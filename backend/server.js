@@ -10,7 +10,7 @@ app.use(express.json());
 
 // Ruta de prueba
 app.get('/api/mensaje', (req, res) => {
-  res.json({ mensaje: '¡Hola desde el servidor Express!' });
+  res.json({ mensaje: 'Hola desde el servidor backend' });
 });
 
 app.listen(PORT, () => {
