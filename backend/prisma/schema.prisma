@@ -10,12 +10,45 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CLIENT
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  nombres   String
-  apellidos String
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id              Int         @id @default(autoincrement())
+  firstName       String
+  lastName        String
+  email           String      @unique
+  passwordHash    String      
+  role            Role        @default(CLIENT)
+  createdAt       DateTime    @default(now())
+  apdatedAt       DateTime    @updatedAt
+  client          Client?
+  admin           Admin?
+}
+
+model Client {
+  id              Int         @id @default(autoincrement())
+  userId          Int         @unique
+  link            String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Admin {
+  id              Int         @id @default(autoincrement())
+  userId          Int         @unique
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  audits          Audit[]
+} 
+
+model Audit{
+  id              Int         @id @default(autoincrement())
+  adminId         Int 
+  action          String
+  createdAt       DateTime    @default(now())
+  admin           Admin       @relation(fields: [adminId], references: [id], onDelete: Cascade)
 }
