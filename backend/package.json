@@ -12,16 +12,24 @@
   },
   "license": "ISC",
   "author": "Cody Nathaniel Cabrera Abad",
-  "type": "commonjs",
-  "main": "index.js",
+  "type": "module",
+  "main": "src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "node --watch src/server.js"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^6.5.1",
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "dotenv": "^17.0.2",
+    "express": "^5.2.1",
+    "prisma": "^6.5.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
+  },
+  "eslintConfig": {
+    "extends": "standard"
   }
 }
