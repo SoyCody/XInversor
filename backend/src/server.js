@@ -4,13 +4,16 @@ import cors from 'cors';
 import usersRoutes from './routes/user.routes.js'
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Habilitar CORS para permitir peticiones desde el frontend
 app.use(cors());
 app.use(express.json());
 
-app.use('/users', usersRoutes);
+// Montado en /api/users porque el frontend llama a
+// `${API_URL}/api/users/...` — antes estaba en /users
+// y el registro nunca llegaba a esta ruta (404).
+app.use('/api/users', usersRoutes);
 
 // Ruta de prueba
 app.get('/api/mensaje', (req, res) => {
