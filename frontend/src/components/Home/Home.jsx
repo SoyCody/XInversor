@@ -11,6 +11,9 @@ const Home = () => {
   const goClientDashboard = () => {
     navigate("/adminDasboard");
   };
+  const goAdminDashboard = ()=>{
+    navigate("/adminDashboard");
+  };
   const heroRef = useRef(null);
 
   // ========================================
@@ -38,11 +41,8 @@ const Home = () => {
     const el = heroRef.current;
 
     if (!el) return;
-
     const rect = el.getBoundingClientRect();
-
     const x = ((e.clientX - rect.left) / rect.width) * 100;
-
     const y = ((e.clientY - rect.top) / rect.height) * 100;
 
     el.style.setProperty("--mx", `${x}%`);
@@ -500,21 +500,16 @@ const Home = () => {
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-
-                  // Aquí posteriormente se conectará
-                  // la API de inicio de sesión.
                 }}
               >
                 <label>
                   Correo electrónico
                   <input type="email" placeholder="correo@ejemplo.com" />
                 </label>
-
                 <label>
                   Contraseña
                   <input type="password" placeholder="Ingresa tu contraseña" />
                 </label>
-
                 <div className="form-options">
                   <label>
                     <input type="checkbox" />
