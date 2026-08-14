@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import usersRoutes from './routes/auth.routes.js'
+import adminRoutes from './routes/admin.routes.js'
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -13,7 +14,8 @@ app.use(express.json());
 // Montado en /api/users porque el frontend llama a
 // `${API_URL}/api/users/...` — antes estaba en /users
 // y el registro nunca llegaba a esta ruta (404).
-app.use('/api/users', usersRoutes);
+app.use('/users', usersRoutes);
+app.use('/admin', adminRoutes);
 
 // Ruta de prueba
 app.get('/api/mensaje', (req, res) => {

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'change-this-secret-in-production';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN = process.env.JWR_EXPIRES_IN;
 
 // Genera un token JWT firmado con los datos básicos del usuario.
 // Se usa desde el controller después de registrar/loguear.
@@ -37,4 +37,13 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-export { generateToken, verifyToken };
+const isAdmin = (req, res, next) => {
+  if (req.user?.role !== 'ADMIN') {
+    return res.status(403).json({
+      error: 'Acceso solo para administradores'
+    });
+  }
+  next();
+};
+
+export { generateToken, verifyToken, isAdmin };
