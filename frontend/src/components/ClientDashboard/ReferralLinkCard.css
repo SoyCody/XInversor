@@ -5,8 +5,8 @@
   gap: 10px;
   padding: 20px 24px;
   border-radius: 16px;
-  background: linear-gradient(135deg, rgba(168, 121, 255, 0.14), rgba(168, 121, 255, 0.03));
-  border: 1px solid rgba(168, 121, 255, 0.28);
+  background: rgb(254, 254, 254);
+  border: 1px solid rgba(0, 0, 0, 0.28);
 }
 
 .referral-card-header {
@@ -19,11 +19,11 @@
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
-  color: #a879ff;
+  color: #707070;
 }
 
 .referral-card-symbol {
-  color: #a879ff;
+  color: #12247f;
   font-size: 18px;
   line-height: 1;
 }
@@ -31,7 +31,7 @@
 .referral-card-hint {
   margin: 0;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(0, 0, 0, 0.55);
 }
 
 .referral-card-row {
@@ -47,10 +47,10 @@
   padding: 10px 14px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgb(7, 7, 7);
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 13px;
-  color: #e8e6f0;
+  color: #1f4fa3;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -61,8 +61,8 @@
   padding: 10px 18px;
   border: none;
   border-radius: 10px;
-  background: #a879ff;
-  color: #17121f;
+  background: #12247f;
+  color: #ffffff;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -70,7 +70,6 @@
 }
 
 .referral-card-copy:hover:not(:disabled) {
-  background: #b98dff;
   transform: translateY(-1px);
 }
 
@@ -80,7 +79,7 @@
 }
 
 .referral-card-copy:focus-visible {
-  outline: 2px solid #a879ff;
+  outline: 2px solid #1f4fa3;
   outline-offset: 2px;
 }
 

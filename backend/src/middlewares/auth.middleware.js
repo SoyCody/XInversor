@@ -14,7 +14,7 @@ export const COOKIE_NAME = 'access_token';
 export const COOKIE_OPTIONS = {
   httpOnly: true, // JS del navegador no puede leer ni tocar esta cookie
   secure: process.env.NODE_ENV === 'production', // solo por HTTPS en prod
-  sameSite: 'strict', // no se envía en peticiones iniciadas desde otros sitios
+  sameSite: 'lax', // permite cookies en la app local frontend/backend sin bloquear la sesión
   path: '/',
 };
 

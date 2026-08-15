@@ -1,4 +1,4 @@
-import SideBar from "../SideBar/SideBar";
+import ClientSideBar from "../SideBar/ClientSideBar.jsx";
 import Header from "../Header/Header";
 import ReferralLinkCard from "./ReferralLinkCard.jsx";
 import { useFetch } from "../../hooks/useFetch";
@@ -9,7 +9,7 @@ const ClientDashboard = () => {
 
   return (
     <div className="app">
-      <SideBar />
+      <ClientSideBar />
 
       <main className="main">
         <Header />
