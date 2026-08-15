@@ -23,6 +23,7 @@
     "@prisma/adapter-pg": "^6.5.1",
     "@prisma/client": "^6.5.1",
     "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.0.2",
     "express": "^5.2.1",

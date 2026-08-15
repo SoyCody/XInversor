@@ -1,23 +1,25 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import usersRoutes from './routes/auth.routes.js'
-import adminRoutes from './routes/admin.routes.js'
+import usersRoutes from './routes/auth.routes.js';
+import adminRoutes from './routes/admin.routes.js';
+import clientRoutes from './routes/client.routes.js';
+import cookieParser from 'cookie-parser';
 
 const app = express();
+app.use(cookieParser());
 const PORT = process.env.PORT || 3001;
 
-// Habilitar CORS para permitir peticiones desde el frontend
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true,
+}));
 app.use(express.json());
 
-// Montado en /api/users porque el frontend llama a
-// `${API_URL}/api/users/...` — antes estaba en /users
-// y el registro nunca llegaba a esta ruta (404).
 app.use('/users', usersRoutes);
 app.use('/admin', adminRoutes);
+app.use('/client', clientRoutes);
 
-// Ruta de prueba
 app.get('/api/mensaje', (req, res) => {
   res.json({ mensaje: 'Hola desde el servidor backend' });
 });

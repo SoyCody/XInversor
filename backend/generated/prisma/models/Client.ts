@@ -245,14 +245,14 @@ export type ClientScalarWhereWithAggregatesInput = {
 }
 
 export type ClientCreateInput = {
-  link: string
+  link?: string
   user: Prisma.UserCreateNestedOneWithoutClientInput
 }
 
 export type ClientUncheckedCreateInput = {
   id?: number
   userId: number
-  link: string
+  link?: string
 }
 
 export type ClientUpdateInput = {
@@ -269,7 +269,7 @@ export type ClientUncheckedUpdateInput = {
 export type ClientCreateManyInput = {
   id?: number
   userId: number
-  link: string
+  link?: string
 }
 
 export type ClientUpdateManyMutationInput = {
@@ -348,12 +348,12 @@ export type ClientUncheckedUpdateOneWithoutUserNestedInput = {
 }
 
 export type ClientCreateWithoutUserInput = {
-  link: string
+  link?: string
 }
 
 export type ClientUncheckedCreateWithoutUserInput = {
   id?: number
-  link: string
+  link?: string
 }
 
 export type ClientCreateOrConnectWithoutUserInput = {

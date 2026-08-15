@@ -1,33 +1,21 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+import { apiFetch } from "./httpClient";
 
-export async function registerUser({ firstName, lastName, email, password }) {
-  const response = await fetch(`${API_URL}/users/register`, {
+// Ya no hay nada que guardar en localStorage: el backend setea
+// la cookie httpOnly directamente en la respuesta de fetch.
+export function registerUser({ firstName, lastName, email, password }) {
+  return apiFetch("/users/register", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ firstName, lastName, email, password }),
+    body: { firstName, lastName, email, password },
   });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.error || "No se pudo crear la cuenta.");
-  }
-
-  return data;
 }
 
-export async function loginUser({ email, password }) {
-  const response = await fetch(`${API_URL}/users/login`, {
+export function loginUser({ email, password }) {
+  return apiFetch("/users/login", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: { email, password },
   });
+}
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.error || "No se pudo iniciar sesión.");
-  }
-
-  return data;
+export function logoutUser() {
+  return apiFetch("/users/logout", { method: "POST" });
 }

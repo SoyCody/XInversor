@@ -26,17 +26,27 @@ const registerSchema = Joi.object({
   })
 });
 
+// ==============================
+// VALIDACIONES - Login
+// ==============================
+// A propósito NO repite las reglas de "al menos 8 caracteres":
+// eso es una regla de qué contraseñas se pueden CREAR, no de
+// login. Si alguien tiene una cuenta vieja con password de 6
+// caracteres (por ejemplo, creada antes de subir el mínimo),
+// un min(8) aquí le bloquearía el login con un error de
+// "formato inválido" en vez de dejar que sea el bcrypt.compare
+// el que diga "contraseña incorrecta". Aquí solo se valida que
+// el campo exista y tenga forma de string no vacío.
 const loginSchema = Joi.object({
   email: Joi.string().trim().lowercase().email().required().messages({
     'string.empty': 'El correo electrónico es obligatorio',
     'string.email': 'El correo electrónico no es válido',
     'any.required': 'El correo electrónico es obligatorio'
   }),
-  password: Joi.string().min(8).required().messages({
+  password: Joi.string().required().messages({
     'string.empty': 'La contraseña es obligatoria',
-    'string.min': 'La contraseña debe tener al menos 8 caracteres',
     'any.required': 'La contraseña es obligatoria'
   })
-})
+});
 
 export { registerSchema, loginSchema };

@@ -1,27 +1,19 @@
 import * as authService from '../services/auth.service.js';
-import { generateToken } from '../middlewares/auth.middleware.js';
+import { setAuthCookie, COOKIE_NAME, COOKIE_OPTIONS } from '../middlewares/auth.middleware.js';
 
 const register = async (req, res) => {
   try {
     const user = await authService.registerClient(req.body);
 
-    // Único cambio respecto al comportamiento original:
-    // ahora se genera y devuelve un token JWT junto al usuario.
-    const token = generateToken(user);
+    // El token ya no va en el body: viaja como cookie httpOnly.
+    setAuthCookie(res, user);
 
-    res.status(201).json({
-      ...user,
-      token
-    });
+    res.status(201).json(user);
   } catch (error) {
     if (error instanceof authService.EmailAlreadyExistsError) {
       return res.status(error.statusCode).json({ error: error.message });
     }
 
-    // Si dos registros llegan casi al mismo tiempo con el
-    // mismo correo, la comprobación previa puede no alcanzar
-    // a detectarlo: Prisma lanza P2002 por la restricción
-    // única de la base de datos.
     if (error.code === 'P2002') {
       return res.status(409).json({
         error: 'Ya existe una cuenta con este correo electrónico'
@@ -36,12 +28,10 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const user = await authService.logClient(req.body);
-    const token = generateToken(user);
 
-    res.status(200).json({
-      ...user,
-      token
-    });
+    setAuthCookie(res, user);
+
+    res.status(200).json(user);
   } catch (error) {
     if (error instanceof authService.EmailDoesntExistError) {
       return res.status(error.statusCode).json({ error: error.message });
@@ -55,4 +45,18 @@ const login = async (req, res) => {
   }
 };
 
-export default { register, login };
+const logout = async (req, res) => {
+  try {
+    // MISMAS opciones que se usaron en setAuthCookie (menos maxAge).
+    // Antes limpiabas "access_token" con opciones que nunca coincidían
+    // con ninguna cookie real porque el token nunca se seteaba como cookie.
+    res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
+
+    return res.status(200).json({ message: 'Sesión cerrada exitosamente' });
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error);
+    return res.status(500).json({ error: 'Error al cerrar sesión' });
+  }
+};
+
+export default { register, login, logout };
