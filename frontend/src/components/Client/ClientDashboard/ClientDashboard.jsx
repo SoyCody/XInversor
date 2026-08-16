@@ -1,8 +1,8 @@
-import ClientSideBar from "../SideBar/ClientSideBar.jsx";
-import Header from "../Header/Header";
+import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
+import Header from "../../Header/Header.jsx";
 import ReferralLinkCard from "./ReferralLinkCard.jsx";
-import { useFetch } from "../../hooks/useFetch";
-import { getClientDashboard } from "../../services/clientApi.js";
+import { useFetch } from "../../../hooks/useFetch.js";
+import { getClientDashboard } from "../../../services/clientApi.js";
 
 const ClientDashboard = () => {
   const { data, isLoading, error } = useFetch(getClientDashboard);
@@ -20,12 +20,6 @@ const ClientDashboard = () => {
               <h1>Inicio</h1>
               <p>Resumen de tu cuenta</p>
             </div>
-
-            <button className="date-picker" type="button">
-              <span className="calendar-icon" aria-hidden="true" />
-              9 de Agosto, 2026
-              <span className="chevron" aria-hidden="true" />
-            </button>
           </div>
 
           {error && <p className="dashboard-error">{error}</p>}

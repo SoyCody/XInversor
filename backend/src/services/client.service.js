@@ -8,4 +8,14 @@ const readDashboard = async (userId) => {
   };
 };
 
-export { readDashboard };
+const getMe = async (userId) => {
+  const user = await clientRepository.getMe(userId);
+  
+  if (!user) return null;
+
+  // Excluir la contraseña de la respuesta
+  const { passwordHash, ...userWithoutPassword } = user;
+  return userWithoutPassword;
+};
+
+export { readDashboard, getMe };

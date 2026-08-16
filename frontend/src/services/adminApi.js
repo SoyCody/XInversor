@@ -5,3 +5,7 @@ import { apiFetch } from "./httpClient";
 export function getAdminDashboard() {
   return apiFetch("/admin/dashboard");
 }
+
+export function getMeAdmin() {
+  return apiFetch("/admin/me");
+};

@@ -1,8 +1,8 @@
-import AdminSideBar from "../SideBar/AdminSideBar.jsx";
-import Header from "../Header/Header";
+import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
+import Header from "../../Header/Header";
 import RecentUsersTable from "./RecentUsersTable.jsx";
-import { useFetch } from "../../hooks/useFetch";
-import { getAdminDashboard } from "../../services/adminApi";
+import { useFetch } from "../../../hooks/useFetch";
+import { getAdminDashboard } from "../../../services/adminApi";
 
 const AdminDashboard = () => {
   const { data, isLoading, error } = useFetch(getAdminDashboard);

@@ -1,9 +1,10 @@
-import clientController from '../controllers/client.controller.js';
-import { Router } from 'express';
+import express from 'express';
+const router = express.Router();
+
 import { verifyToken } from '../middlewares/auth.middleware.js';
+import ClientController from '../controllers/client.controller.js';
 
-const router = Router();
-
-router.get('/dashboard', verifyToken, clientController.clientPanel);
+router.get('/dashboard', verifyToken, ClientController.dashboard);
+router.get('/me', verifyToken, ClientController.me);
 
 export default router;

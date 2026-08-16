@@ -1,7 +1,11 @@
+import { Link, useLocation } from "react-router-dom";
 import { useLogout } from "../../hooks/useLogout";
 
 const AdminSideBar = () => {
   const { logout, isSubmitting } = useLogout();
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
 
   return (
     <aside className="sidebar">
@@ -13,10 +17,11 @@ const AdminSideBar = () => {
       </div>
 
       <nav className="sidebar-nav">
-        <a href="#" className="nav-link active">
+
+        <Link to="/adminDashboard" className={`nav-link ${isActive("/adminDashboard") ? "active" : ""}`}>
           <span className="nav-icon dashboard-icon"></span>
           <span>Inicio</span>
-        </a>
+        </Link>
 
         <div className="nav-section">GESTIÓN</div>
 
@@ -31,6 +36,11 @@ const AdminSideBar = () => {
         </a>
 
         <div className="nav-section">CONFIGURACIÓN</div>
+
+        <Link to="/admin/me" className={`nav-link ${isActive("/admin/me") ? "active" : ""}`}>
+          <span className="nav-icon settings-icon"></span>
+          <span>Configuración</span>
+        </Link>
 
         <a href="#" className="nav-link">
           <span className="nav-icon audit-icon"></span>

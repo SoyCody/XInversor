@@ -1,0 +1,58 @@
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  border-radius: 16px;
+  background: rgb(255, 255, 255);
+  border: 1px solid rgba(0, 0, 0, 0.28);
+  margin-bottom: 24px;
+}
+
+.profile-info h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.profile-email {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: rgb(9, 9, 9);
+}
+
+.profile-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.profile-since {
+  font-size: 12px;
+  color: rgb(1, 1, 1);
+}
+
+/* Duplicado a propósito de RecentUsersTable.css: si esta página
+   se carga sin pasar por el chunk de AdminDashboard, esas clases
+   no estarían disponibles. Cuando tengas tiempo, vale la pena mover
+   .role-badge* a un archivo compartido (p. ej. components/common/Badge.css)
+   e importarlo en ambos lugares en vez de mantener dos copias. */
+.role-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.role-badge--admin {
+  background: rgb(116, 55, 228);
+  color: #ffffff;
+}
+
+.role-badge--client {
+  background: #12247f;
+  color: #ffffff;
+}
