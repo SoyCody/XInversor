@@ -18,4 +18,12 @@ export function loginUser({ email, password }) {
 
 export function logoutUser() {
   return apiFetch("/users/logout", { method: "POST" });
-}
+};
+export function updateMe(payload) {
+  // payload: { firstName?, lastName?, email? }
+  // El ID viene del token en el backend
+  return apiFetch("/users/edit/", {
+    method: "PUT",
+    body: payload,
+  });
+};

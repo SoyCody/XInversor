@@ -49,4 +49,16 @@ const loginSchema = Joi.object({
   })
 });
 
-export { registerSchema, loginSchema };
+const updateSchema= Joi.object({
+  firstName: Joi.string().trim().min(2).max(50).messages({
+    'string.min': 'El nombre debe tener al menos 2 caracteres'
+  }),
+  lastName: Joi.string().trim().min(2).max(50).messages({
+    'string.min': 'El apellido debe tener al menos 2 caracteres'
+  }),
+  email: Joi.string().trim().lowercase().email().messages({
+    'string.email': 'El correo electrónico no es válido'
+  })
+})
+
+export { registerSchema, loginSchema, updateSchema };

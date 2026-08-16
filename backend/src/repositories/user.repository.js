@@ -12,4 +12,23 @@ const createUser = (userData) => {
   });
 };
 
-export default { findByEmail, createUser };
+const findById = (id) => {
+  return prisma.user.findUnique({ where: { id } });
+};
+
+const updateUser = (userData) => {
+  const { id, ...data } = userData;
+  return prisma.user.update({
+    where: { id },
+    data,
+    include: { client: true }
+  });
+};
+
+export default { 
+  findById, 
+  updateUser, 
+  findByEmail, 
+  createUser, 
+  updateUser  
+};

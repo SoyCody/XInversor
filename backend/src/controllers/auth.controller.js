@@ -59,4 +59,16 @@ const logout = async (req, res) => {
   }
 };
 
-export default { register, login, logout };
+const update = async (req, res) => {
+  try {
+    const id = req.user?.id; // del token, no del param
+    const user = await authService.updateClient(id, req.body);
+    return res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    const statusCode = error.statusCode || 500;
+    return res.status(statusCode).json({ error: error.message });
+  }
+};
+
+export default { register, login, logout, update };

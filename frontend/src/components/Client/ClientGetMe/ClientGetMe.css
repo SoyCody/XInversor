@@ -56,3 +56,24 @@
   background: #12247f;
   color: #ffffff;
 }
+
+.edit-profile-btn {
+  padding: 10px 20px;
+  background-color: #60a5fa;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-self: flex-start;
+}
+
+.edit-profile-btn:hover {
+  background-color: #3b82f6;
+}
+
+.edit-profile-btn:active {
+  background-color: #1d4ed8;
+}

@@ -18,6 +18,14 @@ class EmailDoesntExistError extends Error {
   }
 }
 
+class UserNotFoundError extends Error {
+  constructor() {
+    super('Usuario no encontrado');
+    this.name = 'UserNotFoundError';
+    this.statusCode = 404;
+  }
+}
+
 // Nueva: contraseña incorrecta. StatusCode 401, no 400/404,
 // porque las credenciales están bien formadas pero no coinciden.
 class InvalidPasswordError extends Error {
@@ -88,10 +96,38 @@ const logClient = async ({ email, password }) => {
   return userWithoutPassword;
 };
 
+const updateClient = async (id, { firstName, lastName, email }) => {
+  const existingUser = await userRepository.findById(id);
+  if (!existingUser) {
+    throw new UserNotFoundError(); 
+  }
+
+  // Solo validar el email si realmente está cambiando
+  if (email && email !== existingUser.email) {
+    const emailOwner = await userRepository.findByEmail(email);
+    if (emailOwner) {
+      throw new EmailAlreadyExistsError();
+    }
+  }
+
+  // Solo mandamos al repo los campos que vinieron en el body
+  const userData = {
+    id,
+    ...(firstName !== undefined && { firstName }),
+    ...(lastName !== undefined && { lastName }),
+    ...(email !== undefined && { email }),
+  };
+
+  const updatedUser = await userRepository.updateUser(userData);
+  const { passwordHash: _passwordHash, ...userWithoutPassword } = updatedUser;
+  return userWithoutPassword;
+};
 export {
   registerClient,
   logClient,
+  updateClient,
   EmailAlreadyExistsError,
   EmailDoesntExistError,
-  InvalidPasswordError
+  InvalidPasswordError,
+  UserNotFoundError
 };

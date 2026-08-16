@@ -51,10 +51,6 @@ const AdminSideBar = () => {
           <span>Reportes</span>
         </a>
         <a href="#" className="nav-link">
-          <span className="nav-icon settings-icon"></span>
-          <span>Configuración</span>
-        </a>
-        <a href="#" className="nav-link">
           <span className="nav-icon notification-icon"></span>
           <span>Notificaciones</span>
         </a>
