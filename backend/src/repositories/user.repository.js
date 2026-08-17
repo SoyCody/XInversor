@@ -25,10 +25,21 @@ const updateUser = (userData) => {
   });
 };
 
+const changePassword = (userData) => {
+  const { id, passwordHash } = userData;
+  return prisma.user.update({
+    where: { id },
+    data: { 
+      passwordHash: passwordHash 
+    }
+  });
+};
+
 export default { 
   findById, 
   updateUser, 
   findByEmail, 
   createUser, 
-  updateUser  
+  updateUser,
+  changePassword  
 };

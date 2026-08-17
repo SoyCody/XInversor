@@ -6,6 +6,8 @@ import AdminDashboard from './components/Admin/AdminDasboard/AdminDashboard.jsx'
 import ClientDashboard from './components/Client/ClientDashboard/ClientDashboard.jsx';
 import ClientGetMe from './components/Client/ClientGetMe/ClientGetMe.jsx';
 import AdminGetMe from './components/Admin/AdminGetMe/AdminGetMe.jsx';
+import AdminChangePassword from './components/Admin/AdminGetMe/AdminChangePassword.jsx';
+import ClientChangePassword  from './components/Client/ClientGetMe/ClientChangePassword.jsx';
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
           <Route path="/clientDashboard" element={<ClientDashboard />} />
           <Route path="/client/me" element={<ClientGetMe/>}/>
           <Route path="/admin/me" element={<AdminGetMe/>}/>
+          <Route path="/change/password" element={<AdminChangePassword/>}/>
+          <Route path="/admin/change/password" element={<ClientChangePassword/>}/>
         </Routes>
       </Router>
     </>

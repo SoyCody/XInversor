@@ -122,10 +122,20 @@ const updateClient = async (id, { firstName, lastName, email }) => {
   const { passwordHash: _passwordHash, ...userWithoutPassword } = updatedUser;
   return userWithoutPassword;
 };
+
+const changePassword = async (id, { password }) => {
+  const passwordHash = await bcrypt.hash(password, 12);
+  const userData = { id, passwordHash }; 
+  
+  const updatePassword = await userRepository.changePassword(userData);
+  return updatePassword;
+}
+
 export {
   registerClient,
   logClient,
   updateClient,
+  changePassword,
   EmailAlreadyExistsError,
   EmailDoesntExistError,
   InvalidPasswordError,

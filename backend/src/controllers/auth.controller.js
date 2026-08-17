@@ -66,9 +66,23 @@ const update = async (req, res) => {
     return res.status(200).json(user);
   } catch (error) {
     console.log(error);
-    const statusCode = error.statusCode || 500;
-    return res.status(statusCode).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
-export default { register, login, logout, update };
+const changePassword = async (req, res) => {
+  try{
+    const id = req.user?.id;
+    const newPassword = await authService.changePassword(id, req.body);
+    return res.status(200).json({
+      message: "La contraseña se ha cambiado correctamente"
+    });
+  }catch(error){
+    console.log(error);
+    return res.status(500).json({
+      message: error.message
+    })
+  }
+}
+
+export default { register, login, logout, update, changePassword };

@@ -59,6 +59,14 @@ const updateSchema= Joi.object({
   email: Joi.string().trim().lowercase().email().messages({
     'string.email': 'El correo electrónico no es válido'
   })
-})
+});
 
-export { registerSchema, loginSchema, updateSchema };
+const passwordSchema = Joi.object({
+  password: Joi.string().required().min(8).messages({
+    'string.min': 'La contraseña debe tener minimo 8 caracteres',
+    'string.empty': 'La contraseña es obligatoria',
+    'any.required': 'La contraseña es obligatoria'
+  })
+});
+
+export { registerSchema, loginSchema, updateSchema, passwordSchema };

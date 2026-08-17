@@ -10,6 +10,7 @@
   flex-direction: column;
   gap: 0.35rem;
   font-size: 0.9rem;
+  color: #050505; /* Un poco más suave que el blanco puro para los labels */
 }
 
 .edit-profile-form input {
@@ -18,15 +19,71 @@
   border: 1px solid #333;
   background: #1e1e1e;
   color: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Efecto azul cuando el input está seleccionado */
+.edit-profile-form input:focus {
+  outline: none;
+  border-color: #3b82f6; /* Azul brillante */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); /* Resplandor suave azul */
 }
 
 .edit-profile-error {
   color: #ff6b6b;
   font-size: 0.85rem;
+  background: rgba(255, 107, 107, 0.1);
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 107, 107, 0.3);
 }
 
 .edit-profile-actions {
   display: flex;
   gap: 0.75rem;
   justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+/* Estilos base para ambos botones */
+.edit-profile-actions button {
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Botón Secundario (Cancelar) */
+.edit-profile-actions button[type="button"] {
+  background: transparent;
+  color: #94a3b8; /* Gris azulado */
+  border: 1px solid #475569;
+}
+
+.edit-profile-actions button[type="button"]:hover:not(:disabled) {
+  background: #334155;
+  color: #fff;
+  border-color: #64748b;
+}
+
+/* Botón Principal (Guardar) - Azul */
+.edit-profile-actions button[type="submit"] {
+  background: #2563eb; /* Azul base */
+  color: #ffffff;
+  border: 1px solid #2563eb;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+.edit-profile-actions button[type="submit"]:hover:not(:disabled) {
+  background: #1d4ed8; /* Azul más oscuro al pasar el mouse */
+  border-color: #1d4ed8;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+}
+
+/* Estado de cargando (disabled) */
+.edit-profile-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

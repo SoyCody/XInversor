@@ -14,16 +14,25 @@ export function loginUser({ email, password }) {
     method: "POST",
     body: { email, password },
   });
-}
+};
 
 export function logoutUser() {
   return apiFetch("/users/logout", { method: "POST" });
 };
+
 export function updateMe(payload) {
   // payload: { firstName?, lastName?, email? }
   // El ID viene del token en el backend
-  return apiFetch("/users/edit/", {
+  return apiFetch("/users/edit", {
     method: "PUT",
     body: payload,
   });
 };
+
+export function changePassword(data) {
+  // "data" será el objeto { password: "..." } que mandamos desde el componente
+  return apiFetch("/users/change/password", {
+    method: "PUT",
+    body: data 
+  });
+}

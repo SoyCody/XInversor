@@ -1,4 +1,5 @@
 import { getMeClient } from "../../../services/clientApi";
+import "../../../App.css";
 import { useFetch } from "../../../hooks/useFetch";
 import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
 import Header from "../../Header/Header.jsx";
@@ -6,6 +7,7 @@ import AccountDetails from "./AccountDetails";
 import "./ClientGetMe.css";
 import EditProfileForm from "../../Auth/EditProfileForm";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const formatDate = (isoString) => {
   if (!isoString) return "—";
@@ -19,6 +21,7 @@ const formatDate = (isoString) => {
 const ClientGetMe = () => {
   const { data: user, isLoading, error } = useFetch(getMeClient);
   const [isEditing, setIsEditing] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="app">
@@ -65,6 +68,12 @@ const ClientGetMe = () => {
                 </div>
               </section>
               <button className="edit-profile-btn" onClick={() => setIsEditing(true)}>Editar perfil</button>
+              <button
+                className="edit-profile-btn"
+                onClick={() => navigate("/change/password", { state: { role: "CLIENT" } })}
+              >
+                Cambiar contraseña
+              </button>
             </>
           )}
         </div>

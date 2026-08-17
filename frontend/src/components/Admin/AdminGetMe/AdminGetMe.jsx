@@ -6,6 +6,7 @@ import AccountDetails from "./AccountDetails";
 import "./AdminGetMe.css";
 import EditProfileForm from "../../Auth/EditProfileForm";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const formatDate = (isoString) => {
   if (!isoString) return "—";
@@ -19,6 +20,7 @@ const formatDate = (isoString) => {
 const AdminGetMe = () => {
   const { data: user, isLoading, error } = useFetch(getMeAdmin);
   const [isEditing, setIsEditing] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="app">
@@ -41,7 +43,7 @@ const AdminGetMe = () => {
             <EditProfileForm
               user={user}
               onCancel={() => setIsEditing(false)}
-              onSuccess={() => setIsEditing(false)} // idealmente aquí refrescas el useFetch
+              onSuccess={() => setIsEditing(false)}
             />
           ) : (
             <>
@@ -64,7 +66,18 @@ const AdminGetMe = () => {
                   </span>
                 </div>
               </section>
-              <button className="edit-profile-btn" onClick={() => setIsEditing(true)}>Editar perfil</button>
+
+              <div className="profile-actions">
+                <button className="edit-profile-btn" onClick={() => setIsEditing(true)}>
+                  Editar perfil
+                </button>
+                <button
+                  className="edit-profile-btn"
+                  onClick={() => navigate("/change/password", { state: { role: "ADMIN" } })}
+                >
+                  Cambiar contraseña
+                </button>
+              </div>
             </>
           )}
         </div>
