@@ -10,4 +10,16 @@ const adminPanel = async (req, res) => {
   }
 };
 
-export default { adminPanel };
+const obtenerClientes = async (req, res) => {
+  try{
+    const users = await adminService.obtenerClientes();
+    return res.status(200).json(users)
+  }catch(error){
+    console.error(error);
+    return res.status(500).json({
+      message: "Error al obtener clientes"
+    })
+  };
+};
+
+export default { adminPanel, obtenerClientes };

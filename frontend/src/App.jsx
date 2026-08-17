@@ -8,6 +8,7 @@ import ClientGetMe from './components/Client/ClientGetMe/ClientGetMe.jsx';
 import AdminGetMe from './components/Admin/AdminGetMe/AdminGetMe.jsx';
 import AdminChangePassword from './components/Admin/AdminGetMe/AdminChangePassword.jsx';
 import ClientChangePassword  from './components/Client/ClientGetMe/ClientChangePassword.jsx';
+import ObtenerClientes from './components/Admin/ObtenerClientes/ObtenerClientes.jsx';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/admin/me" element={<AdminGetMe/>}/>
           <Route path="/change/password" element={<AdminChangePassword/>}/>
           <Route path="/admin/change/password" element={<ClientChangePassword/>}/>
+          <Route path="/admin/clientes" element={<ObtenerClientes />} />
         </Routes>
       </Router>
     </>

@@ -9,3 +9,7 @@ export function getAdminDashboard() {
 export function getMeAdmin() {
   return apiFetch("/admin/me");
 };
+
+export function obtenetClientes() {
+  return apiFetch("/admin/users");
+};

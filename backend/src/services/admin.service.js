@@ -16,4 +16,16 @@ const readDashboard = async () => {
   };
 };
 
-export { readDashboard };
+const obtenerClientes = async () => {
+  const [ totalClientes, clientes ] = await Promise.all([
+    adminRepository.countByRole('CLIENT'),
+    adminRepository.obtenerClientes()
+  ]);
+
+  return { 
+    totalClientes,
+    clientes
+  }
+};
+
+export { readDashboard, obtenerClientes };

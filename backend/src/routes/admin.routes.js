@@ -5,6 +5,8 @@ import clientController from '../controllers/client.controller.js';
 
 const router = Router();
 
-router.get('/dashboard', verifyToken, isAdmin, adminController.adminPanel)
-router.get('/me', verifyToken, clientController.me)
+router.get('/dashboard', verifyToken, isAdmin, adminController.adminPanel);
+router.get('/me', verifyToken, clientController.me);
+router.get('/users', verifyToken, isAdmin, adminController.obtenerClientes);
+
 export default router;

@@ -8,8 +8,34 @@ const findRecent = (take = 10) => {
   return prisma.user.findMany({
     take,
     orderBy: { createdAt: 'desc' },
-    select: { id: true, firstName: true, lastName: true, email: true, role: true, createdAt: true }
+    select: { 
+      id: true, 
+      firstName: true, 
+      lastName: true, 
+      email: true, 
+      role: true, 
+      createdAt: true 
+    }
   });
 };
 
-export default { countAll, countByRole, findRecent };
+const obtenerClientes = () => {
+  return prisma.user.findMany({
+    where: { role: "CLIENT" },
+    select: { 
+      id: true,
+      firstName: true, 
+      lastName: true,
+      email: true,
+      createdAt: true,
+      apdatedAt: true
+    }
+  })
+};
+
+export default { 
+  countAll, 
+  countByRole, 
+  findRecent, 
+  obtenerClientes 
+};
