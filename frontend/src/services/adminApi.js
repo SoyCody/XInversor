@@ -13,3 +13,7 @@ export function getMeAdmin() {
 export function obtenerClientes() {
   return apiFetch("/admin/users");
 };
+
+export function verCliente (id) {
+  return apiFetch(`/admin/watch/user/${id}`);
+};

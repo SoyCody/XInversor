@@ -28,4 +28,11 @@ const obtenerClientes = async () => {
   }
 };
 
-export { readDashboard, obtenerClientes };
+const verCliente = async (id) => {
+  const [cliente] = await Promise.all([
+    adminRepository.verCliente(id)
+  ]);
+  return{ cliente }
+};
+
+export { readDashboard, obtenerClientes, verCliente };

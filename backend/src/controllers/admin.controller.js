@@ -15,11 +15,24 @@ const obtenerClientes = async (req, res) => {
     const users = await adminService.obtenerClientes();
     return res.status(200).json(users)
   }catch(error){
-    console.error(error);
     return res.status(500).json({
       message: "Error al obtener clientes"
     })
   };
 };
 
-export default { adminPanel, obtenerClientes };
+const verCliente = async (req, res) => {
+  try{
+    const { id } = req.params;
+    const cliente = await adminService.verCliente(Number(id));
+    return res.status(200).json(cliente)
+    
+  }catch(error){
+    console.error(error);
+    return res.status(500).json({
+      message: "Error al buscar el cliente"
+    })
+  };
+};
+
+export default { adminPanel, obtenerClientes, verCliente };

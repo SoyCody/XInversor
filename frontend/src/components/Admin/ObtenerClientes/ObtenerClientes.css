@@ -32,14 +32,23 @@
   border-bottom: 1px solid #000000;
 }
 
-.clientes-table tbody tr:hover {
-  background: #60a5fa;
-}
-
 .clientes-table td{
   color: #000000;
 }
 
 .clientes-table th{
   color: #ffff
+}
+
+.edit-profile-btn {
+  padding: 10px 20px;
+  background-color: #2365d4;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-self: flex-start;
 }

@@ -25,17 +25,28 @@ const obtenerClientes = () => {
     select: { 
       id: true,
       firstName: true, 
-      lastName: true,
-      email: true,
-      createdAt: true,
-      apdatedAt: true
+      lastName: true
     }
-  })
+  });
+};
+
+const verCliente = (id) => {
+  return prisma.user.findUnique({
+    where : { id: id},
+    select : {
+      firstName: true, 
+      lastName: true,
+      email : true,
+      createdAt : true,
+      apdatedAt : true
+    }
+  });
 };
 
 export default { 
   countAll, 
   countByRole, 
   findRecent, 
-  obtenerClientes 
+  obtenerClientes, 
+  verCliente 
 };

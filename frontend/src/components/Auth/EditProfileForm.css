@@ -63,14 +63,14 @@
 }
 
 .edit-profile-actions button[type="button"]:hover:not(:disabled) {
-  background: #334155;
+  background: #fd2e2e;
   color: #fff;
   border-color: #64748b;
 }
 
 /* Botón Principal (Guardar) - Azul */
 .edit-profile-actions button[type="submit"] {
-  background: #2563eb; /* Azul base */
+  background: #2365d4; /* Azul base */
   color: #ffffff;
   border: 1px solid #2563eb;
   box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
