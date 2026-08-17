@@ -10,6 +10,6 @@ export function getMeAdmin() {
   return apiFetch("/admin/me");
 };
 
-export function obtenetClientes() {
+export function obtenerClientes() {
   return apiFetch("/admin/users");
 };

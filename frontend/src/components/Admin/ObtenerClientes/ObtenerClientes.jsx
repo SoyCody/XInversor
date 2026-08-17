@@ -1,4 +1,4 @@
-import { getClientes } from "../../../services/adminApi.js";
+import { obtenerClientes } from "../../../services/adminApi.js";
 import { useFetch } from "../../../hooks/useFetch";
 import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
@@ -15,7 +15,7 @@ const formatDate = (isoString) => {
 };
 
 const ObtenerClientes = () => {
-  const { data, isLoading, error } = useFetch(getClientes);
+  const { data, isLoading, error } = useFetch(obtenerClientes);
 
   const clientes = data?.clientes ?? [];
   const totalClientes = data?.totalClientes ?? 0;
