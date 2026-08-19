@@ -30,18 +30,17 @@
 
 .modal-actions {
   display: flex;
-  gap: 15px; /* Crea el espacio uniforme entre los botones */
+  gap: 15px; 
   flex-wrap: wrap;
-  justify-content: flex-start; /* En la imagen están a la izquierda. Si los quieres a la derecha, usa flex-end */
+  justify-content: flex-start; 
   margin-top: 20px;
 }
 
-/* 2. Estilos para los botones dentro de ese contenedor */
 .modal-actions button {
   padding: 10px 20px; 
   border: none;
-  border-radius: 8px; /* Bordes redondeados idénticos a la imagen */
-  font-size: 14px; /* Equivalente a ~0.9rem */
+  border-radius: 8px; 
+  font-size: 14px; 
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
