@@ -9,6 +9,12 @@
   margin-bottom: 24px;
 }
 
+.profile-actions {
+  display: flex;
+  gap: 15px; /* Esta propiedad crea un espacio uniforme entre los botones */
+  flex-wrap: wrap;
+}
+
 .profile-info h2 {
   margin: 0 0 4px;
   font-size: 18px;

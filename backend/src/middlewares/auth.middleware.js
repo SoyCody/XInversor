@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import userRepository from '../repositories/user.repository.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN_DAYS = Number(process.env.JWT_EXPIRES_IN_DAYS) || 1;
@@ -20,7 +21,11 @@ export const COOKIE_OPTIONS = {
 
 const generateToken = (user) => {
   return jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
+    { id: user.id, 
+      email: user.email, 
+      role: user.role, 
+      state: user.state 
+    },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRES_IN }
   );
@@ -31,33 +36,70 @@ const generateToken = (user) => {
 // register/login.
 const setAuthCookie = (res, user) => {
   const token = generateToken(user);
-  res.cookie(COOKIE_NAME, token, { ...COOKIE_OPTIONS, maxAge: JWT_MAX_AGE_MS });
+  res.cookie(
+    COOKIE_NAME, 
+    token, 
+    { ...COOKIE_OPTIONS, 
+      maxAge: JWT_MAX_AGE_MS 
+    });
 };
 
-// Middleware para proteger rutas privadas.
-// Ya NO lee el header Authorization: lee la cookie httpOnly,
-// que el navegador manda solo si la petición usa credentials: 'include'.
-const verifyToken = (req, res, next) => {
+const verifyToken = async (req, res, next) => {
   const token = req.cookies?.[COOKIE_NAME];
 
   if (!token) {
-    return res.status(401).json({ error: 'No autenticado' });
+    return res.status(401).json({ 
+        error: 'No autenticado' 
+    });
   }
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // { id, email, role }
+    const user = await userRepository.findActiveById(decoded.id);
+
+    if (!user) {
+      res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
+      return res.status(401).json({
+        error: 'La sesión ya no está activa'
+      });
+    }
+
+    req.user = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      state: user.state
+    };
     next();
   } catch (error) {
-    return res.status(401).json({ error: 'Token inválido o expirado' });
+    return res.status(401).json({ 
+      error: 'Token inválido o expirado' 
+    });
   }
 };
 
 const isAdmin = (req, res, next) => {
   if (req.user?.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Acceso solo para administradores' });
+    return res.status(403).json({ 
+      error: 'Acceso solo para administradores' 
+    });
   }
   next();
 };
 
-export { generateToken, setAuthCookie, verifyToken, isAdmin };
+const isActive = (req, res, next) => {
+  if (req.user?.state !== 'ACTIVO'){
+    return res.status(403).json({
+      error: 'Este usuario está borrado actualmente'
+    });
+  }
+  next();
+};
+
+export { 
+  generateToken, 
+  setAuthCookie, 
+  verifyToken, 
+  isAdmin,
+  isActive 
+};

@@ -8,9 +8,10 @@ const getLink = async (userId) => {
 };
 
 const getMe = async (userId) => {
-  return prisma.user.findUnique({
+  return prisma.user.findFirst({
     where: {
       id: userId,
+      state: 'ACTIVO',
     },
     include: {
       client: true,

@@ -18,6 +18,11 @@ enum Role {
   CLIENT
 }
 
+enum State {
+  BORRADO
+  ACTIVO
+}
+
 model User {
   id              Int         @id @default(autoincrement())
   firstName       String
@@ -27,6 +32,7 @@ model User {
   role            Role        @default(CLIENT)
   createdAt       DateTime    @default(now())
   apdatedAt       DateTime    @updatedAt
+  state           State       @default(ACTIVO)
   client          Client?
   admin           Admin?
 }

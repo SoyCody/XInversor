@@ -15,3 +15,11 @@ export const Role = {
 } as const
 
 export type Role = (typeof Role)[keyof typeof Role]
+
+
+export const State = {
+  BORRADO: 'BORRADO',
+  ACTIVO: 'ACTIVO'
+} as const
+
+export type State = (typeof State)[keyof typeof State]

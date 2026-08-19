@@ -8,6 +8,8 @@ import "./ClientGetMe.css";
 import EditProfileForm from "../../Auth/EditProfileForm";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ConfirmDeleteModal from "../../Auth/ConfirmDeleteModal";
+import { deleteAccount } from "../../../services/authApi.js";
 
 const formatDate = (isoString) => {
   if (!isoString) return "—";
@@ -22,6 +24,22 @@ const ClientGetMe = () => {
   const { data: user, isLoading, error } = useFetch(getMeClient);
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
+
+  
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteAccount();
+      navigate("/", { replace: true }); // ajusta si tu Home vive en otra ruta
+    } catch (err) {
+      setDeleteError(err.message);
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="app">
@@ -39,6 +57,7 @@ const ClientGetMe = () => {
           </div>
 
           {error && <p className="dashboard-error">{error}</p>}
+          {deleteError && <p className="dashboard-error">{deleteError}</p>}
 
           {isEditing ? (
             <EditProfileForm
@@ -74,7 +93,20 @@ const ClientGetMe = () => {
               >
                 Cambiar contraseña
               </button>
+              <button
+                className="edit-profile-btn edit-profile-btn--danger"
+                onClick={() => setIsDeleteModalOpen(true)}
+              >
+                Eliminar cuenta
+              </button>
             </>
+          )}
+          {isDeleteModalOpen && (
+            <ConfirmDeleteModal
+              isDeleting={isDeleting}
+              onCancel={() => setIsDeleteModalOpen(false)}
+              onConfirm={handleDeleteAccount}
+            />
           )}
         </div>
       </main>

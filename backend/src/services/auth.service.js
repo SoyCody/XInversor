@@ -129,6 +129,11 @@ const changePassword = async (id, { password }) => {
   
   const updatePassword = await userRepository.changePassword(userData);
   return updatePassword;
+};
+
+const deleteUser =  async (id) =>{
+  const deleted = await userRepository.deleteUser(id);
+  return deleted;
 }
 
 export {
@@ -136,6 +141,7 @@ export {
   logClient,
   updateClient,
   changePassword,
+  deleteUser,
   EmailAlreadyExistsError,
   EmailDoesntExistError,
   InvalidPasswordError,

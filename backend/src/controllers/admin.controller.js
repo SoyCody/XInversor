@@ -25,6 +25,13 @@ const verCliente = async (req, res) => {
   try{
     const { id } = req.params;
     const cliente = await adminService.verCliente(Number(id));
+
+    if (!cliente.cliente) {
+      return res.status(404).json({
+        message: 'Cliente no encontrado'
+      });
+    }
+
     return res.status(200).json(cliente)
     
   }catch(error){

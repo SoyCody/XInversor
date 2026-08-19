@@ -83,6 +83,27 @@ const changePassword = async (req, res) => {
       message: error.message
     })
   }
-}
-
-export default { register, login, logout, update, changePassword };
+};
+const deleteUser = async (req, res)=> {
+  try {
+    const id = req.user?.id;
+    await authService.deleteUser(id);
+    res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
+    return res.status(200).json({
+      message: "Su cuenta ha sido eliminada exitosamente"
+    })
+  } catch (error){
+    console.log(error);
+    return res.status(500).json({
+      message: 'Error al eliminar el usuario'
+    })
+  }
+ };
+export default { 
+  register, 
+  login, 
+  logout, 
+  update, 
+  changePassword,
+  deleteUser
+};

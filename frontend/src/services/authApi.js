@@ -35,4 +35,8 @@ export function changePassword(data) {
     method: "PUT",
     body: data 
   });
-}
+};
+
+export function deleteAccount () {
+  return apiFetch("/users/delete", { method: "PUT" });
+};

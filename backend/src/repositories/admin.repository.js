@@ -1,13 +1,20 @@
 import prisma from '../db.js';
 
-const countAll = () => prisma.user.count();
+const ACTIVE_STATE = 'ACTIVO';
 
-const countByRole = (role) => prisma.user.count({ where: { role } });
+const countAll = (state = ACTIVE_STATE) => prisma.user.count({
+  where: { state }
+});
 
-const findRecent = (take = 10) => {
+const countByRole = (role, state = ACTIVE_STATE) => prisma.user.count({
+  where: { role, state }
+});
+
+const findRecent = (take = 10, state = ACTIVE_STATE) => {
   return prisma.user.findMany({
     take,
     orderBy: { createdAt: 'desc' },
+    where: { state },
     select: { 
       id: true, 
       firstName: true, 
@@ -19,9 +26,9 @@ const findRecent = (take = 10) => {
   });
 };
 
-const obtenerClientes = () => {
+const obtenerClientes = (state = ACTIVE_STATE) => {
   return prisma.user.findMany({
-    where: { role: "CLIENT" },
+    where: { role: 'CLIENT', state },
     select: { 
       id: true,
       firstName: true, 
@@ -30,9 +37,9 @@ const obtenerClientes = () => {
   });
 };
 
-const verCliente = (id) => {
-  return prisma.user.findUnique({
-    where : { id: id},
+const verCliente = (id, state = ACTIVE_STATE) => {
+  return prisma.user.findFirst({
+    where: { id, state, role: 'CLIENT' },
     select : {
       firstName: true, 
       lastName: true,

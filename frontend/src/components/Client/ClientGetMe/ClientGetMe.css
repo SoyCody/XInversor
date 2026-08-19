@@ -34,6 +34,12 @@
   color: rgb(1, 1, 1);
 }
 
+.profile-actions {
+  display: flex;
+  gap: 15px; /* Esta propiedad crea un espacio uniforme entre los botones */
+  flex-wrap: wrap;
+}
+
 /* Duplicado a propósito de RecentUsersTable.css: si esta página
    se carga sin pasar por el chunk de AdminDashboard, esas clases
    no estarían disponibles. Cuando tengas tiempo, vale la pena mover

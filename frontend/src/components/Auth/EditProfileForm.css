@@ -17,8 +17,8 @@
   padding: 0.6rem 0.75rem;
   border-radius: 8px;
   border: 1px solid #333;
-  background: #1e1e1e;
-  color: #fff;
+  background: #ffffff;
+  color: #000000;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -58,7 +58,7 @@
 /* Botón Secundario (Cancelar) */
 .edit-profile-actions button[type="button"] {
   background: transparent;
-  color: #94a3b8; /* Gris azulado */
+  color: #000000; /* Gris azulado */
   border: 1px solid #475569;
 }
 
