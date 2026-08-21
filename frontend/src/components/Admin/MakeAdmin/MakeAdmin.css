@@ -1,0 +1,84 @@
+.clientes-summary {
+  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+}
+
+.clientes-total strong {
+  color: #000000;
+}
+
+.clientes-table-wrapper {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid #2a2a2a;
+}
+
+.clientes-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 3px;
+}
+
+.clientes-table thead {
+  background: #1e1e1e;
+  font-size: #fff;
+}
+
+.clientes-table th,
+.clientes-table td {
+  padding: 0.75rem;
+  text-align: left;
+  font-size: 13px;
+  border-bottom: 1px solid #000000;
+}
+
+.clientes-table td{
+  color: #000000;
+}
+
+.clientes-table th{
+  color: #ffff
+}
+
+.edit-profile-btn {
+  padding: 10px 20px;
+  background-color: #2365d4;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-self: flex-start;
+}
+
+.cliente-detalle-card {
+  max-width: 480px;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 1.5rem;
+  background: #ffffff;
+  color: black;
+  margin-bottom: 1.5rem;
+}
+
+.cliente-detalle-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.cliente-detalle-row:last-child {
+  border-bottom: none;
+}
+
+.cliente-detalle-label {
+  color: #9a9a9a;
+  font-size: 0.9rem;
+}
+
+.cliente-detalle-value {
+  font-weight: 500;
+}

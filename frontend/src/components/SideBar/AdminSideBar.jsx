@@ -30,10 +30,10 @@ const AdminSideBar = () => {
           <span>Usuarios</span>
         </Link>
 
-        <a href="#" className="nav-link">
+        <Link to="/admin/solicitudes" className={`nav-link ${isActive("/admin/solicitudes") ? "active" : ""}`}>
           <span className="nav-icon verification-icon"></span>
           <span>KYC / Verificación</span>
-        </a>
+        </Link>
 
         <div className="nav-section">CONFIGURACIÓN</div>
 

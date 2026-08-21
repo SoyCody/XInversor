@@ -10,6 +10,8 @@ import AdminChangePassword from './components/Admin/AdminGetMe/AdminChangePasswo
 import ClientChangePassword  from './components/Client/ClientGetMe/ClientChangePassword.jsx';
 import ObtenerClientes from './components/Admin/ObtenerClientes/ObtenerClientes.jsx';
 import VerCliente from './components/Admin/VerCliente/VerCliente.jsx';
+import MakeAdmin from './components/Admin/MakeAdmin/MakeAdmin.jsx';
+import PromoteClient from './components/Admin/MakeAdmin/PromoteClient.jsx';
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
           <Route path="/admin/change/password" element={<ClientChangePassword/>}/>
           <Route path="/admin/clientes" element={<ObtenerClientes />} />
           <Route path="/admin/clientes/:id" element={<VerCliente />} />
+          <Route path="/admin/solicitudes" element={<MakeAdmin />} />
+          <Route path="/admin/promote/:id" element={<PromoteClient />} />
         </Routes>
       </Router>
     </>

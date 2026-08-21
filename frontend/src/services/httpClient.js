@@ -14,7 +14,7 @@ export async function apiFetch(path, { method = "GET", body } = {}) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Ocurrió un error al conectar con el servidor.");
+    throw new Error(data.error || data.message || "Ocurrió un error al conectar con el servidor.");
   }
 
   return data;

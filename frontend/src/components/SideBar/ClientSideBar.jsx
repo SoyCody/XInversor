@@ -28,10 +28,6 @@ const ClientSideBar = () => {
           <span className="nav-icon orders-icon"></span>
           <span>Órdenes</span>
         </a>
-        <a href="#" className="nav-link">
-          <span className="nav-icon verification-icon"></span>
-          <span>KYC / Verificación</span>
-        </a>
 
         <div className="nav-section">CONFIGURACIÓN</div>
 

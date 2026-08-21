@@ -17,3 +17,7 @@ export function obtenerClientes() {
 export function verCliente (id) {
   return apiFetch(`/admin/watch/user/${id}`);
 };
+
+export function promoteToAdmin(id) {
+  return apiFetch(`/admin/promote/${id}`, { method: "PUT" });
+};
