@@ -22,11 +22,17 @@ router.get('/users',
     isActive,
     adminController.obtenerClientes
 );
-router.get('/watch/user/:id', 
-    verifyToken, 
-    isAdmin, 
+router.get('/watch/user/:id',
+    verifyToken,
+    isAdmin,
     isActive,
     adminController.verCliente
+);
+router.put('/promote/:id',
+    verifyToken,
+    isAdmin,
+    isActive,
+    adminController.promoteToAdmin
 );
 
 export default router;

@@ -35,11 +35,28 @@ const verCliente = async (req, res) => {
     return res.status(200).json(cliente)
     
   }catch(error){
-    console.error(error);
     return res.status(500).json({
       message: "Error al buscar el cliente"
     })
   };
 };
 
-export default { adminPanel, obtenerClientes, verCliente };
+const promoteToAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await adminService.promoteToAdmin(Number(id));
+    return res.status(200).json(user);
+  } catch (error) {
+    if (error instanceof adminService.UserNotFoundError ||
+        error instanceof adminService.AlreadyAdminError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+
+    console.error(error);
+    return res.status(500).json({
+      message: "Error al ascender al usuario"
+    });
+  }
+};
+
+export default { adminPanel, obtenerClientes, verCliente, promoteToAdmin };

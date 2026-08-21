@@ -41,7 +41,7 @@ const verCliente = (id, state = ACTIVE_STATE) => {
   return prisma.user.findFirst({
     where: { id, state, role: 'CLIENT' },
     select : {
-      firstName: true, 
+      firstName: true,
       lastName: true,
       email : true,
       createdAt : true,
@@ -50,10 +50,32 @@ const verCliente = (id, state = ACTIVE_STATE) => {
   });
 };
 
-export default { 
-  countAll, 
-  countByRole, 
-  findRecent, 
-  obtenerClientes, 
-  verCliente 
+const promoteToAdmin = (id) => {
+  return prisma.$transaction(async (tx) => {
+    const user = await tx.user.update({
+      where: { id },
+      data: { role: 'ADMIN' }
+    });
+
+    // El Client del usuario NO se toca aquí: así conserva su link
+    // e historial aunque ahora también sea admin.
+    // upsert por si el usuario ya tuvo un perfil Admin antes
+    // (por ejemplo, fue degradado y vuelve a ascender).
+    await tx.admin.upsert({
+      where: { userId: id },
+      update: {},
+      create: { userId: id }
+    });
+
+    return user;
+  });
+};
+
+export default {
+  countAll,
+  countByRole,
+  findRecent,
+  obtenerClientes,
+  verCliente,
+  promoteToAdmin
 };

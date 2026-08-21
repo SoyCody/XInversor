@@ -7,7 +7,7 @@ import {
     passwordSchema
 } from '../validators/auth.validator.js';
 import authController from '../controllers/auth.controller.js';
-import { verifyToken, isAdmin, isActive } from '../middlewares/auth.middleware.js';
+import { verifyToken, isActive } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
