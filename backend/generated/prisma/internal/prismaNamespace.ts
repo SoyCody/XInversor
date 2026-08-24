@@ -393,7 +393,9 @@ export const ModelName = {
   User: 'User',
   Client: 'Client',
   Admin: 'Admin',
-  Audit: 'Audit'
+  Audit: 'Audit',
+  Inversion: 'Inversion',
+  Estado: 'Estado'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -409,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "client" | "admin" | "audit"
+    modelProps: "user" | "client" | "admin" | "audit" | "inversion" | "estado"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -709,6 +711,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Inversion: {
+      payload: Prisma.$InversionPayload<ExtArgs>
+      fields: Prisma.InversionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InversionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InversionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InversionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InversionPayload>
+        }
+        findFirst: {
+          args: Prisma.InversionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InversionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InversionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InversionPayload>
+        }
+        findMany: {
+          args: Prisma.InversionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InversionPayload>[]
+        }
+        create: {
+          args: Prisma.InversionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InversionPayload>
+        }
+        createMany: {
+          args: Prisma.InversionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InversionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InversionPayload>[]
+        }
+        delete: {
+          args: Prisma.InversionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InversionPayload>
+        }
+        update: {
+          args: Prisma.InversionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InversionPayload>
+        }
+        deleteMany: {
+          args: Prisma.InversionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InversionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InversionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InversionPayload>[]
+        }
+        upsert: {
+          args: Prisma.InversionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InversionPayload>
+        }
+        aggregate: {
+          args: Prisma.InversionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInversion>
+        }
+        groupBy: {
+          args: Prisma.InversionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InversionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InversionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InversionCountAggregateOutputType> | number
+        }
+      }
+    }
+    Estado: {
+      payload: Prisma.$EstadoPayload<ExtArgs>
+      fields: Prisma.EstadoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EstadoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstadoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EstadoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstadoPayload>
+        }
+        findFirst: {
+          args: Prisma.EstadoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstadoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EstadoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstadoPayload>
+        }
+        findMany: {
+          args: Prisma.EstadoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstadoPayload>[]
+        }
+        create: {
+          args: Prisma.EstadoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstadoPayload>
+        }
+        createMany: {
+          args: Prisma.EstadoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EstadoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstadoPayload>[]
+        }
+        delete: {
+          args: Prisma.EstadoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstadoPayload>
+        }
+        update: {
+          args: Prisma.EstadoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstadoPayload>
+        }
+        deleteMany: {
+          args: Prisma.EstadoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EstadoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EstadoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstadoPayload>[]
+        }
+        upsert: {
+          args: Prisma.EstadoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstadoPayload>
+        }
+        aggregate: {
+          args: Prisma.EstadoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEstado>
+        }
+        groupBy: {
+          args: Prisma.EstadoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EstadoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EstadoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EstadoCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -782,12 +932,37 @@ export type AdminScalarFieldEnum = (typeof AdminScalarFieldEnum)[keyof typeof Ad
 
 export const AuditScalarFieldEnum = {
   id: 'id',
-  adminId: 'adminId',
+  userId: 'userId',
   action: 'action',
+  tableName: 'tableName',
+  targetId: 'targetId',
   createdAt: 'createdAt'
 } as const
 
 export type AuditScalarFieldEnum = (typeof AuditScalarFieldEnum)[keyof typeof AuditScalarFieldEnum]
+
+
+export const InversionScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  monto: 'monto',
+  comision: 'comision',
+  dias: 'dias',
+  total: 'total',
+  createdAt: 'createdAt'
+} as const
+
+export type InversionScalarFieldEnum = (typeof InversionScalarFieldEnum)[keyof typeof InversionScalarFieldEnum]
+
+
+export const EstadoScalarFieldEnum = {
+  id: 'id',
+  inversionId: 'inversionId',
+  estado: 'estado',
+  createdAt: 'createdAt'
+} as const
+
+export type EstadoScalarFieldEnum = (typeof EstadoScalarFieldEnum)[keyof typeof EstadoScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -879,6 +1054,34 @@ export type EnumStateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMode
  * Reference to a field of type 'State[]'
  */
 export type ListEnumStateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'State[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal'
+ */
+export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal[]'
+ */
+export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+/**
+ * Reference to a field of type 'EstadoInversion'
+ */
+export type EnumEstadoInversionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EstadoInversion'>
+    
+
+
+/**
+ * Reference to a field of type 'EstadoInversion[]'
+ */
+export type ListEnumEstadoInversionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EstadoInversion[]'>
     
 
 
@@ -986,6 +1189,8 @@ export type GlobalOmitConfig = {
   client?: Prisma.ClientOmit
   admin?: Prisma.AdminOmit
   audit?: Prisma.AuditOmit
+  inversion?: Prisma.InversionOmit
+  estado?: Prisma.EstadoOmit
 }
 
 /* Types for Logging */

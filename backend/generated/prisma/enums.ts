@@ -23,3 +23,13 @@ export const State = {
 } as const
 
 export type State = (typeof State)[keyof typeof State]
+
+
+export const EstadoInversion = {
+  EN_PROGRESO: 'EN_PROGRESO',
+  ACEPTADO: 'ACEPTADO',
+  RECHAZADO: 'RECHAZADO',
+  RETIRADO: 'RETIRADO'
+} as const
+
+export type EstadoInversion = (typeof EstadoInversion)[keyof typeof EstadoInversion]

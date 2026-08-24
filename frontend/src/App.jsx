@@ -12,6 +12,8 @@ import ObtenerClientes from './components/Admin/ObtenerClientes/ObtenerClientes.
 import VerCliente from './components/Admin/VerCliente/VerCliente.jsx';
 import MakeAdmin from './components/Admin/MakeAdmin/MakeAdmin.jsx';
 import PromoteClient from './components/Admin/MakeAdmin/PromoteClient.jsx';
+import Auditorias from './components/Admin/Auditorias/Auditorias.jsx';
+import VerAuditoria from './components/Admin/Auditorias/VerAuditoria.jsx';
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
           <Route path="/admin/clientes/:id" element={<VerCliente />} />
           <Route path="/admin/solicitudes" element={<MakeAdmin />} />
           <Route path="/admin/promote/:id" element={<PromoteClient />} />
+          <Route path="/admin/auditorias" element={<Auditorias />} />
+          <Route path="/admin/auditorias/:id" element={<VerAuditoria />} />
         </Routes>
       </Router>
     </>

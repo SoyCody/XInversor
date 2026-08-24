@@ -1,5 +1,6 @@
 import adminRepository from '../repositories/admin.repository.js';
 import userRepository from '../repositories/user.repository.js';
+import { registrarAuditoria, AUDIT_ACTIONS, AUDIT_TABLES } from './auditorias.service.js';
 
 // Error de dominio: se traduce a un código de estado en el controller.
 class UserNotFoundError extends Error {
@@ -53,7 +54,7 @@ const verCliente = async (id) => {
   return{ cliente }
 };
 
-const promoteToAdmin = async (id) => {
+const promoteToAdmin = async (id, actingAdminUserId) => {
   const user = await userRepository.findActiveById(id);
   if (!user) {
     throw new UserNotFoundError();
@@ -63,9 +64,14 @@ const promoteToAdmin = async (id) => {
     throw new AlreadyAdminError();
   }
 
-  // El Client del usuario se conserva tal cual: el ascenso solo
-  // agrega el perfil Admin y cambia el rol, no borra nada.
   const updatedUser = await adminRepository.promoteToAdmin(id);
+
+  await registrarAuditoria({
+    userId: actingAdminUserId,
+    action: AUDIT_ACTIONS.ROLE_CHANGE,
+    tableName: AUDIT_TABLES.USER,
+    targetId: id
+  });
 
   const { passwordHash, ...userWithoutPassword } = updatedUser;
   return userWithoutPassword;

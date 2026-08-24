@@ -205,6 +205,7 @@ export type ClientWhereInput = {
   userId?: Prisma.IntFilter<"Client"> | number
   link?: Prisma.StringFilter<"Client"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  inversiones?: Prisma.InversionListRelationFilter
 }
 
 export type ClientOrderByWithRelationInput = {
@@ -212,6 +213,7 @@ export type ClientOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   link?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  inversiones?: Prisma.InversionOrderByRelationAggregateInput
 }
 
 export type ClientWhereUniqueInput = Prisma.AtLeast<{
@@ -222,6 +224,7 @@ export type ClientWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ClientWhereInput | Prisma.ClientWhereInput[]
   link?: Prisma.StringFilter<"Client"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  inversiones?: Prisma.InversionListRelationFilter
 }, "id" | "userId">
 
 export type ClientOrderByWithAggregationInput = {
@@ -247,23 +250,27 @@ export type ClientScalarWhereWithAggregatesInput = {
 export type ClientCreateInput = {
   link?: string
   user: Prisma.UserCreateNestedOneWithoutClientInput
+  inversiones?: Prisma.InversionCreateNestedManyWithoutClientInput
 }
 
 export type ClientUncheckedCreateInput = {
   id?: number
   userId: number
   link?: string
+  inversiones?: Prisma.InversionUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ClientUpdateInput = {
   link?: Prisma.StringFieldUpdateOperationsInput | string
   user?: Prisma.UserUpdateOneRequiredWithoutClientNestedInput
+  inversiones?: Prisma.InversionUpdateManyWithoutClientNestedInput
 }
 
 export type ClientUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   link?: Prisma.StringFieldUpdateOperationsInput | string
+  inversiones?: Prisma.InversionUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ClientCreateManyInput = {
@@ -315,6 +322,11 @@ export type ClientSumOrderByAggregateInput = {
   userId?: Prisma.SortOrder
 }
 
+export type ClientScalarRelationFilter = {
+  is?: Prisma.ClientWhereInput
+  isNot?: Prisma.ClientWhereInput
+}
+
 export type ClientCreateNestedOneWithoutUserInput = {
   create?: Prisma.XOR<Prisma.ClientCreateWithoutUserInput, Prisma.ClientUncheckedCreateWithoutUserInput>
   connectOrCreate?: Prisma.ClientCreateOrConnectWithoutUserInput
@@ -347,13 +359,29 @@ export type ClientUncheckedUpdateOneWithoutUserNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ClientUpdateToOneWithWhereWithoutUserInput, Prisma.ClientUpdateWithoutUserInput>, Prisma.ClientUncheckedUpdateWithoutUserInput>
 }
 
+export type ClientCreateNestedOneWithoutInversionesInput = {
+  create?: Prisma.XOR<Prisma.ClientCreateWithoutInversionesInput, Prisma.ClientUncheckedCreateWithoutInversionesInput>
+  connectOrCreate?: Prisma.ClientCreateOrConnectWithoutInversionesInput
+  connect?: Prisma.ClientWhereUniqueInput
+}
+
+export type ClientUpdateOneRequiredWithoutInversionesNestedInput = {
+  create?: Prisma.XOR<Prisma.ClientCreateWithoutInversionesInput, Prisma.ClientUncheckedCreateWithoutInversionesInput>
+  connectOrCreate?: Prisma.ClientCreateOrConnectWithoutInversionesInput
+  upsert?: Prisma.ClientUpsertWithoutInversionesInput
+  connect?: Prisma.ClientWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ClientUpdateToOneWithWhereWithoutInversionesInput, Prisma.ClientUpdateWithoutInversionesInput>, Prisma.ClientUncheckedUpdateWithoutInversionesInput>
+}
+
 export type ClientCreateWithoutUserInput = {
   link?: string
+  inversiones?: Prisma.InversionCreateNestedManyWithoutClientInput
 }
 
 export type ClientUncheckedCreateWithoutUserInput = {
   id?: number
   link?: string
+  inversiones?: Prisma.InversionUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ClientCreateOrConnectWithoutUserInput = {
@@ -374,13 +402,82 @@ export type ClientUpdateToOneWithWhereWithoutUserInput = {
 
 export type ClientUpdateWithoutUserInput = {
   link?: Prisma.StringFieldUpdateOperationsInput | string
+  inversiones?: Prisma.InversionUpdateManyWithoutClientNestedInput
 }
 
 export type ClientUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   link?: Prisma.StringFieldUpdateOperationsInput | string
+  inversiones?: Prisma.InversionUncheckedUpdateManyWithoutClientNestedInput
 }
 
+export type ClientCreateWithoutInversionesInput = {
+  link?: string
+  user: Prisma.UserCreateNestedOneWithoutClientInput
+}
+
+export type ClientUncheckedCreateWithoutInversionesInput = {
+  id?: number
+  userId: number
+  link?: string
+}
+
+export type ClientCreateOrConnectWithoutInversionesInput = {
+  where: Prisma.ClientWhereUniqueInput
+  create: Prisma.XOR<Prisma.ClientCreateWithoutInversionesInput, Prisma.ClientUncheckedCreateWithoutInversionesInput>
+}
+
+export type ClientUpsertWithoutInversionesInput = {
+  update: Prisma.XOR<Prisma.ClientUpdateWithoutInversionesInput, Prisma.ClientUncheckedUpdateWithoutInversionesInput>
+  create: Prisma.XOR<Prisma.ClientCreateWithoutInversionesInput, Prisma.ClientUncheckedCreateWithoutInversionesInput>
+  where?: Prisma.ClientWhereInput
+}
+
+export type ClientUpdateToOneWithWhereWithoutInversionesInput = {
+  where?: Prisma.ClientWhereInput
+  data: Prisma.XOR<Prisma.ClientUpdateWithoutInversionesInput, Prisma.ClientUncheckedUpdateWithoutInversionesInput>
+}
+
+export type ClientUpdateWithoutInversionesInput = {
+  link?: Prisma.StringFieldUpdateOperationsInput | string
+  user?: Prisma.UserUpdateOneRequiredWithoutClientNestedInput
+}
+
+export type ClientUncheckedUpdateWithoutInversionesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  link?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
+
+/**
+ * Count Type ClientCountOutputType
+ */
+
+export type ClientCountOutputType = {
+  inversiones: number
+}
+
+export type ClientCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  inversiones?: boolean | ClientCountOutputTypeCountInversionesArgs
+}
+
+/**
+ * ClientCountOutputType without action
+ */
+export type ClientCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ClientCountOutputType
+   */
+  select?: Prisma.ClientCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ClientCountOutputType without action
+ */
+export type ClientCountOutputTypeCountInversionesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InversionWhereInput
+}
 
 
 export type ClientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -388,6 +485,8 @@ export type ClientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   userId?: boolean
   link?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  inversiones?: boolean | Prisma.Client$inversionesArgs<ExtArgs>
+  _count?: boolean | Prisma.ClientCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["client"]>
 
 export type ClientSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -413,6 +512,8 @@ export type ClientSelectScalar = {
 export type ClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "link", ExtArgs["result"]["client"]>
 export type ClientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  inversiones?: boolean | Prisma.Client$inversionesArgs<ExtArgs>
+  _count?: boolean | Prisma.ClientCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ClientIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -425,6 +526,7 @@ export type $ClientPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   name: "Client"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
+    inversiones: Prisma.$InversionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -825,6 +927,7 @@ readonly fields: ClientFieldRefs;
 export interface Prisma__ClientClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  inversiones<T extends Prisma.Client$inversionesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Client$inversionesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InversionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1250,6 +1353,30 @@ export type ClientDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Limit how many Clients to delete.
    */
   limit?: number
+}
+
+/**
+ * Client.inversiones
+ */
+export type Client$inversionesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Inversion
+   */
+  select?: Prisma.InversionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Inversion
+   */
+  omit?: Prisma.InversionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InversionInclude<ExtArgs> | null
+  where?: Prisma.InversionWhereInput
+  orderBy?: Prisma.InversionOrderByWithRelationInput | Prisma.InversionOrderByWithRelationInput[]
+  cursor?: Prisma.InversionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InversionScalarFieldEnum | Prisma.InversionScalarFieldEnum[]
 }
 
 /**

@@ -52,7 +52,9 @@ export const ModelName = {
   User: 'User',
   Client: 'Client',
   Admin: 'Admin',
-  Audit: 'Audit'
+  Audit: 'Audit',
+  Inversion: 'Inversion',
+  Estado: 'Estado'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -105,12 +107,37 @@ export type AdminScalarFieldEnum = (typeof AdminScalarFieldEnum)[keyof typeof Ad
 
 export const AuditScalarFieldEnum = {
   id: 'id',
-  adminId: 'adminId',
+  userId: 'userId',
   action: 'action',
+  tableName: 'tableName',
+  targetId: 'targetId',
   createdAt: 'createdAt'
 } as const
 
 export type AuditScalarFieldEnum = (typeof AuditScalarFieldEnum)[keyof typeof AuditScalarFieldEnum]
+
+
+export const InversionScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  monto: 'monto',
+  comision: 'comision',
+  dias: 'dias',
+  total: 'total',
+  createdAt: 'createdAt'
+} as const
+
+export type InversionScalarFieldEnum = (typeof InversionScalarFieldEnum)[keyof typeof InversionScalarFieldEnum]
+
+
+export const EstadoScalarFieldEnum = {
+  id: 'id',
+  inversionId: 'inversionId',
+  estado: 'estado',
+  createdAt: 'createdAt'
+} as const
+
+export type EstadoScalarFieldEnum = (typeof EstadoScalarFieldEnum)[keyof typeof EstadoScalarFieldEnum]
 
 
 export const SortOrder = {

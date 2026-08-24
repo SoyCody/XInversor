@@ -5,6 +5,7 @@ import usersRoutes from './routes/auth.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import clientRoutes from './routes/client.routes.js';
 import cookieParser from 'cookie-parser';
+import auditRoutes from './routes/audit.routes.js';
 
 const app = express();
 app.use(cookieParser());
@@ -21,10 +22,7 @@ app.use(express.json());
 app.use('/users', usersRoutes);
 app.use('/admin', adminRoutes);
 app.use('/client', clientRoutes);
-
-app.get('/api/mensaje', (req, res) => {
-  res.json({ mensaje: 'Hola desde el servidor backend' });
-});
+app.use('/audits', auditRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor backend corriendo en http://localhost:${PORT}`);

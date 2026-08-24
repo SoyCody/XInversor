@@ -197,14 +197,12 @@ export type AdminWhereInput = {
   id?: Prisma.IntFilter<"Admin"> | number
   userId?: Prisma.IntFilter<"Admin"> | number
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  audits?: Prisma.AuditListRelationFilter
 }
 
 export type AdminOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
-  audits?: Prisma.AuditOrderByRelationAggregateInput
 }
 
 export type AdminWhereUniqueInput = Prisma.AtLeast<{
@@ -214,7 +212,6 @@ export type AdminWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.AdminWhereInput[]
   NOT?: Prisma.AdminWhereInput | Prisma.AdminWhereInput[]
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  audits?: Prisma.AuditListRelationFilter
 }, "id" | "userId">
 
 export type AdminOrderByWithAggregationInput = {
@@ -237,24 +234,20 @@ export type AdminScalarWhereWithAggregatesInput = {
 
 export type AdminCreateInput = {
   user: Prisma.UserCreateNestedOneWithoutAdminInput
-  audits?: Prisma.AuditCreateNestedManyWithoutAdminInput
 }
 
 export type AdminUncheckedCreateInput = {
   id?: number
   userId: number
-  audits?: Prisma.AuditUncheckedCreateNestedManyWithoutAdminInput
 }
 
 export type AdminUpdateInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutAdminNestedInput
-  audits?: Prisma.AuditUpdateManyWithoutAdminNestedInput
 }
 
 export type AdminUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
-  audits?: Prisma.AuditUncheckedUpdateManyWithoutAdminNestedInput
 }
 
 export type AdminCreateManyInput = {
@@ -301,11 +294,6 @@ export type AdminSumOrderByAggregateInput = {
   userId?: Prisma.SortOrder
 }
 
-export type AdminScalarRelationFilter = {
-  is?: Prisma.AdminWhereInput
-  isNot?: Prisma.AdminWhereInput
-}
-
 export type AdminCreateNestedOneWithoutUserInput = {
   create?: Prisma.XOR<Prisma.AdminCreateWithoutUserInput, Prisma.AdminUncheckedCreateWithoutUserInput>
   connectOrCreate?: Prisma.AdminCreateOrConnectWithoutUserInput
@@ -338,27 +326,12 @@ export type AdminUncheckedUpdateOneWithoutUserNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUpdateToOneWithWhereWithoutUserInput, Prisma.AdminUpdateWithoutUserInput>, Prisma.AdminUncheckedUpdateWithoutUserInput>
 }
 
-export type AdminCreateNestedOneWithoutAuditsInput = {
-  create?: Prisma.XOR<Prisma.AdminCreateWithoutAuditsInput, Prisma.AdminUncheckedCreateWithoutAuditsInput>
-  connectOrCreate?: Prisma.AdminCreateOrConnectWithoutAuditsInput
-  connect?: Prisma.AdminWhereUniqueInput
-}
-
-export type AdminUpdateOneRequiredWithoutAuditsNestedInput = {
-  create?: Prisma.XOR<Prisma.AdminCreateWithoutAuditsInput, Prisma.AdminUncheckedCreateWithoutAuditsInput>
-  connectOrCreate?: Prisma.AdminCreateOrConnectWithoutAuditsInput
-  upsert?: Prisma.AdminUpsertWithoutAuditsInput
-  connect?: Prisma.AdminWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUpdateToOneWithWhereWithoutAuditsInput, Prisma.AdminUpdateWithoutAuditsInput>, Prisma.AdminUncheckedUpdateWithoutAuditsInput>
-}
-
 export type AdminCreateWithoutUserInput = {
-  audits?: Prisma.AuditCreateNestedManyWithoutAdminInput
+
 }
 
 export type AdminUncheckedCreateWithoutUserInput = {
   id?: number
-  audits?: Prisma.AuditUncheckedCreateNestedManyWithoutAdminInput
 }
 
 export type AdminCreateOrConnectWithoutUserInput = {
@@ -378,85 +351,19 @@ export type AdminUpdateToOneWithWhereWithoutUserInput = {
 }
 
 export type AdminUpdateWithoutUserInput = {
-  audits?: Prisma.AuditUpdateManyWithoutAdminNestedInput
+
 }
 
 export type AdminUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  audits?: Prisma.AuditUncheckedUpdateManyWithoutAdminNestedInput
 }
 
-export type AdminCreateWithoutAuditsInput = {
-  user: Prisma.UserCreateNestedOneWithoutAdminInput
-}
-
-export type AdminUncheckedCreateWithoutAuditsInput = {
-  id?: number
-  userId: number
-}
-
-export type AdminCreateOrConnectWithoutAuditsInput = {
-  where: Prisma.AdminWhereUniqueInput
-  create: Prisma.XOR<Prisma.AdminCreateWithoutAuditsInput, Prisma.AdminUncheckedCreateWithoutAuditsInput>
-}
-
-export type AdminUpsertWithoutAuditsInput = {
-  update: Prisma.XOR<Prisma.AdminUpdateWithoutAuditsInput, Prisma.AdminUncheckedUpdateWithoutAuditsInput>
-  create: Prisma.XOR<Prisma.AdminCreateWithoutAuditsInput, Prisma.AdminUncheckedCreateWithoutAuditsInput>
-  where?: Prisma.AdminWhereInput
-}
-
-export type AdminUpdateToOneWithWhereWithoutAuditsInput = {
-  where?: Prisma.AdminWhereInput
-  data: Prisma.XOR<Prisma.AdminUpdateWithoutAuditsInput, Prisma.AdminUncheckedUpdateWithoutAuditsInput>
-}
-
-export type AdminUpdateWithoutAuditsInput = {
-  user?: Prisma.UserUpdateOneRequiredWithoutAdminNestedInput
-}
-
-export type AdminUncheckedUpdateWithoutAuditsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
-}
-
-
-/**
- * Count Type AdminCountOutputType
- */
-
-export type AdminCountOutputType = {
-  audits: number
-}
-
-export type AdminCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  audits?: boolean | AdminCountOutputTypeCountAuditsArgs
-}
-
-/**
- * AdminCountOutputType without action
- */
-export type AdminCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the AdminCountOutputType
-   */
-  select?: Prisma.AdminCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * AdminCountOutputType without action
- */
-export type AdminCountOutputTypeCountAuditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AuditWhereInput
-}
 
 
 export type AdminSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  audits?: boolean | Prisma.Admin$auditsArgs<ExtArgs>
-  _count?: boolean | Prisma.AdminCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["admin"]>
 
 export type AdminSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -479,8 +386,6 @@ export type AdminSelectScalar = {
 export type AdminOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId", ExtArgs["result"]["admin"]>
 export type AdminInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  audits?: boolean | Prisma.Admin$auditsArgs<ExtArgs>
-  _count?: boolean | Prisma.AdminCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AdminIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -493,7 +398,6 @@ export type $AdminPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   name: "Admin"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
-    audits: Prisma.$AuditPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -893,7 +797,6 @@ readonly fields: AdminFieldRefs;
 export interface Prisma__AdminClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  audits<T extends Prisma.Admin$auditsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Admin$auditsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1318,30 +1221,6 @@ export type AdminDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Admins to delete.
    */
   limit?: number
-}
-
-/**
- * Admin.audits
- */
-export type Admin$auditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Audit
-   */
-  select?: Prisma.AuditSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Audit
-   */
-  omit?: Prisma.AuditOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.AuditInclude<ExtArgs> | null
-  where?: Prisma.AuditWhereInput
-  orderBy?: Prisma.AuditOrderByWithRelationInput | Prisma.AuditOrderByWithRelationInput[]
-  cursor?: Prisma.AuditWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.AuditScalarFieldEnum | Prisma.AuditScalarFieldEnum[]
 }
 
 /**

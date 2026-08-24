@@ -23,18 +23,26 @@ enum State {
   ACTIVO
 }
 
+enum EstadoInversion {
+  EN_PROGRESO
+  ACEPTADO
+  RECHAZADO
+  RETIRADO
+}
+
 model User {
   id              Int         @id @default(autoincrement())
   firstName       String
   lastName        String
   email           String      @unique
-  passwordHash    String      
+  passwordHash    String
   role            Role        @default(CLIENT)
   createdAt       DateTime    @default(now())
   apdatedAt       DateTime    @updatedAt
   state           State       @default(ACTIVO)
   client          Client?
   admin           Admin?
+  audits          Audit[]
 }
 
 model Client {
@@ -42,19 +50,41 @@ model Client {
   userId          Int         @unique
   link            String      @default("https://accounts.binance.bh/en-BH/register?ref=XZV234DGDGD2&registerChannel=&return_to=aHR0cHM6Ly93d3cuYmluYW5jZS5iaC9lbi1CSC92aXAtaW5zdGl0dXRpb25hbC1zZXJ2aWNlcz9yZWY9WkhIRlNZSU0%3D")
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  inversiones     Inversion[]
 }
 
 model Admin {
   id              Int         @id @default(autoincrement())
   userId          Int         @unique
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  audits          Audit[]
-} 
+}
 
 model Audit{
   id              Int         @id @default(autoincrement())
-  adminId         Int 
+  userId          Int
   action          String
+  tableName       String
+  targetId        Int
   createdAt       DateTime    @default(now())
-  admin           Admin       @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Inversion{
+  id              Int             @id @default(autoincrement())
+  clientId        Int
+  monto           Decimal
+  comision        Decimal
+  dias            Int
+  total           Decimal
+  createdAt       DateTime        @default(now())
+  client          Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  estados         Estado[]
+}
+
+model Estado{
+  id              Int             @id @default(autoincrement())
+  inversionId     Int
+  estado          EstadoInversion @default(EN_PROGRESO)
+  createdAt       DateTime        @default(now())
+  inversion       Inversion       @relation(fields: [inversionId], references: [id], onDelete: Cascade)
 }

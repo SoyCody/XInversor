@@ -42,10 +42,10 @@ const AdminSideBar = () => {
           <span>Configuración</span>
         </Link>
 
-        <a href="#" className="nav-link">
+        <Link to="/admin/auditorias" className={`nav-link ${isActive("/admin/auditorias") ? "active" : ""}`}>
           <span className="nav-icon audit-icon"></span>
           <span>Auditorías</span>
-        </a>
+        </Link>
         <a href="#" className="nav-link">
           <span className="nav-icon reports-icon"></span>
           <span>Reportes</span>

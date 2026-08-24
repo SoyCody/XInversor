@@ -44,7 +44,7 @@ const verCliente = async (req, res) => {
 const promoteToAdmin = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await adminService.promoteToAdmin(Number(id));
+    const user = await adminService.promoteToAdmin(Number(id), req.user.id);
     return res.status(200).json(user);
   } catch (error) {
     if (error instanceof adminService.UserNotFoundError ||

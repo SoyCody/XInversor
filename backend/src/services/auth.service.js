@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import userRepository from '../repositories/user.repository.js';
+import { registrarAuditoria, AUDIT_ACTIONS, AUDIT_TABLES } from './auditorias.service.js';
 
 // Error de dominio: se traduce a un 409 en el controller.
 class EmailAlreadyExistsError extends Error {
@@ -69,6 +70,13 @@ const registerClient = async ({ firstName, lastName, email, password }) => {
   // ==============================
   const newUser = await userRepository.createUser(userData);
 
+  await registrarAuditoria({
+    userId: newUser.id,
+    action: AUDIT_ACTIONS.CREATE,
+    tableName: AUDIT_TABLES.USER,
+    targetId: newUser.id
+  });
+
   // No devolver el hash
   const { passwordHash: _passwordHash, ...userWithoutPassword } = newUser;
   return userWithoutPassword;
@@ -119,6 +127,14 @@ const updateClient = async (id, { firstName, lastName, email }) => {
   };
 
   const updatedUser = await userRepository.updateUser(userData);
+
+  await registrarAuditoria({
+    userId: id,
+    action: AUDIT_ACTIONS.UPDATE,
+    tableName: AUDIT_TABLES.USER,
+    targetId: id
+  });
+
   const { passwordHash: _passwordHash, ...userWithoutPassword } = updatedUser;
   return userWithoutPassword;
 };
@@ -133,6 +149,14 @@ const changePassword = async (id, { password }) => {
 
 const deleteUser =  async (id) =>{
   const deleted = await userRepository.deleteUser(id);
+
+  await registrarAuditoria({
+    userId: id,
+    action: AUDIT_ACTIONS.DELETE,
+    tableName: AUDIT_TABLES.USER,
+    targetId: id
+  });
+
   return deleted;
 }
 

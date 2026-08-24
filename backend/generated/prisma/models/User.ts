@@ -250,6 +250,7 @@ export type UserWhereInput = {
   state?: Prisma.EnumStateFilter<"User"> | $Enums.State
   client?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
   admin?: Prisma.XOR<Prisma.AdminNullableScalarRelationFilter, Prisma.AdminWhereInput> | null
+  audits?: Prisma.AuditListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -264,6 +265,7 @@ export type UserOrderByWithRelationInput = {
   state?: Prisma.SortOrder
   client?: Prisma.ClientOrderByWithRelationInput
   admin?: Prisma.AdminOrderByWithRelationInput
+  audits?: Prisma.AuditOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -281,6 +283,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   state?: Prisma.EnumStateFilter<"User"> | $Enums.State
   client?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
   admin?: Prisma.XOR<Prisma.AdminNullableScalarRelationFilter, Prisma.AdminWhereInput> | null
+  audits?: Prisma.AuditListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -326,6 +329,7 @@ export type UserCreateInput = {
   state?: $Enums.State
   client?: Prisma.ClientCreateNestedOneWithoutUserInput
   admin?: Prisma.AdminCreateNestedOneWithoutUserInput
+  audits?: Prisma.AuditCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -340,6 +344,7 @@ export type UserUncheckedCreateInput = {
   state?: $Enums.State
   client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
   admin?: Prisma.AdminUncheckedCreateNestedOneWithoutUserInput
+  audits?: Prisma.AuditUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -353,6 +358,7 @@ export type UserUpdateInput = {
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
   client?: Prisma.ClientUpdateOneWithoutUserNestedInput
   admin?: Prisma.AdminUpdateOneWithoutUserNestedInput
+  audits?: Prisma.AuditUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -367,6 +373,7 @@ export type UserUncheckedUpdateInput = {
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
   client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
   admin?: Prisma.AdminUncheckedUpdateOneWithoutUserNestedInput
+  audits?: Prisma.AuditUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -505,6 +512,20 @@ export type UserUpdateOneRequiredWithoutAdminNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAdminInput, Prisma.UserUpdateWithoutAdminInput>, Prisma.UserUncheckedUpdateWithoutAdminInput>
 }
 
+export type UserCreateNestedOneWithoutAuditsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAuditsInput, Prisma.UserUncheckedCreateWithoutAuditsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAuditsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutAuditsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAuditsInput, Prisma.UserUncheckedCreateWithoutAuditsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAuditsInput
+  upsert?: Prisma.UserUpsertWithoutAuditsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAuditsInput, Prisma.UserUpdateWithoutAuditsInput>, Prisma.UserUncheckedUpdateWithoutAuditsInput>
+}
+
 export type UserCreateWithoutClientInput = {
   firstName: string
   lastName: string
@@ -515,6 +536,7 @@ export type UserCreateWithoutClientInput = {
   apdatedAt?: Date | string
   state?: $Enums.State
   admin?: Prisma.AdminCreateNestedOneWithoutUserInput
+  audits?: Prisma.AuditCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutClientInput = {
@@ -528,6 +550,7 @@ export type UserUncheckedCreateWithoutClientInput = {
   apdatedAt?: Date | string
   state?: $Enums.State
   admin?: Prisma.AdminUncheckedCreateNestedOneWithoutUserInput
+  audits?: Prisma.AuditUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutClientInput = {
@@ -556,6 +579,7 @@ export type UserUpdateWithoutClientInput = {
   apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
   admin?: Prisma.AdminUpdateOneWithoutUserNestedInput
+  audits?: Prisma.AuditUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutClientInput = {
@@ -569,6 +593,7 @@ export type UserUncheckedUpdateWithoutClientInput = {
   apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
   admin?: Prisma.AdminUncheckedUpdateOneWithoutUserNestedInput
+  audits?: Prisma.AuditUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAdminInput = {
@@ -581,6 +606,7 @@ export type UserCreateWithoutAdminInput = {
   apdatedAt?: Date | string
   state?: $Enums.State
   client?: Prisma.ClientCreateNestedOneWithoutUserInput
+  audits?: Prisma.AuditCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAdminInput = {
@@ -594,6 +620,7 @@ export type UserUncheckedCreateWithoutAdminInput = {
   apdatedAt?: Date | string
   state?: $Enums.State
   client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
+  audits?: Prisma.AuditUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAdminInput = {
@@ -622,6 +649,7 @@ export type UserUpdateWithoutAdminInput = {
   apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
   client?: Prisma.ClientUpdateOneWithoutUserNestedInput
+  audits?: Prisma.AuditUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAdminInput = {
@@ -635,8 +663,108 @@ export type UserUncheckedUpdateWithoutAdminInput = {
   apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
   client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
+  audits?: Prisma.AuditUncheckedUpdateManyWithoutUserNestedInput
 }
 
+export type UserCreateWithoutAuditsInput = {
+  firstName: string
+  lastName: string
+  email: string
+  passwordHash: string
+  role?: $Enums.Role
+  createdAt?: Date | string
+  apdatedAt?: Date | string
+  state?: $Enums.State
+  client?: Prisma.ClientCreateNestedOneWithoutUserInput
+  admin?: Prisma.AdminCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutAuditsInput = {
+  id?: number
+  firstName: string
+  lastName: string
+  email: string
+  passwordHash: string
+  role?: $Enums.Role
+  createdAt?: Date | string
+  apdatedAt?: Date | string
+  state?: $Enums.State
+  client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
+  admin?: Prisma.AdminUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutAuditsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAuditsInput, Prisma.UserUncheckedCreateWithoutAuditsInput>
+}
+
+export type UserUpsertWithoutAuditsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAuditsInput, Prisma.UserUncheckedUpdateWithoutAuditsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAuditsInput, Prisma.UserUncheckedCreateWithoutAuditsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAuditsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAuditsInput, Prisma.UserUncheckedUpdateWithoutAuditsInput>
+}
+
+export type UserUpdateWithoutAuditsInput = {
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
+  client?: Prisma.ClientUpdateOneWithoutUserNestedInput
+  admin?: Prisma.AdminUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAuditsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
+  client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
+  admin?: Prisma.AdminUncheckedUpdateOneWithoutUserNestedInput
+}
+
+
+/**
+ * Count Type UserCountOutputType
+ */
+
+export type UserCountOutputType = {
+  audits: number
+}
+
+export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  audits?: boolean | UserCountOutputTypeCountAuditsArgs
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserCountOutputType
+   */
+  select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAuditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AuditWhereInput
+}
 
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -651,6 +779,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   state?: boolean
   client?: boolean | Prisma.User$clientArgs<ExtArgs>
   admin?: boolean | Prisma.User$adminArgs<ExtArgs>
+  audits?: boolean | Prisma.User$auditsArgs<ExtArgs>
+  _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -693,6 +823,8 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.User$clientArgs<ExtArgs>
   admin?: boolean | Prisma.User$adminArgs<ExtArgs>
+  audits?: boolean | Prisma.User$auditsArgs<ExtArgs>
+  _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -702,6 +834,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     client: Prisma.$ClientPayload<ExtArgs> | null
     admin: Prisma.$AdminPayload<ExtArgs> | null
+    audits: Prisma.$AuditPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1109,6 +1242,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   client<T extends Prisma.User$clientArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$clientArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   admin<T extends Prisma.User$adminArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$adminArgs<ExtArgs>>): Prisma.Prisma__AdminClient<runtime.Types.Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  audits<T extends Prisma.User$auditsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$auditsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1570,6 +1704,30 @@ export type User$adminArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   include?: Prisma.AdminInclude<ExtArgs> | null
   where?: Prisma.AdminWhereInput
+}
+
+/**
+ * User.audits
+ */
+export type User$auditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Audit
+   */
+  select?: Prisma.AuditSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Audit
+   */
+  omit?: Prisma.AuditOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AuditInclude<ExtArgs> | null
+  where?: Prisma.AuditWhereInput
+  orderBy?: Prisma.AuditOrderByWithRelationInput | Prisma.AuditOrderByWithRelationInput[]
+  cursor?: Prisma.AuditWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AuditScalarFieldEnum | Prisma.AuditScalarFieldEnum[]
 }
 
 /**

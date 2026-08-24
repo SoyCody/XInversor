@@ -37,3 +37,13 @@ export type Admin = Prisma.AdminModel
  * 
  */
 export type Audit = Prisma.AuditModel
+/**
+ * Model Inversion
+ * 
+ */
+export type Inversion = Prisma.InversionModel
+/**
+ * Model Estado
+ * 
+ */
+export type Estado = Prisma.EstadoModel
