@@ -2,22 +2,26 @@ import prisma from '../db.js';
 
 const ACTIVE_STATE = 'ACTIVO';
 
-// Toda interacción directa con Prisma vive aquí.
+// El avatar (Bytes) nunca debe viajar en las respuestas de "usuario":
+// infla el JSON y filtra binario donde no corresponde. Se sirve aparte
+// por su propio endpoint (ver getAvatar).
 const findByEmail = (email, state = ACTIVE_STATE) => {
   return prisma.user.findFirst({
-    where: { email, state }
+    where: { email, state },
+    omit: { avatar: true }
   });
 };
 
 const createUser = (userData) => {
   return prisma.user.create({
     data: userData,
-    include: { client: true }
+    include: { client: true },
+    omit: { avatar: true }
   });
 };
 
 const findById = (id, state = ACTIVE_STATE) => {
-  return prisma.user.findFirst({ where: { id, state } });
+  return prisma.user.findFirst({ where: { id, state }, omit: { avatar: true } });
 };
 
 const updateUser = (userData) => {
@@ -25,7 +29,23 @@ const updateUser = (userData) => {
   return prisma.user.update({
     where: { id },
     data,
-    include: { client: true }
+    include: { client: true },
+    omit: { avatar: true }
+  });
+};
+
+const updateAvatar = ({ id, avatar, avatarType }) => {
+  return prisma.user.update({
+    where: { id },
+    data: { avatar, avatarType, avatarUpdatedAt: new Date() },
+    select: { id: true, avatarUpdatedAt: true }
+  });
+};
+
+const getAvatar = (id, state = ACTIVE_STATE) => {
+  return prisma.user.findFirst({
+    where: { id, state },
+    select: { avatar: true, avatarType: true }
   });
 };
 
@@ -46,13 +66,15 @@ const deleteUser = (id)=> {
   });
 };
 
-export default { 
-  findById, 
+export default {
+  findById,
   findActiveById,
-  updateUser, 
-  findByEmail, 
-  createUser, 
+  updateUser,
+  findByEmail,
+  createUser,
   updateUser,
   changePassword,
-  deleteUser
+  deleteUser,
+  updateAvatar,
+  getAvatar
 };

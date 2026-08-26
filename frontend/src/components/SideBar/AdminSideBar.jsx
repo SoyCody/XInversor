@@ -25,6 +25,11 @@ const AdminSideBar = () => {
 
         <div className="nav-section">GESTIÓN</div>
 
+        <a href="#" className="nav-link">
+          <span className="nav-icon orders-icon"></span>
+          <span>Órdenes</span>
+        </a>
+
         <Link to="/admin/clientes" className={`nav-link ${isActive("/admin/clientes") ? "active" : ""}`}>
           <span className="nav-icon users-icon"></span>
           <span>Usuarios</span>

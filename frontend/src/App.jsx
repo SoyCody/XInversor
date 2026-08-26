@@ -26,8 +26,8 @@ function App() {
           <Route path="/clientDashboard" element={<ClientDashboard />} />
           <Route path="/client/me" element={<ClientGetMe/>}/>
           <Route path="/admin/me" element={<AdminGetMe/>}/>
-          <Route path="/change/password" element={<AdminChangePassword/>}/>
-          <Route path="/admin/change/password" element={<ClientChangePassword/>}/>
+          <Route path="/admin/change/password" element={<AdminChangePassword/>}/>
+          <Route path="/client/change/password" element={<ClientChangePassword/>}/>
           <Route path="/admin/clientes" element={<ObtenerClientes />} />
           <Route path="/admin/clientes/:id" element={<VerCliente />} />
           <Route path="/admin/solicitudes" element={<MakeAdmin />} />

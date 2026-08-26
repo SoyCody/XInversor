@@ -42,7 +42,7 @@ const ClientChangePassword = () => {
     setIsSubmitting(true);
     try {
       await changePassword({ password: formData.password });
-      navigate(-1);
+      navigate("/client/me");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -91,7 +91,7 @@ const ClientChangePassword = () => {
             </label>
 
             <div className="edit-profile-actions">
-              <button type="button" onClick={() => navigate(-1)} disabled={isSubmitting}>
+              <button type="button" onClick={() => navigate("/client/me")} disabled={isSubmitting}>
                 Cancelar
               </button>
               <button type="submit" disabled={isSubmitting}>

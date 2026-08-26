@@ -1,4 +1,7 @@
-import { apiFetch } from "./httpClient";
+import { apiFetch, apiFetchFormData, API_URL } from "./httpClient";
+
+export const ALLOWED_AVATAR_TYPES = ["image/png", "image/jpeg", "image/webp"];
+export const MAX_AVATAR_SIZE_BYTES = 2 * 1024 * 1024; // 2MB, igual que el backend
 
 // Ya no hay nada que guardar en localStorage: el backend setea
 // la cookie httpOnly directamente en la respuesta de fetch.
@@ -39,4 +42,17 @@ export function changePassword(data) {
 
 export function deleteAccount () {
   return apiFetch("/users/delete", { method: "PUT" });
+};
+
+export function uploadAvatar(file) {
+  const formData = new FormData();
+  formData.append("avatar", file);
+  return apiFetchFormData("/users/avatar", { method: "PUT", body: formData });
+};
+
+// updatedAt sirve como cache-busting: cambia la url cuando cambia la foto.
+export function getAvatarUrl(userId, updatedAt) {
+  if (!userId) return null;
+  const base = `${API_URL}/users/${userId}/avatar`;
+  return updatedAt ? `${base}?v=${new Date(updatedAt).getTime()}` : base;
 };

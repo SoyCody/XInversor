@@ -82,7 +82,10 @@ export const UserScalarFieldEnum = {
   role: 'role',
   createdAt: 'createdAt',
   apdatedAt: 'apdatedAt',
-  state: 'state'
+  state: 'state',
+  avatar: 'avatar',
+  avatarType: 'avatarType',
+  avatarUpdatedAt: 'avatarUpdatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -154,4 +157,12 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

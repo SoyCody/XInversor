@@ -1,4 +1,5 @@
 import { getMeClient } from "../../../services/clientApi";
+import { getAvatarUrl } from "../../../services/authApi.js";
 import "../../../App.css";
 import { useFetch } from "../../../hooks/useFetch";
 import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
@@ -21,7 +22,7 @@ const formatDate = (isoString) => {
 };
 
 const ClientGetMe = () => {
-  const { data: user, isLoading, error } = useFetch(getMeClient);
+  const { data: user, isLoading, error, refetch, setData } = useFetch(getMeClient);
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -56,6 +57,16 @@ const ClientGetMe = () => {
             </div>
           </div>
 
+          {!isLoading && user?.id && (
+            <div className="profile-avatar-wrapper">
+              <img
+                className="profile-avatar-large"
+                src={getAvatarUrl(user.id, user.avatarUpdatedAt)}
+                alt="Foto de perfil"
+              />
+            </div>
+          )}
+
           {error && <p className="dashboard-error">{error}</p>}
           {deleteError && <p className="dashboard-error">{deleteError}</p>}
 
@@ -63,7 +74,11 @@ const ClientGetMe = () => {
             <EditProfileForm
               user={user}
               onCancel={() => setIsEditing(false)}
-              onSuccess={() => setIsEditing(false)} // idealmente aquí refrescas el useFetch
+              onSuccess={(updatedUser) => {
+                if (updatedUser) setData(updatedUser);
+                setIsEditing(false);
+              }}
+              onAvatarUpdated={refetch}
             />
           ) : (
             <>
@@ -86,19 +101,22 @@ const ClientGetMe = () => {
                   </span>
                 </div>
               </section>
-              <button className="edit-profile-btn" onClick={() => setIsEditing(true)}>Editar perfil</button>
-              <button
-                className="edit-profile-btn"
-                onClick={() => navigate("/change/password", { state: { role: "CLIENT" } })}
-              >
-                Cambiar contraseña
-              </button>
-              <button
-                className="edit-profile-btn edit-profile-btn--danger"
-                onClick={() => setIsDeleteModalOpen(true)}
-              >
-                Eliminar cuenta
-              </button>
+              <div className="profile-actions">
+                <button className="edit-profile-btn" onClick={() => setIsEditing(true)}>Editar perfil</button>
+                <button
+                  className="edit-profile-btn"
+                  onClick={() => navigate("/client/change/password")}
+                >
+                  Cambiar contraseña
+                </button>
+                <button
+                  className="edit-profile-btn edit-profile-btn--danger"
+                  onClick={() => setIsDeleteModalOpen(true)}
+                >
+                  Eliminar cuenta
+                </button>
+              </div>
+              
             </>
           )}
           {isDeleteModalOpen && (

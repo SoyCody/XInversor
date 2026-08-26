@@ -40,6 +40,9 @@ model User {
   createdAt       DateTime    @default(now())
   apdatedAt       DateTime    @updatedAt
   state           State       @default(ACTIVO)
+  avatar          Bytes?
+  avatarType      String?
+  avatarUpdatedAt DateTime?
   client          Client?
   admin           Admin?
   audits          Audit[]

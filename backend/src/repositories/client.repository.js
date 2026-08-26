@@ -16,6 +16,7 @@ const getMe = async (userId) => {
     include: {
       client: true,
     },
+    omit: { avatar: true },
   });
 };
 export default { getLink, getMe };

@@ -19,3 +19,23 @@ export async function apiFetch(path, { method = "GET", body } = {}) {
 
   return data;
 }
+
+// Para subir archivos (FormData): no se setea Content-Type a mano,
+// el navegador arma el boundary del multipart automáticamente.
+export async function apiFetchFormData(path, { method = "POST", body } = {}) {
+  const response = await fetch(`${API_URL}${path}`, {
+    method,
+    credentials: "include",
+    body,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || data.message || "Ocurrió un error al conectar con el servidor.");
+  }
+
+  return data;
+}
+
+export { API_URL };

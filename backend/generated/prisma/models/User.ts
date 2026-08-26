@@ -44,6 +44,9 @@ export type UserMinAggregateOutputType = {
   createdAt: Date | null
   apdatedAt: Date | null
   state: $Enums.State | null
+  avatar: runtime.Bytes | null
+  avatarType: string | null
+  avatarUpdatedAt: Date | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -56,6 +59,9 @@ export type UserMaxAggregateOutputType = {
   createdAt: Date | null
   apdatedAt: Date | null
   state: $Enums.State | null
+  avatar: runtime.Bytes | null
+  avatarType: string | null
+  avatarUpdatedAt: Date | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -68,6 +74,9 @@ export type UserCountAggregateOutputType = {
   createdAt: number
   apdatedAt: number
   state: number
+  avatar: number
+  avatarType: number
+  avatarUpdatedAt: number
   _all: number
 }
 
@@ -90,6 +99,9 @@ export type UserMinAggregateInputType = {
   createdAt?: true
   apdatedAt?: true
   state?: true
+  avatar?: true
+  avatarType?: true
+  avatarUpdatedAt?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -102,6 +114,9 @@ export type UserMaxAggregateInputType = {
   createdAt?: true
   apdatedAt?: true
   state?: true
+  avatar?: true
+  avatarType?: true
+  avatarUpdatedAt?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -114,6 +129,9 @@ export type UserCountAggregateInputType = {
   createdAt?: true
   apdatedAt?: true
   state?: true
+  avatar?: true
+  avatarType?: true
+  avatarUpdatedAt?: true
   _all?: true
 }
 
@@ -213,6 +231,9 @@ export type UserGroupByOutputType = {
   createdAt: Date
   apdatedAt: Date
   state: $Enums.State
+  avatar: runtime.Bytes | null
+  avatarType: string | null
+  avatarUpdatedAt: Date | null
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -248,6 +269,9 @@ export type UserWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   apdatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   state?: Prisma.EnumStateFilter<"User"> | $Enums.State
+  avatar?: Prisma.BytesNullableFilter<"User"> | runtime.Bytes | null
+  avatarType?: Prisma.StringNullableFilter<"User"> | string | null
+  avatarUpdatedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   client?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
   admin?: Prisma.XOR<Prisma.AdminNullableScalarRelationFilter, Prisma.AdminWhereInput> | null
   audits?: Prisma.AuditListRelationFilter
@@ -263,6 +287,9 @@ export type UserOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   apdatedAt?: Prisma.SortOrder
   state?: Prisma.SortOrder
+  avatar?: Prisma.SortOrderInput | Prisma.SortOrder
+  avatarType?: Prisma.SortOrderInput | Prisma.SortOrder
+  avatarUpdatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   client?: Prisma.ClientOrderByWithRelationInput
   admin?: Prisma.AdminOrderByWithRelationInput
   audits?: Prisma.AuditOrderByRelationAggregateInput
@@ -281,6 +308,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   apdatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   state?: Prisma.EnumStateFilter<"User"> | $Enums.State
+  avatar?: Prisma.BytesNullableFilter<"User"> | runtime.Bytes | null
+  avatarType?: Prisma.StringNullableFilter<"User"> | string | null
+  avatarUpdatedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   client?: Prisma.XOR<Prisma.ClientNullableScalarRelationFilter, Prisma.ClientWhereInput> | null
   admin?: Prisma.XOR<Prisma.AdminNullableScalarRelationFilter, Prisma.AdminWhereInput> | null
   audits?: Prisma.AuditListRelationFilter
@@ -296,6 +326,9 @@ export type UserOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   apdatedAt?: Prisma.SortOrder
   state?: Prisma.SortOrder
+  avatar?: Prisma.SortOrderInput | Prisma.SortOrder
+  avatarType?: Prisma.SortOrderInput | Prisma.SortOrder
+  avatarUpdatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -316,6 +349,9 @@ export type UserScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   apdatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   state?: Prisma.EnumStateWithAggregatesFilter<"User"> | $Enums.State
+  avatar?: Prisma.BytesNullableWithAggregatesFilter<"User"> | runtime.Bytes | null
+  avatarType?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  avatarUpdatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
 }
 
 export type UserCreateInput = {
@@ -327,6 +363,9 @@ export type UserCreateInput = {
   createdAt?: Date | string
   apdatedAt?: Date | string
   state?: $Enums.State
+  avatar?: runtime.Bytes | null
+  avatarType?: string | null
+  avatarUpdatedAt?: Date | string | null
   client?: Prisma.ClientCreateNestedOneWithoutUserInput
   admin?: Prisma.AdminCreateNestedOneWithoutUserInput
   audits?: Prisma.AuditCreateNestedManyWithoutUserInput
@@ -342,6 +381,9 @@ export type UserUncheckedCreateInput = {
   createdAt?: Date | string
   apdatedAt?: Date | string
   state?: $Enums.State
+  avatar?: runtime.Bytes | null
+  avatarType?: string | null
+  avatarUpdatedAt?: Date | string | null
   client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
   admin?: Prisma.AdminUncheckedCreateNestedOneWithoutUserInput
   audits?: Prisma.AuditUncheckedCreateNestedManyWithoutUserInput
@@ -356,6 +398,9 @@ export type UserUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
+  avatar?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null
+  avatarType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUpdateOneWithoutUserNestedInput
   admin?: Prisma.AdminUpdateOneWithoutUserNestedInput
   audits?: Prisma.AuditUpdateManyWithoutUserNestedInput
@@ -371,6 +416,9 @@ export type UserUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
+  avatar?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null
+  avatarType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
   admin?: Prisma.AdminUncheckedUpdateOneWithoutUserNestedInput
   audits?: Prisma.AuditUncheckedUpdateManyWithoutUserNestedInput
@@ -386,6 +434,9 @@ export type UserCreateManyInput = {
   createdAt?: Date | string
   apdatedAt?: Date | string
   state?: $Enums.State
+  avatar?: runtime.Bytes | null
+  avatarType?: string | null
+  avatarUpdatedAt?: Date | string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -397,6 +448,9 @@ export type UserUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
+  avatar?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null
+  avatarType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -409,6 +463,9 @@ export type UserUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
+  avatar?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null
+  avatarType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -421,6 +478,9 @@ export type UserCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   apdatedAt?: Prisma.SortOrder
   state?: Prisma.SortOrder
+  avatar?: Prisma.SortOrder
+  avatarType?: Prisma.SortOrder
+  avatarUpdatedAt?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
@@ -437,6 +497,9 @@ export type UserMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   apdatedAt?: Prisma.SortOrder
   state?: Prisma.SortOrder
+  avatar?: Prisma.SortOrder
+  avatarType?: Prisma.SortOrder
+  avatarUpdatedAt?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -449,6 +512,9 @@ export type UserMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   apdatedAt?: Prisma.SortOrder
   state?: Prisma.SortOrder
+  avatar?: Prisma.SortOrder
+  avatarType?: Prisma.SortOrder
+  avatarUpdatedAt?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
@@ -474,6 +540,18 @@ export type DateTimeFieldUpdateOperationsInput = {
 
 export type EnumStateFieldUpdateOperationsInput = {
   set?: $Enums.State
+}
+
+export type NullableBytesFieldUpdateOperationsInput = {
+  set?: runtime.Bytes | null
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type IntFieldUpdateOperationsInput = {
@@ -535,6 +613,9 @@ export type UserCreateWithoutClientInput = {
   createdAt?: Date | string
   apdatedAt?: Date | string
   state?: $Enums.State
+  avatar?: runtime.Bytes | null
+  avatarType?: string | null
+  avatarUpdatedAt?: Date | string | null
   admin?: Prisma.AdminCreateNestedOneWithoutUserInput
   audits?: Prisma.AuditCreateNestedManyWithoutUserInput
 }
@@ -549,6 +630,9 @@ export type UserUncheckedCreateWithoutClientInput = {
   createdAt?: Date | string
   apdatedAt?: Date | string
   state?: $Enums.State
+  avatar?: runtime.Bytes | null
+  avatarType?: string | null
+  avatarUpdatedAt?: Date | string | null
   admin?: Prisma.AdminUncheckedCreateNestedOneWithoutUserInput
   audits?: Prisma.AuditUncheckedCreateNestedManyWithoutUserInput
 }
@@ -578,6 +662,9 @@ export type UserUpdateWithoutClientInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
+  avatar?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null
+  avatarType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   admin?: Prisma.AdminUpdateOneWithoutUserNestedInput
   audits?: Prisma.AuditUpdateManyWithoutUserNestedInput
 }
@@ -592,6 +679,9 @@ export type UserUncheckedUpdateWithoutClientInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
+  avatar?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null
+  avatarType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   admin?: Prisma.AdminUncheckedUpdateOneWithoutUserNestedInput
   audits?: Prisma.AuditUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -605,6 +695,9 @@ export type UserCreateWithoutAdminInput = {
   createdAt?: Date | string
   apdatedAt?: Date | string
   state?: $Enums.State
+  avatar?: runtime.Bytes | null
+  avatarType?: string | null
+  avatarUpdatedAt?: Date | string | null
   client?: Prisma.ClientCreateNestedOneWithoutUserInput
   audits?: Prisma.AuditCreateNestedManyWithoutUserInput
 }
@@ -619,6 +712,9 @@ export type UserUncheckedCreateWithoutAdminInput = {
   createdAt?: Date | string
   apdatedAt?: Date | string
   state?: $Enums.State
+  avatar?: runtime.Bytes | null
+  avatarType?: string | null
+  avatarUpdatedAt?: Date | string | null
   client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
   audits?: Prisma.AuditUncheckedCreateNestedManyWithoutUserInput
 }
@@ -648,6 +744,9 @@ export type UserUpdateWithoutAdminInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
+  avatar?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null
+  avatarType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUpdateOneWithoutUserNestedInput
   audits?: Prisma.AuditUpdateManyWithoutUserNestedInput
 }
@@ -662,6 +761,9 @@ export type UserUncheckedUpdateWithoutAdminInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
+  avatar?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null
+  avatarType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
   audits?: Prisma.AuditUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -675,6 +777,9 @@ export type UserCreateWithoutAuditsInput = {
   createdAt?: Date | string
   apdatedAt?: Date | string
   state?: $Enums.State
+  avatar?: runtime.Bytes | null
+  avatarType?: string | null
+  avatarUpdatedAt?: Date | string | null
   client?: Prisma.ClientCreateNestedOneWithoutUserInput
   admin?: Prisma.AdminCreateNestedOneWithoutUserInput
 }
@@ -689,6 +794,9 @@ export type UserUncheckedCreateWithoutAuditsInput = {
   createdAt?: Date | string
   apdatedAt?: Date | string
   state?: $Enums.State
+  avatar?: runtime.Bytes | null
+  avatarType?: string | null
+  avatarUpdatedAt?: Date | string | null
   client?: Prisma.ClientUncheckedCreateNestedOneWithoutUserInput
   admin?: Prisma.AdminUncheckedCreateNestedOneWithoutUserInput
 }
@@ -718,6 +826,9 @@ export type UserUpdateWithoutAuditsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
+  avatar?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null
+  avatarType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUpdateOneWithoutUserNestedInput
   admin?: Prisma.AdminUpdateOneWithoutUserNestedInput
 }
@@ -732,6 +843,9 @@ export type UserUncheckedUpdateWithoutAuditsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apdatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   state?: Prisma.EnumStateFieldUpdateOperationsInput | $Enums.State
+  avatar?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null
+  avatarType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUncheckedUpdateOneWithoutUserNestedInput
   admin?: Prisma.AdminUncheckedUpdateOneWithoutUserNestedInput
 }
@@ -777,6 +891,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdAt?: boolean
   apdatedAt?: boolean
   state?: boolean
+  avatar?: boolean
+  avatarType?: boolean
+  avatarUpdatedAt?: boolean
   client?: boolean | Prisma.User$clientArgs<ExtArgs>
   admin?: boolean | Prisma.User$adminArgs<ExtArgs>
   audits?: boolean | Prisma.User$auditsArgs<ExtArgs>
@@ -793,6 +910,9 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdAt?: boolean
   apdatedAt?: boolean
   state?: boolean
+  avatar?: boolean
+  avatarType?: boolean
+  avatarUpdatedAt?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -805,6 +925,9 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdAt?: boolean
   apdatedAt?: boolean
   state?: boolean
+  avatar?: boolean
+  avatarType?: boolean
+  avatarUpdatedAt?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -817,9 +940,12 @@ export type UserSelectScalar = {
   createdAt?: boolean
   apdatedAt?: boolean
   state?: boolean
+  avatar?: boolean
+  avatarType?: boolean
+  avatarUpdatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "passwordHash" | "role" | "createdAt" | "apdatedAt" | "state", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "passwordHash" | "role" | "createdAt" | "apdatedAt" | "state" | "avatar" | "avatarType" | "avatarUpdatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.User$clientArgs<ExtArgs>
   admin?: boolean | Prisma.User$adminArgs<ExtArgs>
@@ -846,6 +972,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     createdAt: Date
     apdatedAt: Date
     state: $Enums.State
+    avatar: runtime.Bytes | null
+    avatarType: string | null
+    avatarUpdatedAt: Date | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1281,6 +1410,9 @@ export interface UserFieldRefs {
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly apdatedAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly state: Prisma.FieldRef<"User", 'State'>
+  readonly avatar: Prisma.FieldRef<"User", 'Bytes'>
+  readonly avatarType: Prisma.FieldRef<"User", 'String'>
+  readonly avatarUpdatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     
 

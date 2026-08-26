@@ -42,7 +42,7 @@ const AdminChangePassword = () => {
     setIsSubmitting(true);
     try {
       await changePassword({ password: formData.password });
-      navigate(-1);
+      navigate("/admin/me");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -91,7 +91,7 @@ const AdminChangePassword = () => {
             </label>
 
             <div className="edit-profile-actions">
-              <button type="button" onClick={() => navigate(-1)} disabled={isSubmitting}>
+              <button type="button" onClick={() => navigate("/admin/me")} disabled={isSubmitting}>
                 Cancelar
               </button>
               <button type="submit" disabled={isSubmitting}>

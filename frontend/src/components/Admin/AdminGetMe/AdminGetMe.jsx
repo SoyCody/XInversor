@@ -1,5 +1,5 @@
 import { getMeAdmin } from "../../../services/adminApi.js";
-import { deleteAccount } from "../../../services/authApi.js";
+import { deleteAccount, getAvatarUrl } from "../../../services/authApi.js";
 import { useFetch } from "../../../hooks/useFetch";
 import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
@@ -20,7 +20,7 @@ const formatDate = (isoString) => {
 };
 
 const AdminGetMe = () => {
-  const { data: user, isLoading, error } = useFetch(getMeAdmin);
+  const { data: user, isLoading, error, refetch, setData } = useFetch(getMeAdmin);
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -54,6 +54,16 @@ const AdminGetMe = () => {
             </div>
           </div>
 
+          {!isLoading && user?.id && (
+            <div className="profile-avatar-wrapper">
+              <img
+                className="profile-avatar-large"
+                src={getAvatarUrl(user.id, user.avatarUpdatedAt)}
+                alt="Foto de perfil"
+              />
+            </div>
+          )}
+
           {error && <p className="dashboard-error">{error}</p>}
           {deleteError && <p className="dashboard-error">{deleteError}</p>}
 
@@ -61,7 +71,11 @@ const AdminGetMe = () => {
             <EditProfileForm
               user={user}
               onCancel={() => setIsEditing(false)}
-              onSuccess={() => setIsEditing(false)}
+              onSuccess={(updatedUser) => {
+                if (updatedUser) setData(updatedUser);
+                setIsEditing(false);
+              }}
+              onAvatarUpdated={refetch}
             />
           ) : (
             <>
@@ -91,7 +105,7 @@ const AdminGetMe = () => {
                 </button>
                 <button
                   className="edit-profile-btn"
-                  onClick={() => navigate("/change/password", { state: { role: "ADMIN" } })}
+                  onClick={() => navigate("/admin/change/password")}
                 >
                   Cambiar contraseña
                 </button>

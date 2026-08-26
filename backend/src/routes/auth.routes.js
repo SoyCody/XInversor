@@ -8,6 +8,7 @@ import {
 } from '../validators/auth.validator.js';
 import authController from '../controllers/auth.controller.js';
 import { verifyToken, isActive } from '../middlewares/auth.middleware.js';
+import { uploadAvatar } from '../middlewares/upload.middleware.js';
 
 const router = Router();
 
@@ -30,9 +31,19 @@ router.put('/change/password',
     authController.changePassword
 );
 
-router.put('/delete', 
+router.put('/delete',
     verifyToken,
     authController.deleteUser
 );
+
+router.put('/avatar',
+    verifyToken,
+    isActive,
+    uploadAvatar,
+    authController.updateAvatar
+);
+
+// Pública: se sirve como una imagen normal (<img src>), sin cookie de sesión.
+router.get('/:id/avatar', authController.getAvatar);
 
 export default router;

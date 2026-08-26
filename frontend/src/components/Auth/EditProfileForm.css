@@ -29,6 +29,54 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); /* Resplandor suave azul */
 }
 
+.edit-avatar-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.edit-avatar-preview {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #333;
+}
+
+.edit-avatar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.edit-avatar-actions input[type="file"] {
+  font-size: 0.8rem;
+  color: #000000;
+}
+
+.edit-avatar-actions button {
+  align-self: flex-start;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: #2365d4;
+  color: #ffffff;
+  border: 1px solid #2563eb;
+}
+
+.edit-avatar-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.edit-avatar-success {
+  color: #16a34a;
+  font-size: 0.85rem;
+}
+
 .edit-profile-error {
   color: #ff6b6b;
   font-size: 0.85rem;

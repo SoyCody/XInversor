@@ -84,6 +84,46 @@ const changePassword = async (req, res) => {
     })
   }
 };
+const updateAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No se envió ninguna imagen' });
+    }
+
+    const id = req.user?.id;
+    const result = await authService.updateAvatar(id, req.file);
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error instanceof authService.UserNotFoundError) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+
+    console.error('Error al actualizar la foto de perfil:', error);
+    return res.status(500).json({ error: 'Error al actualizar la foto de perfil' });
+  }
+};
+
+const getAvatar = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ error: 'Id inválido' });
+    }
+
+    const avatarData = await authService.getAvatar(id);
+    if (!avatarData?.avatar) {
+      return res.status(404).json({ error: 'Foto de perfil no encontrada' });
+    }
+
+    res.set('Content-Type', avatarData.avatarType || 'image/png');
+    res.set('Cache-Control', 'private, max-age=300');
+    return res.send(avatarData.avatar);
+  } catch (error) {
+    console.error('Error al obtener la foto de perfil:', error);
+    return res.status(500).json({ error: 'Error al obtener la foto de perfil' });
+  }
+};
+
 const deleteUser = async (req, res)=> {
   try {
     const id = req.user?.id;
@@ -99,11 +139,13 @@ const deleteUser = async (req, res)=> {
     })
   }
  };
-export default { 
-  register, 
-  login, 
-  logout, 
-  update, 
+export default {
+  register,
+  login,
+  logout,
+  update,
   changePassword,
-  deleteUser
+  deleteUser,
+  updateAvatar,
+  getAvatar
 };

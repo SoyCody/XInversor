@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import userRepository from '../repositories/user.repository.js';
 import { registrarAuditoria, AUDIT_ACTIONS, AUDIT_TABLES } from './auditorias.service.js';
+import { getDefaultAvatar } from '../utils/defaultAvatar.js';
 
 // Error de dominio: se traduce a un 409 en el controller.
 class EmailAlreadyExistsError extends Error {
@@ -50,12 +51,16 @@ const registerClient = async ({ firstName, lastName, email, password }) => {
   // HASH DE CONTRASEÑA
   // ==============================
   const passwordHash = await bcrypt.hash(password, 12);
+  const { buffer: defaultAvatar, mimeType: defaultAvatarType } = getDefaultAvatar();
   const userData = {
     firstName,
     lastName,
     email,
     passwordHash,
     role: 'CLIENT',
+    avatar: defaultAvatar,
+    avatarType: defaultAvatarType,
+    avatarUpdatedAt: new Date(),
     client: {
       create: {
         // Aquí posteriormente colocaremos
@@ -147,6 +152,32 @@ const changePassword = async (id, { password }) => {
   return updatePassword;
 };
 
+const updateAvatar = async (id, file) => {
+  const existingUser = await userRepository.findById(id);
+  if (!existingUser) {
+    throw new UserNotFoundError();
+  }
+
+  const updated = await userRepository.updateAvatar({
+    id,
+    avatar: file.buffer,
+    avatarType: file.mimetype
+  });
+
+  await registrarAuditoria({
+    userId: id,
+    action: AUDIT_ACTIONS.UPDATE,
+    tableName: AUDIT_TABLES.USER,
+    targetId: id
+  });
+
+  return { avatarUpdatedAt: updated.avatarUpdatedAt };
+};
+
+const getAvatar = async (id) => {
+  return userRepository.getAvatar(id);
+};
+
 const deleteUser =  async (id) =>{
   const deleted = await userRepository.deleteUser(id);
 
@@ -166,6 +197,8 @@ export {
   updateClient,
   changePassword,
   deleteUser,
+  updateAvatar,
+  getAvatar,
   EmailAlreadyExistsError,
   EmailDoesntExistError,
   InvalidPasswordError,

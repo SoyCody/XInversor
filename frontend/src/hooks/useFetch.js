@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const initialState = { data: null, isLoading: true, error: "" };
 
@@ -32,5 +32,20 @@ export function useFetch(fetchFn, deps = []) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
-  return state;
+  // Vuelve a pedir los datos al backend (p. ej. tras subir una foto nueva,
+  // donde solo cambió "avatarUpdatedAt" y no conviene mandarlo a mano).
+  const refetch = useCallback(() => {
+    fetchFn()
+      .then((result) => setState({ data: result, isLoading: false, error: "" }))
+      .catch((err) => setState({ data: null, isLoading: false, error: err.message }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Actualiza "data" directo con lo que ya devolvió un PUT/POST, sin
+  // pedirlo de nuevo (p. ej. tras editar nombre/apellido/email).
+  const setData = useCallback((data) => {
+    setState((prev) => ({ ...prev, data }));
+  }, []);
+
+  return { ...state, refetch, setData };
 }
