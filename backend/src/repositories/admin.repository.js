@@ -45,7 +45,9 @@ const verCliente = (id, state = ACTIVE_STATE) => {
       lastName: true,
       email : true,
       createdAt : true,
-      apdatedAt : true
+      apdatedAt : true,
+      avatarUpdatedAt : true,
+      client: { select: { blocked: true } }
     }
   });
 };
@@ -71,11 +73,27 @@ const promoteToAdmin = (id) => {
   });
 };
 
+const block = (id) => {
+  return prisma.$transaction(async (tx) => {
+    const client = await tx.client.findUnique({ where: { userId: id } });
+    if (!client) {
+      return null;
+    }
+
+    return tx.client.update({
+      where: { userId: id },
+      data: { blocked: !client.blocked },
+      select: { id: true, userId: true, blocked: true }
+    });
+  });
+};
+
 export default {
   countAll,
   countByRole,
   findRecent,
   obtenerClientes,
   verCliente,
-  promoteToAdmin
+  promoteToAdmin,
+  block
 };

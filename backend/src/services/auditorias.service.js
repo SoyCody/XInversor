@@ -1,3 +1,4 @@
+import { Client } from 'pg';
 import auditoriasRepository from '../repositories/auditorias.repository.js';
 
 export const AUDIT_ACTIONS = {
@@ -11,7 +12,8 @@ export const AUDIT_ACTIONS = {
 export const AUDIT_TABLES = {
   USER: 'user',
   ROL: 'rol',
-  INVERSION: 'inversion'
+  INVERSION: 'inversion',
+  CLIENT: 'cliente'
 };
 
 export const registrarAuditoria = ({ userId, action, tableName, targetId }) => {

@@ -21,3 +21,7 @@ export function verCliente (id) {
 export function promoteToAdmin(id) {
   return apiFetch(`/admin/promote/${id}`, { method: "PUT" });
 };
+ 
+export function blockClient(id) {
+  return apiFetch(`/admin/block/${id}`, { method: "PUT" });
+};

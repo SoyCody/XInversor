@@ -48,10 +48,13 @@ const obtenerClientes = async () => {
 };
 
 const verCliente = async (id) => {
-  const [cliente] = await Promise.all([
-    adminRepository.verCliente(id)
-  ]);
-  return{ cliente }
+  const cliente = await adminRepository.verCliente(id);
+  if (!cliente) {
+    return { cliente: null };
+  }
+
+  const { client, ...rest } = cliente;
+  return { cliente: { ...rest, blocked: client?.blocked ?? false } };
 };
 
 const promoteToAdmin = async (id, actingAdminUserId) => {
@@ -77,11 +80,33 @@ const promoteToAdmin = async (id, actingAdminUserId) => {
   return userWithoutPassword;
 };
 
+const blockClient = async (id, actingAdminUserId) => {
+  const user = await userRepository.findActiveById(id);
+  if (!user || user.role !== 'CLIENT') {
+    throw new UserNotFoundError();
+  }
+
+  const client = await adminRepository.block(id);
+  if (!client) {
+    throw new UserNotFoundError();
+  }
+
+  await registrarAuditoria({
+    userId: actingAdminUserId,
+    action: AUDIT_ACTIONS.UPDATE,
+    tableName: AUDIT_TABLES.CLIENT,
+    targetId: id
+  });
+
+  return client;
+};
+
 export {
   readDashboard,
   obtenerClientes,
   verCliente,
   promoteToAdmin,
   UserNotFoundError,
-  AlreadyAdminError
+  AlreadyAdminError,
+  blockClient
 };

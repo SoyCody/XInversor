@@ -59,4 +59,27 @@ const promoteToAdmin = async (req, res) => {
   }
 };
 
-export default { adminPanel, obtenerClientes, verCliente, promoteToAdmin };
+const blockClient = async (req, res) => {
+  try{
+    const { id } = req.params;
+    const blocked = await adminService.blockClient(Number(id), req.user.id);
+    return res.status(200).json(blocked);
+  } catch ( error ) {
+    if (error instanceof adminService.UserNotFoundError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+
+    console.error(error);
+    return res.status(500).json({
+      message: "Error al bloquear el cliente"
+    })
+  };
+};
+
+export default {
+  adminPanel,
+  obtenerClientes,
+  verCliente,
+  promoteToAdmin,
+  blockClient
+};

@@ -11,28 +11,39 @@ router.get('/dashboard',
     isActive, 
     adminController.adminPanel
 );
+
 router.get('/me', 
     verifyToken, 
     isActive,
     clientController.me
 );
+
 router.get('/users', 
     verifyToken, 
     isAdmin, 
     isActive,
     adminController.obtenerClientes
 );
+
 router.get('/watch/user/:id',
     verifyToken,
     isAdmin,
     isActive,
     adminController.verCliente
 );
+
 router.put('/promote/:id',
     verifyToken,
     isAdmin,
     isActive,
     adminController.promoteToAdmin
+);
+
+router.put('/block/:id',
+    verifyToken,
+    isAdmin,
+    isActive,
+    adminController.blockClient
 );
 
 export default router;
