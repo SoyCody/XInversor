@@ -1,4 +1,5 @@
-import { obtenerClientes } from "../../../services/adminApi.js";
+import { useMemo, useState } from "react";
+import { obtenerPersonas } from "../../../services/adminApi.js";
 import { useFetch } from "../../../hooks/useFetch";
 import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
@@ -6,12 +7,40 @@ import { useNavigate } from "react-router-dom";
 import "../../../App.css";
 import "./ObtenerClientes.css";
 
+const FILTROS = [
+  { value: "CLIENT", label: "Clientes", titulo: "Clientes", descripcion: "Listado de todos los clientes registrados" },
+  { value: "ALL", label: "Todos los usuarios", titulo: "Usuarios", descripcion: "Listado de todos los usuarios registrados" },
+  { value: "ADMIN", label: "Administradores", titulo: "Administradores", descripcion: "Listado de los administradores" },
+  { value: "BLOCKED", label: "Clientes bloqueados", titulo: "Clientes bloqueados", descripcion: "Clientes que no pueden operar" },
+  { value: "DELETED", label: "Cuentas eliminadas", titulo: "Cuentas eliminadas", descripcion: "Usuarios que eliminaron su cuenta" },
+];
+
+const formatDate = (isoString) => {
+  if (!isoString) return "—";
+  return new Date(isoString).toLocaleDateString("es-EC", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
+
 const ObtenerClientes = () => {
-  const { data, isLoading, error } = useFetch(obtenerClientes);
+  const [tipo, setTipo] = useState("CLIENT");
+  const [busqueda, setBusqueda] = useState("");
   const navigate = useNavigate();
 
-  const clientes = data?.clientes ?? [];
-  const totalClientes = data?.totalClientes ?? 0;
+  // Al cambiar el filtro (deps=[tipo]) el hook vuelve a pedir la lista.
+  const { data, isLoading, error } = useFetch(() => obtenerPersonas(tipo), [tipo]);
+
+  const filtroActual = FILTROS.find((f) => f.value === tipo) ?? FILTROS[0];
+  const usuariosFiltrados = useMemo(() => {
+    const usuarios = data?.users ?? [];
+    const q = busqueda.trim().toLowerCase();
+    if (!q) return usuarios;
+    return usuarios.filter((u) =>
+      `${u.firstName} ${u.lastName}`.toLowerCase().includes(q)
+    );
+  }, [data, busqueda]);
 
   return (
     <div className="app">
@@ -23,25 +52,53 @@ const ObtenerClientes = () => {
         <div className="content">
           <div className="page-heading">
             <div>
-              <h1>Clientes</h1>
-              <p>Listado de todos los clientes registrados</p>
+              <h1>{filtroActual.titulo}</h1>
+              <p>{filtroActual.descripcion}</p>
+            </div>
+
+            <div className="clientes-controls">
+              <label className="clientes-filtro">
+                <span>Ver:</span>
+                <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
+                  {FILTROS.map((f) => (
+                    <option key={f.value} value={f.value}>
+                      {f.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <div className="search">
+                <span className="search-icon" aria-hidden="true" />
+                <input
+                  type="text"
+                  placeholder="Buscar por nombre o apellido..."
+                  aria-label="Buscar por nombre o apellido"
+                  value={busqueda}
+                  onChange={(e) => setBusqueda(e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
           {error && <p className="dashboard-error">{error}</p>}
 
           {isLoading ? (
-            <p>Cargando clientes...</p>
+            <p>Cargando usuarios...</p>
           ) : (
             <>
               <div className="clientes-summary">
                 <span className="clientes-total">
-                  Total de clientes: <strong>{totalClientes}</strong>
+                  Total: <strong>{usuariosFiltrados.length}</strong>
                 </span>
               </div>
 
-              {clientes.length === 0 ? (
-                <p>No hay clientes registrados.</p>
+              {usuariosFiltrados.length === 0 ? (
+                <p>
+                  {busqueda.trim()
+                    ? "Ningún usuario coincide con la búsqueda."
+                    : "No hay usuarios para este filtro."}
+                </p>
               ) : (
                 <div className="clientes-table-wrapper">
                   <table className="clientes-table">
@@ -49,18 +106,22 @@ const ObtenerClientes = () => {
                       <tr>
                         <th>Nombre</th>
                         <th>Apellido</th>
+                        <th>Registrado</th>
+                        <th>Bloqueado</th>
                         <th></th>
                       </tr>
                     </thead>
                     <tbody>
-                      {clientes.map((cliente) => (
-                        <tr key={cliente.id}>
-                          <td>{cliente.firstName}</td>
-                          <td>{cliente.lastName}</td>
+                      {usuariosFiltrados.map((usuario) => (
+                        <tr key={usuario.id}>
+                          <td>{usuario.firstName}</td>
+                          <td>{usuario.lastName}</td>
+                          <td>{formatDate(usuario.createdAt)}</td>
+                          <td>{usuario.blocked ? "Sí" : "—"}</td>
                           <td>
                             <button
                               className="edit-profile-btn"
-                              onClick={() => navigate(`/admin/clientes/${cliente.id}`)}
+                              onClick={() => navigate(`/admin/clientes/${usuario.id}`)}
                             >
                               Ver detalles
                             </button>

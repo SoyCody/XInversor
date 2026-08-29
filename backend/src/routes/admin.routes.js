@@ -18,11 +18,13 @@ router.get('/me',
     clientController.me
 );
 
-router.get('/users', 
-    verifyToken, 
-    isAdmin, 
+// GET /admin/users            -> todos
+// GET /admin/users?tipo=CLIENT | ADMIN | BLOCKED | DELETED
+router.get('/users',
+    verifyToken,
+    isAdmin,
     isActive,
-    adminController.obtenerClientes
+    adminController.obtenerPersonas
 );
 
 router.get('/watch/user/:id',

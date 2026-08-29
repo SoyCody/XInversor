@@ -1,6 +1,16 @@
 import prisma from '../db.js';
 
 const ACTIVE_STATE = 'ACTIVO';
+const DELETED_STATE = 'BORRADO';
+
+// Filtros disponibles para obtenerPersona(tipo).
+const PERSONA_FILTERS = {
+  ALL:     { state: ACTIVE_STATE },
+  CLIENT:  { role: 'CLIENT', state: ACTIVE_STATE },
+  ADMIN:   { role: 'ADMIN', state: ACTIVE_STATE },
+  BLOCKED: { role: 'CLIENT', state: ACTIVE_STATE, client: { is: { blocked: true } } },
+  DELETED: { state: DELETED_STATE }
+};
 
 const countAll = (state = ACTIVE_STATE) => prisma.user.count({
   where: { state }
@@ -26,24 +36,33 @@ const findRecent = (take = 10, state = ACTIVE_STATE) => {
   });
 };
 
-const obtenerClientes = (state = ACTIVE_STATE) => {
+const obtenerPersona = (tipo = 'ALL') => {
+  const where = PERSONA_FILTERS[tipo] ?? PERSONA_FILTERS.ALL;
+
   return prisma.user.findMany({
-    where: { role: 'CLIENT', state },
-    select: { 
+    where,
+    orderBy: { createdAt: 'desc' },
+    select: {
       id: true,
-      firstName: true, 
-      lastName: true
+      firstName: true,
+      lastName: true,
+      createdAt: true,
+      client: { select: { blocked: true } }
     }
   });
 };
 
-const verCliente = (id, state = ACTIVE_STATE) => {
-  return prisma.user.findFirst({
-    where: { id, state, role: 'CLIENT' },
+// Detalle completo de cualquier usuario (CLIENT o ADMIN, activo o
+// con la cuenta eliminada): es lo que consume "Ver detalles".
+const verCliente = (id) => {
+  return prisma.user.findUnique({
+    where: { id },
     select : {
       firstName: true,
       lastName: true,
       email : true,
+      role : true,
+      state : true,
       createdAt : true,
       apdatedAt : true,
       avatarUpdatedAt : true,
@@ -92,7 +111,7 @@ export default {
   countAll,
   countByRole,
   findRecent,
-  obtenerClientes,
+  obtenerPersona,
   verCliente,
   promoteToAdmin,
   block

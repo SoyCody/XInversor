@@ -25,6 +25,11 @@ const VerCliente = () => {
 
   const cliente = data?.cliente;
   const isBlocked = Boolean(cliente?.blocked);
+  // El bloqueo solo aplica a clientes con la cuenta activa.
+  const puedeBloquear = cliente?.role === "CLIENT" && cliente?.state === "ACTIVO";
+
+  const ROLES = { CLIENT: "Cliente", ADMIN: "Administrador" };
+  const ESTADOS = { ACTIVO: "Activa", BORRADO: "Eliminada" };
 
   const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
   const [isBlocking, setIsBlocking] = useState(false);
@@ -61,7 +66,7 @@ const VerCliente = () => {
           
             <div className="page-heading">
               <div>
-                <h1>Detalle del cliente</h1>
+                <h1>Detalle del usuario</h1>
                 <p>Información completa de la cuenta</p>
               </div>
             </div>
@@ -72,7 +77,7 @@ const VerCliente = () => {
             {isLoading ? (
               <p>Cargando cliente...</p>
             ) : !cliente ? (
-              <p>No se encontró información de este cliente.</p>
+              <p>No se encontró información de este usuario.</p>
             ) : (
               <>
                 <div className="cliente-avatar-wrapper">
@@ -96,6 +101,14 @@ const VerCliente = () => {
                     <span className="cliente-detalle-value">{cliente.email}</span>
                   </div>
                   <div className="cliente-detalle-row">
+                    <span className="cliente-detalle-label">Rol</span>
+                    <span className="cliente-detalle-value">{ROLES[cliente.role] ?? cliente.role}</span>
+                  </div>
+                  <div className="cliente-detalle-row">
+                    <span className="cliente-detalle-label">Estado de la cuenta</span>
+                    <span className="cliente-detalle-value">{ESTADOS[cliente.state] ?? cliente.state}</span>
+                  </div>
+                  <div className="cliente-detalle-row">
                     <span className="cliente-detalle-label">Registrado</span>
                     <span className="cliente-detalle-value">{formatDate(cliente.createdAt)}</span>
                   </div>
@@ -105,15 +118,17 @@ const VerCliente = () => {
                   </div>
                 </section>
 
-                <div className="vercliente-actions">
-                  <button
-                    type="button"
-                    className={isBlocked ? "unblock-client-btn" : "block-client-btn"}
-                    onClick={() => setIsBlockModalOpen(true)}
-                  >
-                    {isBlocked ? "Desbloquear cliente" : "Bloquear cliente"}
-                  </button>
-                </div>
+                {puedeBloquear && (
+                  <div className="vercliente-actions">
+                    <button
+                      type="button"
+                      className={isBlocked ? "unblock-client-btn" : "block-client-btn"}
+                      onClick={() => setIsBlockModalOpen(true)}
+                    >
+                      {isBlocked ? "Desbloquear cliente" : "Bloquear cliente"}
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </div>

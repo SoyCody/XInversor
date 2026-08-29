@@ -23,6 +23,10 @@ export function logoutUser() {
   return apiFetch("/users/logout", { method: "POST" });
 };
 
+export function getCurrentUser() {
+  return apiFetch("/client/me");
+};
+
 export function updateMe(payload) {
   // payload: { firstName?, lastName?, email? }
   // El ID viene del token en el backend

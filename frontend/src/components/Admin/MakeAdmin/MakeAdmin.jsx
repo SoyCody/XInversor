@@ -10,8 +10,8 @@ const MakeAdmin = () => {
   const { data, isLoading, error } = useFetch(obtenerClientes);
   const navigate = useNavigate();
 
-  const clientes = data?.clientes ?? [];
-  const totalClientes = data?.totalClientes ?? 0;
+  const clientes = data?.users ?? [];
+  const totalClientes = data?.total ?? 0;
 
   return (
     <div className="app">

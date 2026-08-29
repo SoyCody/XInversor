@@ -35,16 +35,28 @@ const readDashboard = async () => {
   };
 };
 
-const obtenerClientes = async () => {
-  const [ totalClientes, clientes ] = await Promise.all([
-    adminRepository.countByRole('CLIENT'),
-    adminRepository.obtenerClientes()
-  ]);
+// Tipos aceptados; cualquier otro valor cae en 'ALL'.
+const PERSONA_TIPOS = ['ALL', 'CLIENT', 'ADMIN', 'BLOCKED', 'DELETED'];
 
-  return { 
-    totalClientes,
-    clientes
-  }
+const obtenerPersonas = async (tipo = 'ALL') => {
+  const key = PERSONA_TIPOS.includes(String(tipo).toUpperCase())
+    ? String(tipo).toUpperCase()
+    : 'ALL';
+
+  const rows = await adminRepository.obtenerPersona(key);
+
+  // Se aplana client.blocked para que el frontend reciba una lista
+  // homogénea; los usuarios sin perfil Client quedan como blocked: false.
+  const users = rows.map(({ client, ...rest }) => ({
+    ...rest,
+    blocked: client?.blocked ?? false
+  }));
+
+  return {
+    tipo: key,
+    total: users.length,
+    users
+  };
 };
 
 const verCliente = async (id) => {
@@ -103,7 +115,7 @@ const blockClient = async (id, actingAdminUserId) => {
 
 export {
   readDashboard,
-  obtenerClientes,
+  obtenerPersonas,
   verCliente,
   promoteToAdmin,
   UserNotFoundError,

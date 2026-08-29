@@ -10,15 +10,16 @@ const adminPanel = async (req, res) => {
   }
 };
 
-const obtenerClientes = async (req, res) => {
-  try{
-    const users = await adminService.obtenerClientes();
-    return res.status(200).json(users)
-  }catch(error){
+const obtenerPersonas = async (req, res) => {
+  try {
+    const data = await adminService.obtenerPersonas(req.query.tipo);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error('Error al obtener usuarios:', error);
     return res.status(500).json({
-      message: "Error al obtener clientes"
-    })
-  };
+      message: "Error al obtener usuarios"
+    });
+  }
 };
 
 const verCliente = async (req, res) => {
@@ -78,7 +79,7 @@ const blockClient = async (req, res) => {
 
 export default {
   adminPanel,
-  obtenerClientes,
+  obtenerPersonas,
   verCliente,
   promoteToAdmin,
   blockClient

@@ -10,8 +10,25 @@ export function getMeAdmin() {
   return apiFetch("/admin/me");
 };
 
+// tipo: "ALL" | "CLIENT" | "ADMIN" | "BLOCKED" | "DELETED"
+export function obtenerPersonas(tipo = "ALL") {
+  return apiFetch(`/admin/users?tipo=${encodeURIComponent(tipo)}`);
+};
+
 export function obtenerClientes() {
-  return apiFetch("/admin/users");
+  return obtenerPersonas("CLIENT");
+};
+
+export function obtenerAdministradores() {
+  return obtenerPersonas("ADMIN");
+};
+
+export function obtenerBloqueados() {
+  return obtenerPersonas("BLOCKED");
+};
+
+export function obtenerBorrados () {
+  return obtenerPersonas("DELETED");
 };
 
 export function verCliente (id) {
