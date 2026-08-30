@@ -20,4 +20,7 @@ const me = async (req, res) => {
   }
 };
 
-export default { dashboard, me };
+export default { 
+  dashboard, 
+  me
+};

@@ -77,9 +77,9 @@ model Inversion{
   id              Int             @id @default(autoincrement())
   clientId        Int
   monto           Decimal
-  comision        Decimal
-  dias            Int
-  total           Decimal
+  dias            Int             @default(0)
+  total           Decimal         @default(0.00)
+  intereses       Decimal         @default(0.00)
   createdAt       DateTime        @default(now())
   client          Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
   estados         Estado[]

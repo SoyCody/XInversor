@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import userRepository from '../repositories/user.repository.js';
+import clientRepository from '../repositories/client.repository.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN_DAYS = Number(process.env.JWT_EXPIRES_IN_DAYS) || 1;
@@ -96,10 +97,28 @@ const isActive = (req, res, next) => {
   next();
 };
 
-export { 
-  generateToken, 
-  setAuthCookie, 
-  verifyToken, 
+const isnBlocked = async (req, res, next) => {
+  try {
+    const client = await clientRepository.getBlocked(req.user.id);
+
+    if (client?.blocked) {
+      return res.status(403).json({
+        error: 'Acceso denegado: cuenta bloqueada'
+      });
+    }
+    next();
+  } catch (error) {
+    return res.status(500).json({
+      error: 'No se pudo verificar el estado de la cuenta'
+    });
+  }
+};
+
+export {
+  generateToken,
+  setAuthCookie,
+  verifyToken,
   isAdmin,
-  isActive 
+  isActive,
+  isnBlocked
 };

@@ -24,10 +24,10 @@ const ClientSideBar = () => {
 
         <div className="nav-section">GESTIÓN</div>
 
-        <a href="#" className="nav-link">
+        <Link to="/client/inversiones" className={`nav-link ${isActive("/client/inversiones") ? "active" : ""}`}>
           <span className="nav-icon orders-icon"></span>
-          <span>Órdenes</span>
-        </a>
+          <span>Inversiones</span>
+        </Link>
 
         <div className="nav-section">CONFIGURACIÓN</div>
 

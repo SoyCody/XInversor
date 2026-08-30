@@ -6,6 +6,7 @@ import adminRoutes from './routes/admin.routes.js';
 import clientRoutes from './routes/client.routes.js';
 import cookieParser from 'cookie-parser';
 import auditRoutes from './routes/audit.routes.js';
+import investmentRoutes from './routes/investment.routes.js';
 
 const app = express();
 app.use(cookieParser());
@@ -23,6 +24,7 @@ app.use('/users', usersRoutes);
 app.use('/admin', adminRoutes);
 app.use('/client', clientRoutes);
 app.use('/audits', auditRoutes);
+app.use('/investment', investmentRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor backend corriendo en http://localhost:${PORT}`);

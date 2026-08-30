@@ -1,5 +1,6 @@
 import clientRepository from '../repositories/client.repository.js';
 
+
 const readDashboard = async (userId) => {
   const client = await clientRepository.getLink(userId);
 
@@ -18,4 +19,9 @@ const getMe = async (userId) => {
   return userWithoutPassword;
 };
 
-export { readDashboard, getMe };
+
+
+export { 
+  readDashboard, 
+  getMe
+};

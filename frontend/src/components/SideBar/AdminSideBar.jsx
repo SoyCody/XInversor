@@ -25,10 +25,10 @@ const AdminSideBar = () => {
 
         <div className="nav-section">GESTIÓN</div>
 
-        <a href="#" className="nav-link">
+        <Link to="/admin/inversiones" className={`nav-link ${isActive("/admin/inversiones") ? "active" : ""}`}>
           <span className="nav-icon orders-icon"></span>
-          <span>Órdenes</span>
-        </a>
+          <span>Inversiones</span>
+        </Link>
 
         <Link to="/admin/clientes" className={`nav-link ${isActive("/admin/clientes") ? "active" : ""}`}>
           <span className="nav-icon users-icon"></span>

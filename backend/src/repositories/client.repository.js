@@ -7,6 +7,13 @@ const getLink = async (userId) => {
   });
 };
 
+const getBlocked = async (userId) => {
+  return prisma.client.findUnique({
+    where: { userId },
+    select: { blocked: true },
+  });
+};
+
 const getMe = async (userId) => {
   return prisma.user.findFirst({
     where: {
@@ -19,4 +26,9 @@ const getMe = async (userId) => {
     omit: { avatar: true },
   });
 };
-export default { getLink, getMe };
+
+export default {
+  getLink,
+  getBlocked,
+  getMe,
+};

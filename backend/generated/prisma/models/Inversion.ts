@@ -30,27 +30,27 @@ export type InversionAvgAggregateOutputType = {
   id: number | null
   clientId: number | null
   monto: runtime.Decimal | null
-  comision: runtime.Decimal | null
   dias: number | null
   total: runtime.Decimal | null
+  intereses: runtime.Decimal | null
 }
 
 export type InversionSumAggregateOutputType = {
   id: number | null
   clientId: number | null
   monto: runtime.Decimal | null
-  comision: runtime.Decimal | null
   dias: number | null
   total: runtime.Decimal | null
+  intereses: runtime.Decimal | null
 }
 
 export type InversionMinAggregateOutputType = {
   id: number | null
   clientId: number | null
   monto: runtime.Decimal | null
-  comision: runtime.Decimal | null
   dias: number | null
   total: runtime.Decimal | null
+  intereses: runtime.Decimal | null
   createdAt: Date | null
 }
 
@@ -58,9 +58,9 @@ export type InversionMaxAggregateOutputType = {
   id: number | null
   clientId: number | null
   monto: runtime.Decimal | null
-  comision: runtime.Decimal | null
   dias: number | null
   total: runtime.Decimal | null
+  intereses: runtime.Decimal | null
   createdAt: Date | null
 }
 
@@ -68,9 +68,9 @@ export type InversionCountAggregateOutputType = {
   id: number
   clientId: number
   monto: number
-  comision: number
   dias: number
   total: number
+  intereses: number
   createdAt: number
   _all: number
 }
@@ -80,27 +80,27 @@ export type InversionAvgAggregateInputType = {
   id?: true
   clientId?: true
   monto?: true
-  comision?: true
   dias?: true
   total?: true
+  intereses?: true
 }
 
 export type InversionSumAggregateInputType = {
   id?: true
   clientId?: true
   monto?: true
-  comision?: true
   dias?: true
   total?: true
+  intereses?: true
 }
 
 export type InversionMinAggregateInputType = {
   id?: true
   clientId?: true
   monto?: true
-  comision?: true
   dias?: true
   total?: true
+  intereses?: true
   createdAt?: true
 }
 
@@ -108,9 +108,9 @@ export type InversionMaxAggregateInputType = {
   id?: true
   clientId?: true
   monto?: true
-  comision?: true
   dias?: true
   total?: true
+  intereses?: true
   createdAt?: true
 }
 
@@ -118,9 +118,9 @@ export type InversionCountAggregateInputType = {
   id?: true
   clientId?: true
   monto?: true
-  comision?: true
   dias?: true
   total?: true
+  intereses?: true
   createdAt?: true
   _all?: true
 }
@@ -215,9 +215,9 @@ export type InversionGroupByOutputType = {
   id: number
   clientId: number
   monto: runtime.Decimal
-  comision: runtime.Decimal
   dias: number
   total: runtime.Decimal
+  intereses: runtime.Decimal
   createdAt: Date
   _count: InversionCountAggregateOutputType | null
   _avg: InversionAvgAggregateOutputType | null
@@ -248,9 +248,9 @@ export type InversionWhereInput = {
   id?: Prisma.IntFilter<"Inversion"> | number
   clientId?: Prisma.IntFilter<"Inversion"> | number
   monto?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFilter<"Inversion"> | number
   total?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Inversion"> | Date | string
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
   estados?: Prisma.EstadoListRelationFilter
@@ -260,9 +260,9 @@ export type InversionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
-  comision?: Prisma.SortOrder
   dias?: Prisma.SortOrder
   total?: Prisma.SortOrder
+  intereses?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   client?: Prisma.ClientOrderByWithRelationInput
   estados?: Prisma.EstadoOrderByRelationAggregateInput
@@ -275,9 +275,9 @@ export type InversionWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.InversionWhereInput | Prisma.InversionWhereInput[]
   clientId?: Prisma.IntFilter<"Inversion"> | number
   monto?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFilter<"Inversion"> | number
   total?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Inversion"> | Date | string
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
   estados?: Prisma.EstadoListRelationFilter
@@ -287,9 +287,9 @@ export type InversionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
-  comision?: Prisma.SortOrder
   dias?: Prisma.SortOrder
   total?: Prisma.SortOrder
+  intereses?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.InversionCountOrderByAggregateInput
   _avg?: Prisma.InversionAvgOrderByAggregateInput
@@ -305,17 +305,17 @@ export type InversionScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Inversion"> | number
   clientId?: Prisma.IntWithAggregatesFilter<"Inversion"> | number
   monto?: Prisma.DecimalWithAggregatesFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision?: Prisma.DecimalWithAggregatesFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntWithAggregatesFilter<"Inversion"> | number
   total?: Prisma.DecimalWithAggregatesFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalWithAggregatesFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Inversion"> | Date | string
 }
 
 export type InversionCreateInput = {
   monto: runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision: runtime.Decimal | runtime.DecimalJsLike | number | string
-  dias: number
-  total: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dias?: number
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   client: Prisma.ClientCreateNestedOneWithoutInversionesInput
   estados?: Prisma.EstadoCreateNestedManyWithoutInversionInput
@@ -325,18 +325,18 @@ export type InversionUncheckedCreateInput = {
   id?: number
   clientId: number
   monto: runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision: runtime.Decimal | runtime.DecimalJsLike | number | string
-  dias: number
-  total: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dias?: number
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   estados?: Prisma.EstadoUncheckedCreateNestedManyWithoutInversionInput
 }
 
 export type InversionUpdateInput = {
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ClientUpdateOneRequiredWithoutInversionesNestedInput
   estados?: Prisma.EstadoUpdateManyWithoutInversionNestedInput
@@ -346,9 +346,9 @@ export type InversionUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   clientId?: Prisma.IntFieldUpdateOperationsInput | number
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   estados?: Prisma.EstadoUncheckedUpdateManyWithoutInversionNestedInput
 }
@@ -357,17 +357,17 @@ export type InversionCreateManyInput = {
   id?: number
   clientId: number
   monto: runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision: runtime.Decimal | runtime.DecimalJsLike | number | string
-  dias: number
-  total: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dias?: number
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
 export type InversionUpdateManyMutationInput = {
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -375,9 +375,9 @@ export type InversionUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   clientId?: Prisma.IntFieldUpdateOperationsInput | number
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -395,9 +395,9 @@ export type InversionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
-  comision?: Prisma.SortOrder
   dias?: Prisma.SortOrder
   total?: Prisma.SortOrder
+  intereses?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -405,18 +405,18 @@ export type InversionAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
-  comision?: Prisma.SortOrder
   dias?: Prisma.SortOrder
   total?: Prisma.SortOrder
+  intereses?: Prisma.SortOrder
 }
 
 export type InversionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
-  comision?: Prisma.SortOrder
   dias?: Prisma.SortOrder
   total?: Prisma.SortOrder
+  intereses?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -424,9 +424,9 @@ export type InversionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
-  comision?: Prisma.SortOrder
   dias?: Prisma.SortOrder
   total?: Prisma.SortOrder
+  intereses?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -434,9 +434,9 @@ export type InversionSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
-  comision?: Prisma.SortOrder
   dias?: Prisma.SortOrder
   total?: Prisma.SortOrder
+  intereses?: Prisma.SortOrder
 }
 
 export type InversionScalarRelationFilter = {
@@ -510,9 +510,9 @@ export type InversionUpdateOneRequiredWithoutEstadosNestedInput = {
 
 export type InversionCreateWithoutClientInput = {
   monto: runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision: runtime.Decimal | runtime.DecimalJsLike | number | string
-  dias: number
-  total: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dias?: number
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   estados?: Prisma.EstadoCreateNestedManyWithoutInversionInput
 }
@@ -520,9 +520,9 @@ export type InversionCreateWithoutClientInput = {
 export type InversionUncheckedCreateWithoutClientInput = {
   id?: number
   monto: runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision: runtime.Decimal | runtime.DecimalJsLike | number | string
-  dias: number
-  total: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dias?: number
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   estados?: Prisma.EstadoUncheckedCreateNestedManyWithoutInversionInput
 }
@@ -560,17 +560,17 @@ export type InversionScalarWhereInput = {
   id?: Prisma.IntFilter<"Inversion"> | number
   clientId?: Prisma.IntFilter<"Inversion"> | number
   monto?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFilter<"Inversion"> | number
   total?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Inversion"> | Date | string
 }
 
 export type InversionCreateWithoutEstadosInput = {
   monto: runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision: runtime.Decimal | runtime.DecimalJsLike | number | string
-  dias: number
-  total: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dias?: number
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   client: Prisma.ClientCreateNestedOneWithoutInversionesInput
 }
@@ -579,9 +579,9 @@ export type InversionUncheckedCreateWithoutEstadosInput = {
   id?: number
   clientId: number
   monto: runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision: runtime.Decimal | runtime.DecimalJsLike | number | string
-  dias: number
-  total: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dias?: number
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
@@ -603,9 +603,9 @@ export type InversionUpdateToOneWithWhereWithoutEstadosInput = {
 
 export type InversionUpdateWithoutEstadosInput = {
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ClientUpdateOneRequiredWithoutInversionesNestedInput
 }
@@ -614,26 +614,26 @@ export type InversionUncheckedUpdateWithoutEstadosInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   clientId?: Prisma.IntFieldUpdateOperationsInput | number
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type InversionCreateManyClientInput = {
   id?: number
   monto: runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision: runtime.Decimal | runtime.DecimalJsLike | number | string
-  dias: number
-  total: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dias?: number
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
 export type InversionUpdateWithoutClientInput = {
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   estados?: Prisma.EstadoUpdateManyWithoutInversionNestedInput
 }
@@ -641,9 +641,9 @@ export type InversionUpdateWithoutClientInput = {
 export type InversionUncheckedUpdateWithoutClientInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   estados?: Prisma.EstadoUncheckedUpdateManyWithoutInversionNestedInput
 }
@@ -651,9 +651,9 @@ export type InversionUncheckedUpdateWithoutClientInput = {
 export type InversionUncheckedUpdateManyWithoutClientInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  comision?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -692,9 +692,9 @@ export type InversionSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   id?: boolean
   clientId?: boolean
   monto?: boolean
-  comision?: boolean
   dias?: boolean
   total?: boolean
+  intereses?: boolean
   createdAt?: boolean
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   estados?: boolean | Prisma.Inversion$estadosArgs<ExtArgs>
@@ -705,9 +705,9 @@ export type InversionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   id?: boolean
   clientId?: boolean
   monto?: boolean
-  comision?: boolean
   dias?: boolean
   total?: boolean
+  intereses?: boolean
   createdAt?: boolean
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["inversion"]>
@@ -716,9 +716,9 @@ export type InversionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   id?: boolean
   clientId?: boolean
   monto?: boolean
-  comision?: boolean
   dias?: boolean
   total?: boolean
+  intereses?: boolean
   createdAt?: boolean
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["inversion"]>
@@ -727,13 +727,13 @@ export type InversionSelectScalar = {
   id?: boolean
   clientId?: boolean
   monto?: boolean
-  comision?: boolean
   dias?: boolean
   total?: boolean
+  intereses?: boolean
   createdAt?: boolean
 }
 
-export type InversionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "clientId" | "monto" | "comision" | "dias" | "total" | "createdAt", ExtArgs["result"]["inversion"]>
+export type InversionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "clientId" | "monto" | "dias" | "total" | "intereses" | "createdAt", ExtArgs["result"]["inversion"]>
 export type InversionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   estados?: boolean | Prisma.Inversion$estadosArgs<ExtArgs>
@@ -756,9 +756,9 @@ export type $InversionPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     id: number
     clientId: number
     monto: runtime.Decimal
-    comision: runtime.Decimal
     dias: number
     total: runtime.Decimal
+    intereses: runtime.Decimal
     createdAt: Date
   }, ExtArgs["result"]["inversion"]>
   composites: {}
@@ -1188,9 +1188,9 @@ export interface InversionFieldRefs {
   readonly id: Prisma.FieldRef<"Inversion", 'Int'>
   readonly clientId: Prisma.FieldRef<"Inversion", 'Int'>
   readonly monto: Prisma.FieldRef<"Inversion", 'Decimal'>
-  readonly comision: Prisma.FieldRef<"Inversion", 'Decimal'>
   readonly dias: Prisma.FieldRef<"Inversion", 'Int'>
   readonly total: Prisma.FieldRef<"Inversion", 'Decimal'>
+  readonly intereses: Prisma.FieldRef<"Inversion", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"Inversion", 'DateTime'>
 }
     
