@@ -18,4 +18,11 @@ router.get('/list',
     investmentController.list
 );
 
+router.get('/my',
+    verifyToken,
+    isActive,
+    isnBlocked,
+    investmentController.myList
+)
+
 export default router;

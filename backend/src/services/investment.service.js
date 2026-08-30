@@ -74,7 +74,37 @@ const list = async (tipo = 'ALL') => {
   };
 };
 
+const myList = async (userId, tipo = 'ALL') => {
+  const key = INVERSION_TIPOS.includes(String(tipo).toUpperCase())
+    ? String(tipo).toUpperCase()
+    : 'ALL';
+
+  // req.user.id es el id del User; las inversiones cuelgan del Client.
+  const client = await investmentRepository.getIdByUser(userId);
+
+  if (!client) {
+    throw new Error('El usuario no tiene un perfil de cliente');
+  }
+
+  const rows = await investmentRepository.myList(client.id);
+
+  const inversiones = rows
+    .map(({ estados, ...rest }) => ({
+      ...rest,
+      estado: estados[0]?.estado ?? DEFAULT_ESTADO
+    }))
+    .filter((inversion) => key === 'ALL' || inversion.estado === key);
+
+  return {
+    tipo: key,
+    total: inversiones.length,
+    inversiones
+  };  
+
+};
+
 export default {
     newInvestment,
-    list
+    list,
+    myList
 }

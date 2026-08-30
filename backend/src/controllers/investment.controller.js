@@ -24,7 +24,26 @@ const list = async(req, res) => {
     };
 };
 
+const myList = async(req, res) => {
+  try {
+    const { id } = req.user;
+    const data = await InvestmentService.myList(id, req.query.tipo);
+    if (!data) {
+      return res.status(404).json({
+        message:"No se encontraron inversiones"
+      });
+    };
+    return res.status(200).json(data);
+  } catch ( error ) {
+    console.log(error.message);
+    return res.status(500).json({
+      message: "Error al obtener inversiones"
+    })
+  };
+};
+
 export default {
     createInvestment,
-    list
+    list,
+    myList
 }

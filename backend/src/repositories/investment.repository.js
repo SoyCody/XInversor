@@ -41,8 +41,28 @@ const list = async () => {
   });
 };
 
+const myList = async (clientId) => {
+  return prisma.inversion.findMany({
+    where: { clientId },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      monto: true,
+      dias: true,
+      intereses: true,
+      // Solo el estado actual (el último registrado).
+      estados: {
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+        select: { estado: true }
+      }
+    }
+  });
+};
+
 export default {
     registerInvestment,
     getIdByUser,
-    list
+    list,
+    myList
 }
