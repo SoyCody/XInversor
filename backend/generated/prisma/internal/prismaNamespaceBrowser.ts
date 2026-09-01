@@ -54,6 +54,7 @@ export const ModelName = {
   Admin: 'Admin',
   Audit: 'Audit',
   Inversion: 'Inversion',
+  Solicitud: 'Solicitud',
   Estado: 'Estado'
 } as const
 
@@ -132,6 +133,20 @@ export const InversionScalarFieldEnum = {
 } as const
 
 export type InversionScalarFieldEnum = (typeof InversionScalarFieldEnum)[keyof typeof InversionScalarFieldEnum]
+
+
+export const SolicitudScalarFieldEnum = {
+  id: 'id',
+  inversionId: 'inversionId',
+  montoRetiro: 'montoRetiro',
+  estado: 'estado',
+  pendiente: 'pendiente',
+  adminId: 'adminId',
+  resueltaEn: 'resueltaEn',
+  createdAt: 'createdAt'
+} as const
+
+export type SolicitudScalarFieldEnum = (typeof SolicitudScalarFieldEnum)[keyof typeof SolicitudScalarFieldEnum]
 
 
 export const EstadoScalarFieldEnum = {

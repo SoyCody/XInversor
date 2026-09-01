@@ -254,6 +254,7 @@ export type InversionWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Inversion"> | Date | string
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
   estados?: Prisma.EstadoListRelationFilter
+  solicitudes?: Prisma.SolicitudListRelationFilter
 }
 
 export type InversionOrderByWithRelationInput = {
@@ -266,6 +267,7 @@ export type InversionOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   client?: Prisma.ClientOrderByWithRelationInput
   estados?: Prisma.EstadoOrderByRelationAggregateInput
+  solicitudes?: Prisma.SolicitudOrderByRelationAggregateInput
 }
 
 export type InversionWhereUniqueInput = Prisma.AtLeast<{
@@ -281,6 +283,7 @@ export type InversionWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Inversion"> | Date | string
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
   estados?: Prisma.EstadoListRelationFilter
+  solicitudes?: Prisma.SolicitudListRelationFilter
 }, "id">
 
 export type InversionOrderByWithAggregationInput = {
@@ -319,6 +322,7 @@ export type InversionCreateInput = {
   createdAt?: Date | string
   client: Prisma.ClientCreateNestedOneWithoutInversionesInput
   estados?: Prisma.EstadoCreateNestedManyWithoutInversionInput
+  solicitudes?: Prisma.SolicitudCreateNestedManyWithoutInversionInput
 }
 
 export type InversionUncheckedCreateInput = {
@@ -330,6 +334,7 @@ export type InversionUncheckedCreateInput = {
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   estados?: Prisma.EstadoUncheckedCreateNestedManyWithoutInversionInput
+  solicitudes?: Prisma.SolicitudUncheckedCreateNestedManyWithoutInversionInput
 }
 
 export type InversionUpdateInput = {
@@ -340,6 +345,7 @@ export type InversionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ClientUpdateOneRequiredWithoutInversionesNestedInput
   estados?: Prisma.EstadoUpdateManyWithoutInversionNestedInput
+  solicitudes?: Prisma.SolicitudUpdateManyWithoutInversionNestedInput
 }
 
 export type InversionUncheckedUpdateInput = {
@@ -351,6 +357,7 @@ export type InversionUncheckedUpdateInput = {
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   estados?: Prisma.EstadoUncheckedUpdateManyWithoutInversionNestedInput
+  solicitudes?: Prisma.SolicitudUncheckedUpdateManyWithoutInversionNestedInput
 }
 
 export type InversionCreateManyInput = {
@@ -494,6 +501,20 @@ export type DecimalFieldUpdateOperationsInput = {
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
+export type InversionCreateNestedOneWithoutSolicitudesInput = {
+  create?: Prisma.XOR<Prisma.InversionCreateWithoutSolicitudesInput, Prisma.InversionUncheckedCreateWithoutSolicitudesInput>
+  connectOrCreate?: Prisma.InversionCreateOrConnectWithoutSolicitudesInput
+  connect?: Prisma.InversionWhereUniqueInput
+}
+
+export type InversionUpdateOneRequiredWithoutSolicitudesNestedInput = {
+  create?: Prisma.XOR<Prisma.InversionCreateWithoutSolicitudesInput, Prisma.InversionUncheckedCreateWithoutSolicitudesInput>
+  connectOrCreate?: Prisma.InversionCreateOrConnectWithoutSolicitudesInput
+  upsert?: Prisma.InversionUpsertWithoutSolicitudesInput
+  connect?: Prisma.InversionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InversionUpdateToOneWithWhereWithoutSolicitudesInput, Prisma.InversionUpdateWithoutSolicitudesInput>, Prisma.InversionUncheckedUpdateWithoutSolicitudesInput>
+}
+
 export type InversionCreateNestedOneWithoutEstadosInput = {
   create?: Prisma.XOR<Prisma.InversionCreateWithoutEstadosInput, Prisma.InversionUncheckedCreateWithoutEstadosInput>
   connectOrCreate?: Prisma.InversionCreateOrConnectWithoutEstadosInput
@@ -515,6 +536,7 @@ export type InversionCreateWithoutClientInput = {
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   estados?: Prisma.EstadoCreateNestedManyWithoutInversionInput
+  solicitudes?: Prisma.SolicitudCreateNestedManyWithoutInversionInput
 }
 
 export type InversionUncheckedCreateWithoutClientInput = {
@@ -525,6 +547,7 @@ export type InversionUncheckedCreateWithoutClientInput = {
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   estados?: Prisma.EstadoUncheckedCreateNestedManyWithoutInversionInput
+  solicitudes?: Prisma.SolicitudUncheckedCreateNestedManyWithoutInversionInput
 }
 
 export type InversionCreateOrConnectWithoutClientInput = {
@@ -566,6 +589,64 @@ export type InversionScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Inversion"> | Date | string
 }
 
+export type InversionCreateWithoutSolicitudesInput = {
+  monto: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dias?: number
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  client: Prisma.ClientCreateNestedOneWithoutInversionesInput
+  estados?: Prisma.EstadoCreateNestedManyWithoutInversionInput
+}
+
+export type InversionUncheckedCreateWithoutSolicitudesInput = {
+  id?: number
+  clientId: number
+  monto: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dias?: number
+  total?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  estados?: Prisma.EstadoUncheckedCreateNestedManyWithoutInversionInput
+}
+
+export type InversionCreateOrConnectWithoutSolicitudesInput = {
+  where: Prisma.InversionWhereUniqueInput
+  create: Prisma.XOR<Prisma.InversionCreateWithoutSolicitudesInput, Prisma.InversionUncheckedCreateWithoutSolicitudesInput>
+}
+
+export type InversionUpsertWithoutSolicitudesInput = {
+  update: Prisma.XOR<Prisma.InversionUpdateWithoutSolicitudesInput, Prisma.InversionUncheckedUpdateWithoutSolicitudesInput>
+  create: Prisma.XOR<Prisma.InversionCreateWithoutSolicitudesInput, Prisma.InversionUncheckedCreateWithoutSolicitudesInput>
+  where?: Prisma.InversionWhereInput
+}
+
+export type InversionUpdateToOneWithWhereWithoutSolicitudesInput = {
+  where?: Prisma.InversionWhereInput
+  data: Prisma.XOR<Prisma.InversionUpdateWithoutSolicitudesInput, Prisma.InversionUncheckedUpdateWithoutSolicitudesInput>
+}
+
+export type InversionUpdateWithoutSolicitudesInput = {
+  monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  dias?: Prisma.IntFieldUpdateOperationsInput | number
+  total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ClientUpdateOneRequiredWithoutInversionesNestedInput
+  estados?: Prisma.EstadoUpdateManyWithoutInversionNestedInput
+}
+
+export type InversionUncheckedUpdateWithoutSolicitudesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  clientId?: Prisma.IntFieldUpdateOperationsInput | number
+  monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  dias?: Prisma.IntFieldUpdateOperationsInput | number
+  total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  estados?: Prisma.EstadoUncheckedUpdateManyWithoutInversionNestedInput
+}
+
 export type InversionCreateWithoutEstadosInput = {
   monto: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
@@ -573,6 +654,7 @@ export type InversionCreateWithoutEstadosInput = {
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   client: Prisma.ClientCreateNestedOneWithoutInversionesInput
+  solicitudes?: Prisma.SolicitudCreateNestedManyWithoutInversionInput
 }
 
 export type InversionUncheckedCreateWithoutEstadosInput = {
@@ -583,6 +665,7 @@ export type InversionUncheckedCreateWithoutEstadosInput = {
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
+  solicitudes?: Prisma.SolicitudUncheckedCreateNestedManyWithoutInversionInput
 }
 
 export type InversionCreateOrConnectWithoutEstadosInput = {
@@ -608,6 +691,7 @@ export type InversionUpdateWithoutEstadosInput = {
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ClientUpdateOneRequiredWithoutInversionesNestedInput
+  solicitudes?: Prisma.SolicitudUpdateManyWithoutInversionNestedInput
 }
 
 export type InversionUncheckedUpdateWithoutEstadosInput = {
@@ -618,6 +702,7 @@ export type InversionUncheckedUpdateWithoutEstadosInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  solicitudes?: Prisma.SolicitudUncheckedUpdateManyWithoutInversionNestedInput
 }
 
 export type InversionCreateManyClientInput = {
@@ -636,6 +721,7 @@ export type InversionUpdateWithoutClientInput = {
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   estados?: Prisma.EstadoUpdateManyWithoutInversionNestedInput
+  solicitudes?: Prisma.SolicitudUpdateManyWithoutInversionNestedInput
 }
 
 export type InversionUncheckedUpdateWithoutClientInput = {
@@ -646,6 +732,7 @@ export type InversionUncheckedUpdateWithoutClientInput = {
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   estados?: Prisma.EstadoUncheckedUpdateManyWithoutInversionNestedInput
+  solicitudes?: Prisma.SolicitudUncheckedUpdateManyWithoutInversionNestedInput
 }
 
 export type InversionUncheckedUpdateManyWithoutClientInput = {
@@ -664,10 +751,12 @@ export type InversionUncheckedUpdateManyWithoutClientInput = {
 
 export type InversionCountOutputType = {
   estados: number
+  solicitudes: number
 }
 
 export type InversionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   estados?: boolean | InversionCountOutputTypeCountEstadosArgs
+  solicitudes?: boolean | InversionCountOutputTypeCountSolicitudesArgs
 }
 
 /**
@@ -687,6 +776,13 @@ export type InversionCountOutputTypeCountEstadosArgs<ExtArgs extends runtime.Typ
   where?: Prisma.EstadoWhereInput
 }
 
+/**
+ * InversionCountOutputType without action
+ */
+export type InversionCountOutputTypeCountSolicitudesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SolicitudWhereInput
+}
+
 
 export type InversionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -698,6 +794,7 @@ export type InversionSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   createdAt?: boolean
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   estados?: boolean | Prisma.Inversion$estadosArgs<ExtArgs>
+  solicitudes?: boolean | Prisma.Inversion$solicitudesArgs<ExtArgs>
   _count?: boolean | Prisma.InversionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["inversion"]>
 
@@ -737,6 +834,7 @@ export type InversionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type InversionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   estados?: boolean | Prisma.Inversion$estadosArgs<ExtArgs>
+  solicitudes?: boolean | Prisma.Inversion$solicitudesArgs<ExtArgs>
   _count?: boolean | Prisma.InversionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type InversionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -751,6 +849,7 @@ export type $InversionPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   objects: {
     client: Prisma.$ClientPayload<ExtArgs>
     estados: Prisma.$EstadoPayload<ExtArgs>[]
+    solicitudes: Prisma.$SolicitudPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1156,6 +1255,7 @@ export interface Prisma__InversionClient<T, Null = never, ExtArgs extends runtim
   readonly [Symbol.toStringTag]: "PrismaPromise"
   client<T extends Prisma.ClientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClientDefaultArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   estados<T extends Prisma.Inversion$estadosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Inversion$estadosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EstadoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  solicitudes<T extends Prisma.Inversion$solicitudesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Inversion$solicitudesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SolicitudPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1609,6 +1709,30 @@ export type Inversion$estadosArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.EstadoScalarFieldEnum | Prisma.EstadoScalarFieldEnum[]
+}
+
+/**
+ * Inversion.solicitudes
+ */
+export type Inversion$solicitudesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Solicitud
+   */
+  select?: Prisma.SolicitudSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Solicitud
+   */
+  omit?: Prisma.SolicitudOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SolicitudInclude<ExtArgs> | null
+  where?: Prisma.SolicitudWhereInput
+  orderBy?: Prisma.SolicitudOrderByWithRelationInput | Prisma.SolicitudOrderByWithRelationInput[]
+  cursor?: Prisma.SolicitudWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SolicitudScalarFieldEnum | Prisma.SolicitudScalarFieldEnum[]
 }
 
 /**

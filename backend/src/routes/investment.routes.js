@@ -23,6 +23,8 @@ router.get('/my',
     isActive,
     isnBlocked,
     investmentController.myList
-)
+);
+
+router.put('/acept')
 
 export default router;

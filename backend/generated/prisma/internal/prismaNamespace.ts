@@ -395,6 +395,7 @@ export const ModelName = {
   Admin: 'Admin',
   Audit: 'Audit',
   Inversion: 'Inversion',
+  Solicitud: 'Solicitud',
   Estado: 'Estado'
 } as const
 
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "client" | "admin" | "audit" | "inversion" | "estado"
+    modelProps: "user" | "client" | "admin" | "audit" | "inversion" | "solicitud" | "estado"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -785,6 +786,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Solicitud: {
+      payload: Prisma.$SolicitudPayload<ExtArgs>
+      fields: Prisma.SolicitudFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SolicitudFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SolicitudPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SolicitudFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SolicitudPayload>
+        }
+        findFirst: {
+          args: Prisma.SolicitudFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SolicitudPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SolicitudFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SolicitudPayload>
+        }
+        findMany: {
+          args: Prisma.SolicitudFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SolicitudPayload>[]
+        }
+        create: {
+          args: Prisma.SolicitudCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SolicitudPayload>
+        }
+        createMany: {
+          args: Prisma.SolicitudCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SolicitudCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SolicitudPayload>[]
+        }
+        delete: {
+          args: Prisma.SolicitudDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SolicitudPayload>
+        }
+        update: {
+          args: Prisma.SolicitudUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SolicitudPayload>
+        }
+        deleteMany: {
+          args: Prisma.SolicitudDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SolicitudUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SolicitudUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SolicitudPayload>[]
+        }
+        upsert: {
+          args: Prisma.SolicitudUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SolicitudPayload>
+        }
+        aggregate: {
+          args: Prisma.SolicitudAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSolicitud>
+        }
+        groupBy: {
+          args: Prisma.SolicitudGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SolicitudGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SolicitudCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SolicitudCountAggregateOutputType> | number
+        }
+      }
+    }
     Estado: {
       payload: Prisma.$EstadoPayload<ExtArgs>
       fields: Prisma.EstadoFieldRefs
@@ -959,6 +1034,20 @@ export const InversionScalarFieldEnum = {
 export type InversionScalarFieldEnum = (typeof InversionScalarFieldEnum)[keyof typeof InversionScalarFieldEnum]
 
 
+export const SolicitudScalarFieldEnum = {
+  id: 'id',
+  inversionId: 'inversionId',
+  montoRetiro: 'montoRetiro',
+  estado: 'estado',
+  pendiente: 'pendiente',
+  adminId: 'adminId',
+  resueltaEn: 'resueltaEn',
+  createdAt: 'createdAt'
+} as const
+
+export type SolicitudScalarFieldEnum = (typeof SolicitudScalarFieldEnum)[keyof typeof SolicitudScalarFieldEnum]
+
+
 export const EstadoScalarFieldEnum = {
   id: 'id',
   inversionId: 'inversionId',
@@ -1105,6 +1194,20 @@ export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMo
 
 
 /**
+ * Reference to a field of type 'EstadoSolicitud'
+ */
+export type EnumEstadoSolicitudFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EstadoSolicitud'>
+    
+
+
+/**
+ * Reference to a field of type 'EstadoSolicitud[]'
+ */
+export type ListEnumEstadoSolicitudFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EstadoSolicitud[]'>
+    
+
+
+/**
  * Reference to a field of type 'EstadoInversion'
  */
 export type EnumEstadoInversionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EstadoInversion'>
@@ -1223,6 +1326,7 @@ export type GlobalOmitConfig = {
   admin?: Prisma.AdminOmit
   audit?: Prisma.AuditOmit
   inversion?: Prisma.InversionOmit
+  solicitud?: Prisma.SolicitudOmit
   estado?: Prisma.EstadoOmit
 }
 

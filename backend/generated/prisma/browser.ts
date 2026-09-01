@@ -43,6 +43,11 @@ export type Audit = Prisma.AuditModel
  */
 export type Inversion = Prisma.InversionModel
 /**
+ * Model Solicitud
+ * 
+ */
+export type Solicitud = Prisma.SolicitudModel
+/**
  * Model Estado
  * 
  */
