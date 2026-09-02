@@ -11,6 +11,7 @@ import ClientChangePassword  from './components/Client/ClientGetMe/ClientChangeP
 import ObtenerClientes from './components/Admin/ObtenerClientes/ObtenerClientes.jsx';
 import ObtenerInversiones from './components/Admin/ObtenerInversiones/ObtenerInversiones.jsx';
 import ClientInversiones from './components/Client/ClientInversiones/ClientInversiones.jsx';
+import VerInversion from './components/Client/ClientInversiones/VerInversion.jsx';
 import VerCliente from './components/Admin/VerCliente/VerCliente.jsx';
 import MakeAdmin from './components/Admin/MakeAdmin/MakeAdmin.jsx';
 import PromoteClient from './components/Admin/MakeAdmin/PromoteClient.jsx';
@@ -28,6 +29,7 @@ function App() {
           <Route path="/clientDashboard" element={<ClientDashboard />} />
           <Route path="/client/me" element={<ClientGetMe/>}/>
           <Route path="/client/inversiones" element={<ClientInversiones />} />
+          <Route path="/client/inversiones/:inversionId" element={<VerInversion />} />
           <Route path="/admin/me" element={<AdminGetMe/>}/>
           <Route path="/admin/change/password" element={<AdminChangePassword/>}/>
           <Route path="/client/change/password" element={<ClientChangePassword/>}/>

@@ -13,7 +13,8 @@ export const AUDIT_TABLES = {
   USER: 'user',
   ROL: 'rol',
   INVERSION: 'inversion',
-  CLIENT: 'cliente'
+  CLIENT: 'cliente',
+  SOLICITUD: 'solicitud'
 };
 
 export const registrarAuditoria = ({ userId, action, tableName, targetId }) => {

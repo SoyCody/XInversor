@@ -15,7 +15,7 @@ class EmailAlreadyExistsError extends Error {
 class EmailDoesntExistError extends Error {
   constructor() {
     super('Credenciales inválidas');
-    this.name = 'EmailDoesntExistError'; // <- te faltaba la "r" al final
+    this.name = 'EmailDoesntExistError';
     this.statusCode = 404;
   }
 }
@@ -39,17 +39,12 @@ class InvalidPasswordError extends Error {
 }
 
 const registerClient = async ({ firstName, lastName, email, password }) => {
-  // ==============================
-  // COMPROBAR CORREO
-  // ==============================
+
   const existingUser = await userRepository.findByEmail(email);
   if (existingUser) {
     throw new EmailAlreadyExistsError();
   }
 
-  // ==============================
-  // HASH DE CONTRASEÑA
-  // ==============================
   const passwordHash = await bcrypt.hash(password, 12);
   const { buffer: defaultAvatar, mimeType: defaultAvatarType } = getDefaultAvatar();
   const userData = {
@@ -63,16 +58,11 @@ const registerClient = async ({ firstName, lastName, email, password }) => {
     avatarUpdatedAt: new Date(),
     client: {
       create: {
-        // Aquí posteriormente colocaremos
-        // la generación definitiva del link.
         link: `https://accounts.binance.bh/en-BH/register?ref=XZV234DGDGD2&registerChannel=&return_to=aHR0cHM6Ly93d3cuYmluYW5jZS5iaC9lbi1CSC92aXAtaW5zdGl0dXRpb25hbC1zZXJ2aWNlcz9yZWY9WkhIRlNZSU0%3D`
       }
     }
   };
 
-  // ==============================
-  // CREAR USUARIO
-  // ==============================
   const newUser = await userRepository.createUser(userData);
 
   await registrarAuditoria({
@@ -82,29 +72,21 @@ const registerClient = async ({ firstName, lastName, email, password }) => {
     targetId: newUser.id
   });
 
-  // No devolver el hash
   const { passwordHash: _passwordHash, ...userWithoutPassword } = newUser;
   return userWithoutPassword;
 };
 
 const logClient = async ({ email, password }) => {
-  // ==============================
-  // COMPROBAR QUE EL USUARIO EXISTE
-  // ==============================
   const existingUser = await userRepository.findByEmail(email);
   if (!existingUser) {
     throw new EmailDoesntExistError();
   }
 
-  // ==============================
-  // COMPARAR CONTRASEÑA
-  // ==============================
   const isPasswordValid = await bcrypt.compare(password, existingUser.passwordHash);
   if (!isPasswordValid) {
     throw new InvalidPasswordError();
   }
 
-  // No devolver el hash
   const { passwordHash: _passwordHash, ...userWithoutPassword } = existingUser;
   return userWithoutPassword;
 };

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { listInversiones } from "../../../services/investmentApi.js";
 import { useFetch } from "../../../hooks/useFetch";
+import { formatUsd, formatBtc } from "../../../utils/format.js";
 import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import "../../../App.css";
@@ -8,23 +9,15 @@ import "../ObtenerClientes/ObtenerClientes.css";
 
 const FILTROS = [
   { value: "ALL", label: "Todas", titulo: "Inversiones", descripcion: "Listado de todas las inversiones" },
-  { value: "EN_PROGRESO", label: "En progreso", titulo: "Inversiones en progreso", descripcion: "Inversiones que siguen activas" },
-  { value: "ACEPTADO", label: "Aceptadas", titulo: "Inversiones aceptadas", descripcion: "Inversiones aprobadas por un administrador" },
-  { value: "RECHAZADO", label: "Rechazadas", titulo: "Inversiones rechazadas", descripcion: "Inversiones que no fueron aprobadas" },
+  { value: "PENDIENTE", label: "Pendientes", titulo: "Inversiones pendientes", descripcion: "En el período de bloqueo de 15 días" },
+  { value: "EN_PROGRESO", label: "En progreso", titulo: "Inversiones en progreso", descripcion: "Habilitadas para solicitar retiros" },
   { value: "RETIRADO", label: "Retiradas", titulo: "Inversiones retiradas", descripcion: "Inversiones que el cliente ya retiró" },
 ];
 
 const ESTADO_LABEL = {
+  PENDIENTE: "Pendiente",
   EN_PROGRESO: "En progreso",
-  ACEPTADO: "Aceptada",
-  RECHAZADO: "Rechazada",
   RETIRADO: "Retirada",
-};
-
-const formatMoney = (value) => {
-  const num = Number(value);
-  if (!Number.isFinite(num)) return "—";
-  return `$${num.toFixed(2)}`;
 };
 
 const ObtenerInversiones = () => {
@@ -105,9 +98,9 @@ const ObtenerInversiones = () => {
                     <thead>
                       <tr>
                         <th>Cliente</th>
-                        <th>Monto</th>
+                        <th>Monto (USD)</th>
                         <th>Días</th>
-                        <th>Intereses generados</th>
+                        <th>Intereses (BTC)</th>
                         <th>Estado</th>
                       </tr>
                     </thead>
@@ -115,9 +108,9 @@ const ObtenerInversiones = () => {
                       {inversionesFiltradas.map((inversion) => (
                         <tr key={inversion.id}>
                           <td>{inversion.cliente}</td>
-                          <td>{formatMoney(inversion.monto)}</td>
+                          <td>{formatUsd(inversion.monto)}</td>
                           <td>{inversion.dias}</td>
-                          <td>{formatMoney(inversion.intereses)}</td>
+                          <td>{formatBtc(inversion.intereses)}</td>
                           <td>{ESTADO_LABEL[inversion.estado] ?? inversion.estado}</td>
                         </tr>
                       ))}

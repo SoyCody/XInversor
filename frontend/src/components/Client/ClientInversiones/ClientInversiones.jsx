@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../../../App.css";
 import "../ClientGetMe/ClientGetMe.css";
 import "../../Admin/ObtenerClientes/ObtenerClientes.css";
@@ -7,26 +8,19 @@ import Header from "../../Header/Header.jsx";
 import NuevaInversionForm from "./NuevaInversionForm.jsx";
 import { misInversiones } from "../../../services/investmentApi.js";
 import { useFetch } from "../../../hooks/useFetch";
+import { formatUsd, formatBtc } from "../../../utils/format.js";
 
 const FILTROS = [
   { value: "ALL", label: "Todas", titulo: "Mis inversiones", descripcion: "Todas tus inversiones" },
-  { value: "EN_PROGRESO", label: "En progreso", titulo: "Inversiones en progreso", descripcion: "Las que siguen activas" },
-  { value: "ACEPTADO", label: "Aceptadas", titulo: "Inversiones aceptadas", descripcion: "Aprobadas por un administrador" },
-  { value: "RECHAZADO", label: "Rechazadas", titulo: "Inversiones rechazadas", descripcion: "Las que no fueron aprobadas" },
+  { value: "PENDIENTE", label: "Pendientes", titulo: "Inversiones pendientes", descripcion: "En el período de bloqueo de 15 días" },
+  { value: "EN_PROGRESO", label: "En progreso", titulo: "Inversiones en progreso", descripcion: "Habilitadas para solicitar retiros" },
   { value: "RETIRADO", label: "Retiradas", titulo: "Inversiones retiradas", descripcion: "Las que ya retiraste" },
 ];
 
 const ESTADO_LABEL = {
+  PENDIENTE: "Pendiente",
   EN_PROGRESO: "En progreso",
-  ACEPTADO: "Aceptada",
-  RECHAZADO: "Rechazada",
   RETIRADO: "Retirada",
-};
-
-const formatMoney = (value) => {
-  const num = Number(value);
-  if (!Number.isFinite(num)) return "—";
-  return `$${num.toFixed(2)}`;
 };
 
 const ClientInversiones = () => {
@@ -34,6 +28,7 @@ const ClientInversiones = () => {
   const [successMsg, setSuccessMsg] = useState(null);
   const [tipo, setTipo] = useState("ALL");
   const [reloadKey, setReloadKey] = useState(0);
+  const navigate = useNavigate();
 
   // Se vuelve a pedir la lista al cambiar el filtro o tras crear una inversión.
   const { data, isLoading, error } = useFetch(
@@ -113,19 +108,28 @@ const ClientInversiones = () => {
                   <table className="clientes-table">
                     <thead>
                       <tr>
-                        <th>Monto</th>
+                        <th>Monto (USD)</th>
                         <th>Días</th>
-                        <th>Intereses generados</th>
+                        <th>Intereses (BTC)</th>
                         <th>Estado</th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
                       {inversiones.map((inversion) => (
                         <tr key={inversion.id}>
-                          <td>{formatMoney(inversion.monto)}</td>
+                          <td>{formatUsd(inversion.monto)}</td>
                           <td>{inversion.dias}</td>
-                          <td>{formatMoney(inversion.intereses)}</td>
+                          <td>{formatBtc(inversion.intereses)}</td>
                           <td>{ESTADO_LABEL[inversion.estado] ?? inversion.estado}</td>
+                          <td>
+                            <button
+                              className="edit-profile-btn"
+                              onClick={() => navigate(`/client/inversiones/${inversion.id}`)}
+                            >
+                              Ver detalles
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>

@@ -7,6 +7,7 @@ import clientRoutes from './routes/client.routes.js';
 import cookieParser from 'cookie-parser';
 import auditRoutes from './routes/audit.routes.js';
 import investmentRoutes from './routes/investment.routes.js';
+import { iniciarTareasProgramadas } from './jobs/scheduler.js';
 
 const app = express();
 app.use(cookieParser());
@@ -28,4 +29,5 @@ app.use('/investment', investmentRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
+  iniciarTareasProgramadas();
 });

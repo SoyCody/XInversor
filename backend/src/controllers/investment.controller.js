@@ -42,8 +42,39 @@ const myList = async(req, res) => {
   };
 };
 
+const createApplication = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const inversionId = Number(req.params.inversionId);
+    const { montoRetiro } = req.body;
+    const solicitud = await InvestmentService.createApplication(id, inversionId, montoRetiro);
+    return res.status(201).json(solicitud);
+  } catch ( error ) {
+    console.log(error.message);
+    return res.status(error.statusCode || 500).json({
+      message: error.statusCode ? error.message : 'Error en la nueva solicitud.'
+    });
+  };
+};
+
+const getInvestment = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const inversionId = Number(req.params.inversionId);
+    const data = await InvestmentService.getInvestment(id, inversionId);
+    return res.status(200).json(data);
+  } catch ( error ) {
+    console.log(error.message);
+    return res.status(error.statusCode || 500).json({
+      message: error.statusCode ? error.message : 'Error al obtener la inversión.'
+    });
+  };
+};
+
 export default {
     createInvestment,
     list,
-    myList
+    myList,
+    createApplication,
+    getInvestment
 }
