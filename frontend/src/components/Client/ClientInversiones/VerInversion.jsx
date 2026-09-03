@@ -7,7 +7,6 @@ import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import NuevaSolicitudForm from "../ClientSolicitudes/NuevaSolicitud.jsx";
 import "../../../App.css";
-import "../../Admin/VerCliente/VerCliente.css";
 import "./VerInversion.css";
 
 const formatDateTime = (isoString) => {

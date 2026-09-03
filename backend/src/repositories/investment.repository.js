@@ -51,6 +51,7 @@ const myList = async (clientId) => {
       monto: true,
       dias: true,
       intereses: true,
+      total: true,
       // Solo el estado actual (el último registrado).
       estados: {
         orderBy: { createdAt: 'desc' },

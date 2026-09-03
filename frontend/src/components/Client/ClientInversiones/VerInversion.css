@@ -1,3 +1,71 @@
+/* Layout base de la pantalla de detalle (antes vivía en VerCliente.css). */
+.back-btn {
+  padding: 10px 20px;
+  background-color: #2365d4;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-self: flex-start;
+}
+
+.back-btn:hover {
+  background-color: #153b63;
+}
+
+.page-heading {
+  margin-top: 30px;
+}
+
+.vercliente-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80vw;
+  margin: 0 auto;
+}
+
+.cliente-detalle-card {
+  width: 700px;
+  max-width: 95%;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 2rem;
+  background: #ffffff;
+  color: black;
+}
+
+.cliente-detalle-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.cliente-detalle-row:last-child {
+  border-bottom: none;
+}
+
+.cliente-detalle-label {
+  color: #9a9a9a;
+  font-size: 0.9rem;
+}
+
+.cliente-detalle-value {
+  font-weight: 500;
+}
+
+.vercliente-actions {
+  width: 700px;
+  max-width: 95%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
 .inversion-bloque {
   width: 700px;
   max-width: 95%;

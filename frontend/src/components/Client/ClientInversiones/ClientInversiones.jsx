@@ -47,6 +47,15 @@ const ClientInversiones = () => {
   const filtroActual = FILTROS.find((f) => f.value === tipo) ?? FILTROS[0];
   const inversiones = useMemo(() => data?.inversiones ?? [], [data]);
 
+  // El backend rechaza crear una inversión si ya hay `limiteActivas`
+  // activas (PENDIENTE o EN_PROGRESO); aquí se refleja deshabilitando
+  // el botón para no dejar intentarlo.
+  const limiteActivas = data?.limiteActivas;
+  const limiteAlcanzado =
+    typeof data?.activas === "number" &&
+    typeof limiteActivas === "number" &&
+    data.activas >= limiteActivas;
+
   return (
     <div className="app">
       <ClientSideBar />
@@ -76,6 +85,12 @@ const ClientInversiones = () => {
 
                 <button
                   className="edit-profile-btn"
+                  disabled={limiteAlcanzado}
+                  title={
+                    limiteAlcanzado
+                      ? `Ya tienes ${limiteActivas} inversiones activas, el máximo permitido`
+                      : undefined
+                  }
                   onClick={() => {
                     setSuccessMsg(null);
                     setIsCreating(true);
@@ -89,6 +104,12 @@ const ClientInversiones = () => {
 
           {successMsg && <p className="edit-avatar-success">{successMsg}</p>}
           {error && <p className="dashboard-error">{error}</p>}
+          {!isCreating && limiteAlcanzado && (
+            <p className="dashboard-error">
+              Llegaste al máximo de {limiteActivas} inversiones activas. Debes
+              esperar a que se retire alguna para crear una nueva.
+            </p>
+          )}
 
           {isCreating ? (
             <NuevaInversionForm
@@ -108,6 +129,11 @@ const ClientInversiones = () => {
                 <span className="clientes-total">
                   Total: <strong>{data?.total ?? inversiones.length}</strong>
                 </span>
+                {typeof data?.activas === "number" && (
+                  <span className="clientes-total">
+                    Activas: <strong>{data.activas} / {limiteActivas}</strong>
+                  </span>
+                )}
               </div>
 
               {inversiones.length === 0 ? (

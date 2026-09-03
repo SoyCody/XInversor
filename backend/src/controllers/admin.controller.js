@@ -1,4 +1,5 @@
 import * as adminService from '../services/admin.service.js'
+import investmentService from '../services/investment.service.js'
 
 const adminPanel = async (req, res) => {
   try {
@@ -33,7 +34,13 @@ const verCliente = async (req, res) => {
       });
     }
 
-    return res.status(200).json(cliente)
+    const inversiones = await investmentService.inversionesCliente(
+      Number(id),
+      req.query.tipo,
+      req.query.page
+    );
+
+    return res.status(200).json({ ...cliente, inversiones })
     
   }catch(error){
     return res.status(500).json({

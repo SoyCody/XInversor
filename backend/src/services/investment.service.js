@@ -26,6 +26,20 @@ const newInvestment = async (userId, { monto }) => {
     throw new Error('El monto debe ser un número mayor a 0');
   }
 
+  // Un cliente no puede acumular más de MAX_INVERSIONES_ACTIVAS
+  // inversiones activas (PENDIENTE o EN_PROGRESO) al mismo tiempo.
+  const inversiones = await investmentRepository.myList(client.id);
+  const activas = inversiones.filter((inv) =>
+    ESTADOS_ACTIVOS.includes(inv.estados[0]?.estado ?? DEFAULT_ESTADO)
+  ).length;
+
+  if (activas >= MAX_INVERSIONES_ACTIVAS) {
+    throw fail(
+      409,
+      `No puedes tener más de ${MAX_INVERSIONES_ACTIVAS} inversiones activas al mismo tiempo`
+    );
+  }
+
   const intereses = montoNum * INTERES_RATE;
   const total = montoNum + intereses;
 
@@ -59,6 +73,11 @@ const INVERSION_TIPOS = [
 
 const DEFAULT_ESTADO = 'PENDIENTE';
 
+// Límite de inversiones activas simultáneas por cliente. Cuenta las que
+// están PENDIENTE o EN_PROGRESO; las RETIRADO ya no ocupan cupo.
+const MAX_INVERSIONES_ACTIVAS = 5;
+const ESTADOS_ACTIVOS = ['PENDIENTE', 'EN_PROGRESO'];
+
 const list = async (tipo = 'ALL', rawPage) => {
   const key = INVERSION_TIPOS.includes(String(tipo).toUpperCase())
     ? String(tipo).toUpperCase()
@@ -76,9 +95,6 @@ const list = async (tipo = 'ALL', rawPage) => {
       estado: estados[0]?.estado ?? DEFAULT_ESTADO
     }))
     .filter((inversion) => key === 'ALL' || inversion.estado === key);
-
-  // El filtro por estado vive en una relación (último estado registrado),
-  // así que se pagina en memoria sobre la lista ya filtrada.
   return {
     tipo: key,
     ...buildMeta(inversiones.length, page),
@@ -86,13 +102,39 @@ const list = async (tipo = 'ALL', rawPage) => {
   };
 };
 
-const myList = async (userId, tipo = 'ALL', rawPage) => {
+// Listado paginado de las inversiones de un cliente con el filtro por
+// estado aplicado en memoria (el estado vive en una relación). Lo usan
+// tanto "mis inversiones" (cliente) como el detalle del admin.
+const listInversionesCliente = async (clientId, tipo = 'ALL', rawPage) => {
   const key = INVERSION_TIPOS.includes(String(tipo).toUpperCase())
     ? String(tipo).toUpperCase()
     : 'ALL';
 
   const page = parsePage(rawPage);
 
+  const rows = await investmentRepository.myList(clientId);
+
+  const todas = rows.map(({ estados, ...rest }) => ({
+    ...rest,
+    estado: estados[0]?.estado ?? DEFAULT_ESTADO
+  }));
+
+  const inversiones = todas.filter(
+    (inversion) => key === 'ALL' || inversion.estado === key
+  );
+
+  return {
+    tipo: key,
+    ...buildMeta(inversiones.length, page),
+    // Cupo de inversiones activas: sirve para que el frontend deshabilite
+    // "Nueva inversión" antes de llegar al límite.
+    activas: todas.filter((i) => ESTADOS_ACTIVOS.includes(i.estado)).length,
+    limiteActivas: MAX_INVERSIONES_ACTIVAS,
+    inversiones: paginateArray(inversiones, page)
+  };
+};
+
+const myList = async (userId, tipo = 'ALL', rawPage) => {
   // req.user.id es el id del User; las inversiones cuelgan del Client.
   const client = await investmentRepository.getIdByUser(userId);
 
@@ -100,20 +142,7 @@ const myList = async (userId, tipo = 'ALL', rawPage) => {
     throw new Error('El usuario no tiene un perfil de cliente');
   }
 
-  const rows = await investmentRepository.myList(client.id);
-
-  const inversiones = rows
-    .map(({ estados, ...rest }) => ({
-      ...rest,
-      estado: estados[0]?.estado ?? DEFAULT_ESTADO
-    }))
-    .filter((inversion) => key === 'ALL' || inversion.estado === key);
-
-  return {
-    tipo: key,
-    ...buildMeta(inversiones.length, page),
-    inversiones: paginateArray(inversiones, page)
-  };
+  return listInversionesCliente(client.id, tipo, rawPage);
 };
 
 const getInvestment = async (userId, inversionId) => {
@@ -267,11 +296,31 @@ const incrementarDias = async () => {
   };
 };
 
+// Inversiones de un cliente para la vista de administrador. Acepta los
+// mismos filtros (?tipo=) y paginación (?page=) que "mis inversiones".
+const inversionesCliente = async (userId, tipo = 'ALL', rawPage) => {
+  const client = await investmentRepository.getIdByUser(userId);
+
+  // Un usuario sin perfil de cliente (p. ej. un admin) no tiene inversiones.
+  if (!client) {
+    return {
+      tipo: 'ALL',
+      ...buildMeta(0, parsePage(rawPage)),
+      activas: 0,
+      limiteActivas: MAX_INVERSIONES_ACTIVAS,
+      inversiones: []
+    };
+  }
+
+  return listInversionesCliente(client.id, tipo, rawPage);
+};
+
 export default {
   newInvestment,
   list,
   myList,
   createApplication,
   incrementarDias,
-  getInvestment
+  getInvestment,
+  inversionesCliente
 };

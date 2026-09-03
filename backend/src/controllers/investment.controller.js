@@ -7,9 +7,9 @@ const createInvestment = async (req, res) => {
     return res.status(201).json(inversion)
   } catch ( error ) {
     console.log(error.message)
-    return res.status(500).json({
+    return res.status(error.statusCode || 500).json({
       message: error.message
-    }) 
+    })
   }
 };
 

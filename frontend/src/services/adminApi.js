@@ -34,8 +34,12 @@ export function obtenerBorrados () {
   return obtenerPersonas("DELETED");
 };
 
-export function verCliente (id) {
-  return apiFetch(`/admin/watch/user/${id}`);
+// tipo: "ALL" | "PENDIENTE" | "EN_PROGRESO" | "RETIRADO" filtra las
+// inversiones del cliente que vienen en la respuesta; `page` es 1-based.
+export function verCliente (id, tipo = "ALL", page = 1) {
+  return apiFetch(
+    `/admin/watch/user/${id}?tipo=${encodeURIComponent(tipo)}&page=${encodeURIComponent(page)}`
+  );
 };
 
 export function promoteToAdmin(id) {
