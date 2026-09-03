@@ -11,8 +11,11 @@ export function getMeAdmin() {
 };
 
 // tipo: "ALL" | "CLIENT" | "ADMIN" | "BLOCKED" | "DELETED"
-export function obtenerPersonas(tipo = "ALL") {
-  return apiFetch(`/admin/users?tipo=${encodeURIComponent(tipo)}`);
+// La lista se sirve de 20 en 20; `page` es 1-based.
+export function obtenerPersonas(tipo = "ALL", page = 1) {
+  return apiFetch(
+    `/admin/users?tipo=${encodeURIComponent(tipo)}&page=${encodeURIComponent(page)}`
+  );
 };
 
 export function obtenerClientes() {

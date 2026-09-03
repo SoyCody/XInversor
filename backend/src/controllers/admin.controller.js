@@ -12,7 +12,7 @@ const adminPanel = async (req, res) => {
 
 const obtenerPersonas = async (req, res) => {
   try {
-    const data = await adminService.obtenerPersonas(req.query.tipo);
+    const data = await adminService.obtenerPersonas(req.query.tipo, req.query.page);
     return res.status(200).json(data);
   } catch (error) {
     console.error('Error al obtener usuarios:', error);

@@ -2,7 +2,7 @@ import *  as auditService from '../services/auditorias.service.js';
 
 const obtenerAuditorias = async (req, res) => {
     try{
-        const auditorias = await auditService.auditorias();
+        const auditorias = await auditService.auditorias(req.query.page);
         return res.status(200).json(auditorias);
     } catch (error){
         console.error(error);

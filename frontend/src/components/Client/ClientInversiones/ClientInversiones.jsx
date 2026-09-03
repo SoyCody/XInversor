@@ -5,6 +5,7 @@ import "../ClientGetMe/ClientGetMe.css";
 import "../../Admin/ObtenerClientes/ObtenerClientes.css";
 import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
 import Header from "../../Header/Header.jsx";
+import Pagination from "../../Pagination/Pagination.jsx";
 import NuevaInversionForm from "./NuevaInversionForm.jsx";
 import { misInversiones } from "../../../services/investmentApi.js";
 import { useFetch } from "../../../hooks/useFetch";
@@ -27,14 +28,21 @@ const ClientInversiones = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [successMsg, setSuccessMsg] = useState(null);
   const [tipo, setTipo] = useState("ALL");
+  const [page, setPage] = useState(1);
   const [reloadKey, setReloadKey] = useState(0);
   const navigate = useNavigate();
 
-  // Se vuelve a pedir la lista al cambiar el filtro o tras crear una inversión.
+  // Se vuelve a pedir la lista (de 20 en 20) al cambiar el filtro, la
+  // página o tras crear una inversión.
   const { data, isLoading, error } = useFetch(
-    () => misInversiones(tipo),
-    [tipo, reloadKey]
+    () => misInversiones(tipo, page),
+    [tipo, page, reloadKey]
   );
+
+  const cambiarTipo = (value) => {
+    setTipo(value);
+    setPage(1);
+  };
 
   const filtroActual = FILTROS.find((f) => f.value === tipo) ?? FILTROS[0];
   const inversiones = useMemo(() => data?.inversiones ?? [], [data]);
@@ -57,7 +65,7 @@ const ClientInversiones = () => {
               <div className="clientes-controls">
                 <label className="clientes-filtro">
                   <span>Ver:</span>
-                  <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
+                  <select value={tipo} onChange={(e) => cambiarTipo(e.target.value)}>
                     {FILTROS.map((f) => (
                       <option key={f.value} value={f.value}>
                         {f.label}
@@ -88,6 +96,7 @@ const ClientInversiones = () => {
               onSuccess={() => {
                 setIsCreating(false);
                 setSuccessMsg("Inversión creada correctamente");
+                setPage(1);
                 setReloadKey((k) => k + 1);
               }}
             />
@@ -97,7 +106,7 @@ const ClientInversiones = () => {
             <>
               <div className="clientes-summary">
                 <span className="clientes-total">
-                  Total: <strong>{inversiones.length}</strong>
+                  Total: <strong>{data?.total ?? inversiones.length}</strong>
                 </span>
               </div>
 
@@ -137,6 +146,14 @@ const ClientInversiones = () => {
                 </div>
               )}
             </>
+          )}
+
+          {!isCreating && !isLoading && (
+            <Pagination
+              page={data?.page ?? 1}
+              totalPages={data?.totalPages ?? 1}
+              onChange={setPage}
+            />
           )}
         </div>
       </main>

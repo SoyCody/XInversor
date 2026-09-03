@@ -1,4 +1,5 @@
 import prisma from '../db.js';
+import { toPrismaRange } from '../utils/pagination.js';
 
 const ACTIVE_STATE = 'ACTIVO';
 const DELETED_STATE = 'BORRADO';
@@ -36,20 +37,28 @@ const findRecent = (take = 10, state = ACTIVE_STATE) => {
   });
 };
 
-const obtenerPersona = (tipo = 'ALL') => {
+// Devuelve la página pedida (de 20 en 20) junto con el total real, para
+// que el frontend pueda pintar el paginador.
+const obtenerPersona = async (tipo = 'ALL', page = 1) => {
   const where = PERSONA_FILTERS[tipo] ?? PERSONA_FILTERS.ALL;
 
-  return prisma.user.findMany({
-    where,
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      createdAt: true,
-      client: { select: { blocked: true } }
-    }
-  });
+  const [rows, total] = await prisma.$transaction([
+    prisma.user.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      ...toPrismaRange(page),
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        createdAt: true,
+        client: { select: { blocked: true } }
+      }
+    }),
+    prisma.user.count({ where })
+  ]);
+
+  return { rows, total };
 };
 
 // Detalle completo de cualquier usuario (CLIENT o ADMIN, activo o

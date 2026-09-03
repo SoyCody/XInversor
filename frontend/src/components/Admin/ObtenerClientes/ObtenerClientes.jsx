@@ -3,6 +3,7 @@ import { obtenerPersonas } from "../../../services/adminApi.js";
 import { useFetch } from "../../../hooks/useFetch";
 import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
+import Pagination from "../../Pagination/Pagination.jsx";
 import { useNavigate } from "react-router-dom";
 import "../../../App.css";
 import "./ObtenerClientes.css";
@@ -27,10 +28,19 @@ const formatDate = (isoString) => {
 const ObtenerClientes = () => {
   const [tipo, setTipo] = useState("CLIENT");
   const [busqueda, setBusqueda] = useState("");
+  const [page, setPage] = useState(1);
   const navigate = useNavigate();
 
-  // Al cambiar el filtro (deps=[tipo]) el hook vuelve a pedir la lista.
-  const { data, isLoading, error } = useFetch(() => obtenerPersonas(tipo), [tipo]);
+  // Al cambiar el filtro o la página el hook vuelve a pedir la lista (de 20 en 20).
+  const { data, isLoading, error } = useFetch(
+    () => obtenerPersonas(tipo, page),
+    [tipo, page]
+  );
+
+  const cambiarTipo = (value) => {
+    setTipo(value);
+    setPage(1);
+  };
 
   const filtroActual = FILTROS.find((f) => f.value === tipo) ?? FILTROS[0];
   const usuariosFiltrados = useMemo(() => {
@@ -59,7 +69,7 @@ const ObtenerClientes = () => {
             <div className="clientes-controls">
               <label className="clientes-filtro">
                 <span>Ver:</span>
-                <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
+                <select value={tipo} onChange={(e) => cambiarTipo(e.target.value)}>
                   {FILTROS.map((f) => (
                     <option key={f.value} value={f.value}>
                       {f.label}
@@ -89,7 +99,7 @@ const ObtenerClientes = () => {
             <>
               <div className="clientes-summary">
                 <span className="clientes-total">
-                  Total: <strong>{usuariosFiltrados.length}</strong>
+                  Total: <strong>{data?.total ?? usuariosFiltrados.length}</strong>
                 </span>
               </div>
 
@@ -133,6 +143,14 @@ const ObtenerClientes = () => {
                 </div>
               )}
             </>
+          )}
+
+          {!isLoading && (
+            <Pagination
+              page={data?.page ?? 1}
+              totalPages={data?.totalPages ?? 1}
+              onChange={setPage}
+            />
           )}
         </div>
       </main>

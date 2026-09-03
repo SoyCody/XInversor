@@ -1,5 +1,6 @@
 import investmentRepository from '../repositories/investment.repository.js';
 import { registrarAuditoria, AUDIT_ACTIONS, AUDIT_TABLES } from './auditorias.service.js';
+import { parsePage, buildMeta, paginateArray } from '../utils/pagination.js';
 
 const INTERES_RATE = 0.1;
 
@@ -58,11 +59,12 @@ const INVERSION_TIPOS = [
 
 const DEFAULT_ESTADO = 'PENDIENTE';
 
-const list = async (tipo = 'ALL') => {
+const list = async (tipo = 'ALL', rawPage) => {
   const key = INVERSION_TIPOS.includes(String(tipo).toUpperCase())
     ? String(tipo).toUpperCase()
     : 'ALL';
 
+  const page = parsePage(rawPage);
   const rows = await investmentRepository.list();
 
   // Se aplana el cliente a su nombre y el estado actual a un string;
@@ -75,17 +77,21 @@ const list = async (tipo = 'ALL') => {
     }))
     .filter((inversion) => key === 'ALL' || inversion.estado === key);
 
+  // El filtro por estado vive en una relación (último estado registrado),
+  // así que se pagina en memoria sobre la lista ya filtrada.
   return {
     tipo: key,
-    total: inversiones.length,
-    inversiones
+    ...buildMeta(inversiones.length, page),
+    inversiones: paginateArray(inversiones, page)
   };
 };
 
-const myList = async (userId, tipo = 'ALL') => {
+const myList = async (userId, tipo = 'ALL', rawPage) => {
   const key = INVERSION_TIPOS.includes(String(tipo).toUpperCase())
     ? String(tipo).toUpperCase()
     : 'ALL';
+
+  const page = parsePage(rawPage);
 
   // req.user.id es el id del User; las inversiones cuelgan del Client.
   const client = await investmentRepository.getIdByUser(userId);
@@ -105,8 +111,8 @@ const myList = async (userId, tipo = 'ALL') => {
 
   return {
     tipo: key,
-    total: inversiones.length,
-    inversiones
+    ...buildMeta(inversiones.length, page),
+    inversiones: paginateArray(inversiones, page)
   };
 };
 

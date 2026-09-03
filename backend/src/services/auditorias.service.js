@@ -1,5 +1,5 @@
-import { Client } from 'pg';
 import auditoriasRepository from '../repositories/auditorias.repository.js';
+import { parsePage, buildMeta } from '../utils/pagination.js';
 
 export const AUDIT_ACTIONS = {
   CREATE: 'CREATE',
@@ -21,10 +21,11 @@ export const registrarAuditoria = ({ userId, action, tableName, targetId }) => {
   return auditoriasRepository.createAudit({ userId, action, tableName, targetId });
 };
 
-export const auditorias = async () => {
-  const registros = await auditoriasRepository.all();
+export const auditorias = async (rawPage) => {
+  const page = parsePage(rawPage);
+  const { rows, total } = await auditoriasRepository.all(page);
 
-  const auditorias = registros.map(({ id, user, action, tableName }) => ({
+  const auditorias = rows.map(({ id, user, action, tableName }) => ({
     id,
     nombre: `${user.firstName} ${user.lastName}`,
     rol: user.role,
@@ -32,8 +33,11 @@ export const auditorias = async () => {
     tabla: tableName
   }));
 
+  const meta = buildMeta(total, page);
+
   return {
-    totalAuditorias: auditorias.length,
+    totalAuditorias: meta.total,
+    ...meta,
     auditorias
   };
 };

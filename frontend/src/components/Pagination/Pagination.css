@@ -1,0 +1,59 @@
+/* Paginador centrado al final del contenido. Mismo lenguaje visual que
+   el selector de archivo del perfil: rectángulo con esquinas redondeadas,
+   borde fino y sutil, fondo gris muy claro y divisiones internas finas. */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.pagination__box {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid #e2e5ea;
+  border-radius: 8px;
+  background: #fafbfc;
+  overflow: hidden;
+}
+
+.pagination__item {
+  min-width: 38px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1;
+  color: #6b7280; /* gris claro */
+  background: transparent;
+  border: none;
+  border-left: 1px solid #e2e5ea; /* línea divisoria fina */
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.pagination__item:first-child {
+  border-left: none;
+}
+
+.pagination__item:hover:not(:disabled):not(.pagination__item--active) {
+  background: #ececf0;
+  color: #1f2937;
+}
+
+.pagination__item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Página en la que está el usuario: azul del background del sidebar. */
+.pagination__item--active {
+  background: #153b63;
+  color: #ffffff;
+  cursor: default;
+}
+
+.pagination__ellipsis {
+  display: flex;
+  align-items: center;
+  color: #9ca3af;
+  cursor: default;
+}

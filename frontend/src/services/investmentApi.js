@@ -1,13 +1,18 @@
 import { apiFetch } from "./httpClient";
 
 // tipo: "ALL" | "PENDIENTE" | "EN_PROGRESO" | "RETIRADO"
-export function listInversiones(tipo = "ALL") {
-  return apiFetch(`/investment/list?tipo=${encodeURIComponent(tipo)}`);
+// La lista se sirve de 20 en 20; `page` es 1-based.
+export function listInversiones(tipo = "ALL", page = 1) {
+  return apiFetch(
+    `/investment/list?tipo=${encodeURIComponent(tipo)}&page=${encodeURIComponent(page)}`
+  );
 }
 
 // Inversiones del cliente autenticado.
-export function misInversiones(tipo = "ALL") {
-  return apiFetch(`/investment/my?tipo=${encodeURIComponent(tipo)}`);
+export function misInversiones(tipo = "ALL", page = 1) {
+  return apiFetch(
+    `/investment/my?tipo=${encodeURIComponent(tipo)}&page=${encodeURIComponent(page)}`
+  );
 }
 
 export function crearInversion(monto) {

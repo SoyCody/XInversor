@@ -15,7 +15,7 @@ const createInvestment = async (req, res) => {
 
 const list = async(req, res) => {
     try {
-        const data = await InvestmentService.list(req.query.tipo);
+        const data = await InvestmentService.list(req.query.tipo, req.query.page);
         return res.status(200).json(data);
     } catch( error ) {
         return res.status(500).json({
@@ -27,7 +27,7 @@ const list = async(req, res) => {
 const myList = async(req, res) => {
   try {
     const { id } = req.user;
-    const data = await InvestmentService.myList(id, req.query.tipo);
+    const data = await InvestmentService.myList(id, req.query.tipo, req.query.page);
     if (!data) {
       return res.status(404).json({
         message:"No se encontraron inversiones"

@@ -1,13 +1,19 @@
+import { useState } from "react";
 import { obtenerAuditorias } from "../../../services/auditApi.js";
 import { useFetch } from "../../../hooks/useFetch";
 import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
+import Pagination from "../../Pagination/Pagination.jsx";
 import { useNavigate } from "react-router-dom";
 import "../../../App.css";
 import "./Auditorias.css";
 
 const Auditorias = () => {
-  const { data, isLoading, error } = useFetch(obtenerAuditorias);
+  const [page, setPage] = useState(1);
+  const { data, isLoading, error } = useFetch(
+    () => obtenerAuditorias(page),
+    [page]
+  );
   const navigate = useNavigate();
 
   const auditorias = data?.auditorias ?? [];
@@ -76,6 +82,14 @@ const Auditorias = () => {
                 </div>
               )}
             </>
+          )}
+
+          {!isLoading && (
+            <Pagination
+              page={data?.page ?? 1}
+              totalPages={data?.totalPages ?? 1}
+              onChange={setPage}
+            />
           )}
         </div>
       </main>

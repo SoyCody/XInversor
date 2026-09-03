@@ -50,12 +50,70 @@
   gap: 0.5rem;
 }
 
-.edit-avatar-actions input[type="file"] {
-  font-size: 0.8rem;
-  color: #000000;
+/* Input nativo oculto: lo disparamos desde el botón personalizado */
+.edit-avatar-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.edit-avatar-actions button {
+/* Contenedor central rectangular con esquinas redondeadas y borde sutil */
+.edit-avatar-filepicker {
+  display: inline-flex;
+  align-items: stretch;
+  align-self: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid #e2e5ea;
+  border-radius: 8px;
+  background: #fafbfc;
+  overflow: hidden;
+}
+
+/* Botón de acción a la izquierda */
+.edit-avatar-filepicker__button {
+  flex: 0 0 auto;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1f2937;
+  background: #ececf0;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.edit-avatar-filepicker__button:hover {
+  background: #e2e2e8;
+}
+
+/* Línea divisoria vertical fina */
+.edit-avatar-filepicker__divider {
+  flex: 0 0 1px;
+  background: #e2e5ea;
+}
+
+/* Texto de estado (no clicable) */
+.edit-avatar-filepicker__status {
+  flex: 0 1 auto;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.edit-avatar-upload-btn {
   align-self: flex-start;
   padding: 0.4rem 1rem;
   border-radius: 8px;
@@ -67,7 +125,7 @@
   border: 1px solid #2563eb;
 }
 
-.edit-avatar-actions button:disabled {
+.edit-avatar-upload-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }

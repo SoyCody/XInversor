@@ -1,6 +1,7 @@
 import adminRepository from '../repositories/admin.repository.js';
 import userRepository from '../repositories/user.repository.js';
 import { registrarAuditoria, AUDIT_ACTIONS, AUDIT_TABLES } from './auditorias.service.js';
+import { parsePage, buildMeta } from '../utils/pagination.js';
 
 // Error de dominio: se traduce a un código de estado en el controller.
 class UserNotFoundError extends Error {
@@ -38,12 +39,13 @@ const readDashboard = async () => {
 // Tipos aceptados; cualquier otro valor cae en 'ALL'.
 const PERSONA_TIPOS = ['ALL', 'CLIENT', 'ADMIN', 'BLOCKED', 'DELETED'];
 
-const obtenerPersonas = async (tipo = 'ALL') => {
+const obtenerPersonas = async (tipo = 'ALL', rawPage) => {
   const key = PERSONA_TIPOS.includes(String(tipo).toUpperCase())
     ? String(tipo).toUpperCase()
     : 'ALL';
 
-  const rows = await adminRepository.obtenerPersona(key);
+  const page = parsePage(rawPage);
+  const { rows, total } = await adminRepository.obtenerPersona(key, page);
 
   // Se aplana client.blocked para que el frontend reciba una lista
   // homogénea; los usuarios sin perfil Client quedan como blocked: false.
@@ -54,7 +56,7 @@ const obtenerPersonas = async (tipo = 'ALL') => {
 
   return {
     tipo: key,
-    total: users.length,
+    ...buildMeta(total, page),
     users
   };
 };

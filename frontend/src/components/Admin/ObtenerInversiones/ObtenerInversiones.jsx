@@ -4,6 +4,7 @@ import { useFetch } from "../../../hooks/useFetch";
 import { formatUsd, formatBtc } from "../../../utils/format.js";
 import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
+import Pagination from "../../Pagination/Pagination.jsx";
 import "../../../App.css";
 import "../ObtenerClientes/ObtenerClientes.css";
 
@@ -23,9 +24,18 @@ const ESTADO_LABEL = {
 const ObtenerInversiones = () => {
   const [tipo, setTipo] = useState("ALL");
   const [busqueda, setBusqueda] = useState("");
+  const [page, setPage] = useState(1);
 
-  // Al cambiar el filtro (deps=[tipo]) el hook vuelve a pedir la lista.
-  const { data, isLoading, error } = useFetch(() => listInversiones(tipo), [tipo]);
+  // Al cambiar el filtro o la página el hook vuelve a pedir la lista (de 20 en 20).
+  const { data, isLoading, error } = useFetch(
+    () => listInversiones(tipo, page),
+    [tipo, page]
+  );
+
+  const cambiarTipo = (value) => {
+    setTipo(value);
+    setPage(1);
+  };
 
   const filtroActual = FILTROS.find((f) => f.value === tipo) ?? FILTROS[0];
   const inversionesFiltradas = useMemo(() => {
@@ -52,7 +62,7 @@ const ObtenerInversiones = () => {
             <div className="clientes-controls">
               <label className="clientes-filtro">
                 <span>Ver:</span>
-                <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
+                <select value={tipo} onChange={(e) => cambiarTipo(e.target.value)}>
                   {FILTROS.map((f) => (
                     <option key={f.value} value={f.value}>
                       {f.label}
@@ -82,7 +92,7 @@ const ObtenerInversiones = () => {
             <>
               <div className="clientes-summary">
                 <span className="clientes-total">
-                  Total: <strong>{inversionesFiltradas.length}</strong>
+                  Total: <strong>{data?.total ?? inversionesFiltradas.length}</strong>
                 </span>
               </div>
 
@@ -119,6 +129,14 @@ const ObtenerInversiones = () => {
                 </div>
               )}
             </>
+          )}
+
+          {!isLoading && (
+            <Pagination
+              page={data?.page ?? 1}
+              totalPages={data?.totalPages ?? 1}
+              onChange={setPage}
+            />
           )}
         </div>
       </main>

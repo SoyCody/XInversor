@@ -51,10 +51,6 @@ const EditProfileForm = ({ user, onCancel, onSuccess, onAvatarUpdated }) => {
     setIsUploadingAvatar(true);
     try {
       await uploadAvatar(avatarFile);
-      // Se mantiene "avatarPreview": ya es la foto real guardada en el
-      // servidor. El "user" del padre sigue siendo el de antes de subir
-      // (useFetch no refresca solo), así que volver a currentAvatarUrl
-      // aquí mostraría la foto vieja.
       setAvatarFile(null);
       setAvatarSuccess(true);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -110,12 +106,27 @@ const EditProfileForm = ({ user, onCancel, onSuccess, onAvatarUpdated }) => {
         <div className="edit-avatar-actions">
           <input
             ref={fileInputRef}
+            className="edit-avatar-file-input"
             type="file"
             accept={ALLOWED_AVATAR_TYPES.join(",")}
             onChange={handleAvatarChange}
           />
+          <div className="edit-avatar-filepicker">
+            <button
+              type="button"
+              className="edit-avatar-filepicker__button"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Seleccionar archivo
+            </button>
+            <span className="edit-avatar-filepicker__divider" aria-hidden="true" />
+            <span className="edit-avatar-filepicker__status" title={avatarFile?.name}>
+              {avatarFile?.name ?? "Ningún archivo seleccionado"}
+            </span>
+          </div>
           <button
             type="button"
+            className="edit-avatar-upload-btn"
             onClick={handleAvatarUpload}
             disabled={!avatarFile || isUploadingAvatar}
           >
