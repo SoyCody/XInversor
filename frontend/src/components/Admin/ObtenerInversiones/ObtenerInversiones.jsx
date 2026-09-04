@@ -6,6 +6,7 @@ import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import Pagination from "../../Pagination/Pagination.jsx";
 import "../../../App.css";
+import "../../DataTable/DataTable.css";
 import "../ObtenerClientes/ObtenerClientes.css";
 
 const FILTROS = [
@@ -60,7 +61,7 @@ const ObtenerInversiones = () => {
             </div>
 
             <div className="clientes-controls">
-              <label className="clientes-filtro">
+              <label className="data-filtro">
                 <span>Ver:</span>
                 <select value={tipo} onChange={(e) => cambiarTipo(e.target.value)}>
                   {FILTROS.map((f) => (
@@ -103,8 +104,8 @@ const ObtenerInversiones = () => {
                     : "No hay inversiones para este filtro."}
                 </p>
               ) : (
-                <div className="clientes-table-wrapper">
-                  <table className="clientes-table">
+                <div className="data-table-wrap">
+                  <table className="data-table">
                     <thead>
                       <tr>
                         <th>Cliente</th>

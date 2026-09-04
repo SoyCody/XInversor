@@ -9,6 +9,7 @@ import Header from "../../Header/Header.jsx";
 import Pagination from "../../Pagination/Pagination.jsx";
 import ConfirmDeleteModal from "../../Auth/ConfirmDeleteModal";
 import "../../../App.css";
+import "../../DataTable/DataTable.css";
 import "./VerCliente.css";
 
 const FILTROS_INVERSION = [
@@ -153,7 +154,7 @@ const VerCliente = () => {
               <section className="vc-inversiones">
                 <h3>Inversiones</h3>
 
-                <label className="vc-inv-filtro">
+                <label className="vc-inv-filtro data-filtro">
                   Ver:
                   <select
                     value={tipo}
@@ -172,15 +173,15 @@ const VerCliente = () => {
                     Este cliente no tiene inversiones para este filtro.
                   </p>
                 ) : (
-                  <div className="vc-tabla-wrap">
-                    <table className="vc-tabla">
+                  <div className="data-table-wrap">
+                    <table className="data-table">
                       <thead>
                         <tr>
                           <th>Dias</th>
                           <th>Total (BTC)</th>
                           <th>Intereses (BTC)</th>
                           <th>Estado</th>
-                          <th aria-label="Acciones" />
+                          <th className="data-table-actions" aria-label="Acciones" />
                         </tr>
                       </thead>
                       <tbody>
@@ -192,7 +193,7 @@ const VerCliente = () => {
                             <td>
                               {ESTADO_LABEL[inversion.estado] ?? inversion.estado}
                             </td>
-                            <td>
+                            <td className="data-table-actions">
                               <button
                                 type="button"
                                 className="vc-detalles-btn"

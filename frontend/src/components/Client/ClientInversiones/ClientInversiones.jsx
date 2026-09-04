@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../../App.css";
 import "../ClientGetMe/ClientGetMe.css";
+import "../../DataTable/DataTable.css";
 import "../../Admin/ObtenerClientes/ObtenerClientes.css";
 import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
 import Header from "../../Header/Header.jsx";
@@ -72,7 +73,7 @@ const ClientInversiones = () => {
 
             {!isCreating && (
               <div className="clientes-controls">
-                <label className="clientes-filtro">
+                <label className="data-filtro">
                   <span>Ver:</span>
                   <select value={tipo} onChange={(e) => cambiarTipo(e.target.value)}>
                     {FILTROS.map((f) => (
@@ -139,15 +140,15 @@ const ClientInversiones = () => {
               {inversiones.length === 0 ? (
                 <p>No tienes inversiones para este filtro.</p>
               ) : (
-                <div className="clientes-table-wrapper">
-                  <table className="clientes-table">
+                <div className="data-table-wrap">
+                  <table className="data-table">
                     <thead>
                       <tr>
                         <th>Monto (USD)</th>
                         <th>Días</th>
                         <th>Intereses (BTC)</th>
                         <th>Estado</th>
-                        <th></th>
+                        <th className="data-table-actions" />
                       </tr>
                     </thead>
                     <tbody>
@@ -157,7 +158,7 @@ const ClientInversiones = () => {
                           <td>{inversion.dias}</td>
                           <td>{formatBtc(inversion.intereses)}</td>
                           <td>{ESTADO_LABEL[inversion.estado] ?? inversion.estado}</td>
-                          <td>
+                          <td className="data-table-actions">
                             <button
                               className="edit-profile-btn"
                               onClick={() => navigate(`/client/inversiones/${inversion.id}`)}

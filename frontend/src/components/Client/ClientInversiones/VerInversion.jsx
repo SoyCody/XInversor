@@ -7,6 +7,7 @@ import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import NuevaSolicitudForm from "../ClientSolicitudes/NuevaSolicitud.jsx";
 import "../../../App.css";
+import "../../DataTable/DataTable.css";
 import "./VerInversion.css";
 
 const formatDateTime = (isoString) => {
@@ -156,8 +157,8 @@ const VerInversion = () => {
                   {inversion.solicitudes.length === 0 ? (
                     <p>Esta inversión no tiene solicitudes de retiro.</p>
                   ) : (
-                    <div className="clientes-table-wrapper">
-                      <table className="clientes-table">
+                    <div className="data-table-wrap">
+                      <table className="data-table">
                         <thead>
                           <tr>
                             <th>Monto (BTC)</th>

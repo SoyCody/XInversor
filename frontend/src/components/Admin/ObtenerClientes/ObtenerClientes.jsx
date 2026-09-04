@@ -6,6 +6,7 @@ import Header from "../../Header/Header.jsx";
 import Pagination from "../../Pagination/Pagination.jsx";
 import { useNavigate } from "react-router-dom";
 import "../../../App.css";
+import "../../DataTable/DataTable.css";
 import "./ObtenerClientes.css";
 
 const FILTROS = [
@@ -67,7 +68,7 @@ const ObtenerClientes = () => {
             </div>
 
             <div className="clientes-controls">
-              <label className="clientes-filtro">
+              <label className="data-filtro">
                 <span>Ver:</span>
                 <select value={tipo} onChange={(e) => cambiarTipo(e.target.value)}>
                   {FILTROS.map((f) => (
@@ -110,15 +111,15 @@ const ObtenerClientes = () => {
                     : "No hay usuarios para este filtro."}
                 </p>
               ) : (
-                <div className="clientes-table-wrapper">
-                  <table className="clientes-table">
+                <div className="data-table-wrap">
+                  <table className="data-table">
                     <thead>
                       <tr>
                         <th>Nombre</th>
                         <th>Apellido</th>
                         <th>Registrado</th>
                         <th>Bloqueado</th>
-                        <th></th>
+                        <th className="data-table-actions" />
                       </tr>
                     </thead>
                     <tbody>
@@ -128,7 +129,7 @@ const ObtenerClientes = () => {
                           <td>{usuario.lastName}</td>
                           <td>{formatDate(usuario.createdAt)}</td>
                           <td>{usuario.blocked ? "Sí" : "—"}</td>
-                          <td>
+                          <td className="data-table-actions">
                             <button
                               className="edit-profile-btn"
                               onClick={() => navigate(`/admin/clientes/${usuario.id}`)}

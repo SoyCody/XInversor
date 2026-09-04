@@ -4,7 +4,17 @@ import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import { useNavigate } from "react-router-dom";
 import "../../../App.css";
+import "../../DataTable/DataTable.css";
 import "./MakeAdmin.css";
+
+const formatDate = (isoString) => {
+  if (!isoString) return "—";
+  return new Date(isoString).toLocaleDateString("es-EC", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
 
 const MakeAdmin = () => {
   const { data, isLoading, error } = useFetch(obtenerClientes);
@@ -43,13 +53,14 @@ const MakeAdmin = () => {
               {clientes.length === 0 ? (
                 <p>No hay clientes registrados.</p>
               ) : (
-                <div className="clientes-table-wrapper">
-                  <table className="clientes-table">
+                <div className="data-table-wrap">
+                  <table className="data-table">
                     <thead>
                       <tr>
                         <th>Nombre</th>
                         <th>Apellido</th>
-                        <th></th>
+                        <th>Miembro desde</th>
+                        <th className="data-table-actions" />
                       </tr>
                     </thead>
                     <tbody>
@@ -57,7 +68,8 @@ const MakeAdmin = () => {
                         <tr key={cliente.id}>
                           <td>{cliente.firstName}</td>
                           <td>{cliente.lastName}</td>
-                          <td>
+                          <td>{formatDate(cliente.createdAt)}</td>
+                          <td className="data-table-actions">
                             <button
                               className="edit-profile-btn"
                               onClick={() => navigate(`/admin/promote/${cliente.id}`)}

@@ -6,6 +6,7 @@ import Header from "../../Header/Header.jsx";
 import Pagination from "../../Pagination/Pagination.jsx";
 import { useNavigate } from "react-router-dom";
 import "../../../App.css";
+import "../../DataTable/DataTable.css";
 import "./Auditorias.css";
 
 const Auditorias = () => {
@@ -49,15 +50,15 @@ const Auditorias = () => {
               {auditorias.length === 0 ? (
                 <p>No hay auditorías registradas.</p>
               ) : (
-                <div className="clientes-table-wrapper">
-                  <table className="clientes-table">
+                <div className="data-table-wrap">
+                  <table className="data-table">
                     <thead>
                       <tr>
                         <th>Usuario</th>
                         <th>Rol</th>
                         <th>Acción</th>
                         <th>Tabla</th>
-                        <th></th>
+                        <th className="data-table-actions" />
                       </tr>
                     </thead>
                     <tbody>
@@ -67,7 +68,7 @@ const Auditorias = () => {
                           <td>{auditoria.rol}</td>
                           <td>{auditoria.accion}</td>
                           <td>{auditoria.tabla}</td>
-                          <td>
+                          <td className="data-table-actions">
                             <button
                               className="edit-profile-btn"
                               onClick={() => navigate(`/admin/auditorias/${auditoria.id}`)}

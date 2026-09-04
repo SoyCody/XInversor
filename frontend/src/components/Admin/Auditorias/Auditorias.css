@@ -7,39 +7,6 @@
   color: #000000;
 }
 
-.clientes-table-wrapper {
-  overflow-x: auto;
-  border-radius: 10px;
-  border: 1px solid #2a2a2a;
-}
-
-.clientes-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 3px;
-}
-
-.clientes-table thead {
-  background: #1e1e1e;
-  font-size: #fff;
-}
-
-.clientes-table th,
-.clientes-table td {
-  padding: 0.75rem;
-  text-align: left;
-  font-size: 13px;
-  border-bottom: 1px solid #000000;
-}
-
-.clientes-table td{
-  color: #000000;
-}
-
-.clientes-table th{
-  color: #ffff
-}
-
 .edit-profile-btn {
   padding: 10px 20px;
   background-color: #2365d4;

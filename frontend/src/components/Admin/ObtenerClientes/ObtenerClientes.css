@@ -10,24 +10,6 @@
   flex-wrap: wrap;
 }
 
-.clientes-filtro {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #000000;
-}
-
-.clientes-filtro select {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #2a2a2a;
-  background: #1e1e1e;
-  color: #fff;
-  font-size: 13px;
-  cursor: pointer;
-}
-
 /* Separa visualmente el icono de lupa del área de texto. */
 .clientes-controls .search .search-icon {
   flex: none;
@@ -40,39 +22,6 @@
 
 .clientes-total strong {
   color: #000000;
-}
-
-.clientes-table-wrapper {
-  overflow-x: auto;
-  border-radius: 10px;
-  border: 1px solid #2a2a2a;
-}
-
-.clientes-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 3px;
-}
-
-.clientes-table thead {
-  background: #1e1e1e;
-  font-size: #fff;
-}
-
-.clientes-table th,
-.clientes-table td {
-  padding: 0.75rem;
-  text-align: left;
-  font-size: 13px;
-  border-bottom: 1px solid #000000;
-}
-
-.clientes-table td{
-  color: #000000;
-}
-
-.clientes-table th{
-  color: #ffff
 }
 
 .edit-profile-btn {
