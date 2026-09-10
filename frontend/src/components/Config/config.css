@@ -2,12 +2,12 @@
    Lo usan ClientGetMe y AdminGetMe (mismo cuerpo para cliente y admin,
    cada uno con sus datos).
 
-   .cfg-page centra todo el contenido (encabezado incluido) dentro de
-   .content y le pone un ancho tope, para que no quede pegado a la
-   izquierda con un hueco a la derecha en pantallas anchas. */
+   Estructura igual que VerCliente: los títulos (.page-heading, los h2
+   de sección y sus subtítulos) van pegados al borde izquierdo de
+   .content (como .vc-heading), y solo el contenido de cada sección se
+   centra con el mismo ancho tope que .vc-body (980px). */
 .cfg-page {
-  max-width: 880px;
-  margin-inline: auto;
+  /* contenedor a ancho completo: no recorta ni centra nada por sí mismo */
 }
 
 .cfg {
@@ -15,6 +15,16 @@
   flex-direction: column;
   gap: 36px;
   color: #1f2d3f;
+}
+
+/* Filas de contenido centradas (foto + datos, billetera, eliminar
+   cuenta): mismo ancho y centrado que .vc-body en VerCliente. */
+.cfg-perfil,
+.cfg-wallet-row,
+.cfg-danger {
+  width: 100%;
+  max-width: 980px;
+  margin-inline: auto;
 }
 
 .cfg-section h2,
@@ -138,8 +148,9 @@
 }
 
 .cfg-datos {
-  flex: 0 1 440px;
+  flex: 1 1 420px;
   min-width: 280px;
+  max-width: 560px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -174,7 +185,8 @@
 
 .cfg-wallet-input {
   position: relative;
-  flex: 0 1 440px;
+  flex: 1 1 420px;
+  max-width: 560px;
 }
 
 .cfg-wallet-input input {
