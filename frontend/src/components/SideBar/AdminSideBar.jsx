@@ -1,5 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
 import { useLogout } from "../../hooks/useLogout";
+import "./SideBar.css";
+import logo from "../../assets/logo.png";
+import inicioIcon from "../../assets/inicio.png";
+import inversionesIcon from "../../assets/inversiones.png";
+import usuariosIcon from "../../assets/usuarios.png";
+import verificacionIcon from "../../assets/verificacion.png";
+import configuracionIcon from "../../assets/configuracion.png";
+import auditoriaIcon from "../../assets/auditoria.png";
+import reporteIcon from "../../assets/reporte.png";
+import notificacionIcon from "../../assets/notificacion.png";
+import cerrarSesionIcon from "../../assets/cerrarSesion.png";
 
 const AdminSideBar = () => {
   const { logout, isSubmitting } = useLogout();
@@ -10,53 +21,51 @@ const AdminSideBar = () => {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-logo">
-          <span></span>
-        </div>
-        <div className="brand-name">XInversor</div>
+        <img className="brand-logo-img" src={logo} alt="FXInversors" />
+        <div className="brand-name">FXINVERSORS</div>
       </div>
 
       <nav className="sidebar-nav">
 
         <Link to="/adminDashboard" className={`nav-link ${isActive("/adminDashboard") ? "active" : ""}`}>
-          <span className="nav-icon dashboard-icon"></span>
+          <img className="nav-icon-img" src={inicioIcon} alt="" aria-hidden="true" />
           <span>Inicio</span>
         </Link>
 
         <div className="nav-section">GESTIÓN</div>
 
         <Link to="/admin/inversiones" className={`nav-link ${isActive("/admin/inversiones") ? "active" : ""}`}>
-          <span className="nav-icon orders-icon"></span>
+          <img className="nav-icon-img" src={inversionesIcon} alt="" aria-hidden="true" />
           <span>Inversiones</span>
         </Link>
 
         <Link to="/admin/clientes" className={`nav-link ${isActive("/admin/clientes") ? "active" : ""}`}>
-          <span className="nav-icon users-icon"></span>
+          <img className="nav-icon-img" src={usuariosIcon} alt="" aria-hidden="true" />
           <span>Usuarios</span>
         </Link>
 
         <Link to="/admin/solicitudes" className={`nav-link ${isActive("/admin/solicitudes") ? "active" : ""}`}>
-          <span className="nav-icon verification-icon"></span>
+          <img className="nav-icon-img" src={verificacionIcon} alt="" aria-hidden="true" />
           <span>KYC / Verificación</span>
         </Link>
 
         <div className="nav-section">CONFIGURACIÓN</div>
 
         <Link to="/admin/me" className={`nav-link ${isActive("/admin/me") ? "active" : ""}`}>
-          <span className="nav-icon settings-icon"></span>
+          <img className="nav-icon-img" src={configuracionIcon} alt="" aria-hidden="true" />
           <span>Configuración</span>
         </Link>
 
         <Link to="/admin/auditorias" className={`nav-link ${isActive("/admin/auditorias") ? "active" : ""}`}>
-          <span className="nav-icon audit-icon"></span>
+          <img className="nav-icon-img" src={auditoriaIcon} alt="" aria-hidden="true" />
           <span>Auditorías</span>
         </Link>
         <a href="#" className="nav-link">
-          <span className="nav-icon reports-icon"></span>
+          <img className="nav-icon-img" src={reporteIcon} alt="" aria-hidden="true" />
           <span>Reportes</span>
         </a>
         <a href="#" className="nav-link">
-          <span className="nav-icon notification-icon"></span>
+          <img className="nav-icon-img" src={notificacionIcon} alt="" aria-hidden="true" />
           <span>Notificaciones</span>
         </a>
       </nav>
@@ -67,7 +76,7 @@ const AdminSideBar = () => {
         onClick={logout}
         disabled={isSubmitting}
       >
-        <span className="logout-icon"></span>
+        <img className="logout-icon-img" src={cerrarSesionIcon} alt="" aria-hidden="true" />
         {isSubmitting ? "Cerrando sesión..." : "Cerrar sesión"}
       </button>
     </aside>

@@ -20,7 +20,22 @@ const me = async (req, res) => {
   }
 };
 
-export default { 
-  dashboard, 
-  me
+const updateWallet = async (req, res) => {
+  try {
+    const result = await clientService.updateWallet(req.user.id, req.body.wallet);
+    return res.status(200).json(result);
+  } catch (error) {
+    // P2025: el usuario no tiene un perfil de Client (p. ej. un admin puro).
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'No tienes un perfil de cliente' });
+    }
+    console.error('Error al actualizar la wallet:', error);
+    return res.status(500).json({ error: 'Error al actualizar la wallet' });
+  }
+};
+
+export default {
+  dashboard,
+  me,
+  updateWallet
 };

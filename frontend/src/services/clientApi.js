@@ -7,3 +7,8 @@ export function getClientDashboard() {
 export function getMeClient() {
   return apiFetch("/client/me");
 };
+
+// Cambia el ID de la billetera de bitcoins del cliente autenticado.
+export function updateWallet(wallet) {
+  return apiFetch("/client/wallet", { method: "PUT", body: { wallet } });
+};

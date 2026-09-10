@@ -15,7 +15,9 @@ const registerInvestment = async (data) => {
 const getIdByUser = async (userId) => {
   return prisma.client.findUnique({
     where: { userId },
-    select: { id: true }
+    // `wallet` puede ser null: se usa para exigir que el cliente la tenga
+    // configurada antes de dejarlo invertir.
+    select: { id: true, wallet: true }
   });
 };
 

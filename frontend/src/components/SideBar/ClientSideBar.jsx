@@ -1,5 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { useLogout } from "../../hooks/useLogout";
+import "./SideBar.css";
+import logo from "../../assets/logo.png";
+import inicioIcon from "../../assets/inicio.png";
+import inversionesIcon from "../../assets/inversiones.png";
+import configuracionIcon from "../../assets/configuracion.png";
+import notificacionIcon from "../../assets/notificacion.png";
+import cerrarSesionIcon from "../../assets/cerrarSesion.png";
 
 const ClientSideBar = () => {
   const { logout, isSubmitting } = useLogout();
@@ -10,37 +17,35 @@ const ClientSideBar = () => {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-logo">
-          <span></span>
-        </div>
-        <div className="brand-name">XInversor</div>
+        <img className="brand-logo-img" src={logo} alt="FXInversors" />
+        <div className="brand-name">FXINVERSORS</div>
       </div>
 
       <nav className="sidebar-nav">
         <Link to="/dashboard" className={`nav-link ${isActive("/dashboard") ? "active" : ""}`}>
-          <span className="nav-icon dashboard-icon"></span>
+          <img className="nav-icon-img" src={inicioIcon} alt="" aria-hidden="true" />
           <span>Inicio</span>
         </Link>
 
         <div className="nav-section">GESTIÓN</div>
 
         <Link to="/client/inversiones" className={`nav-link ${isActive("/client/inversiones") ? "active" : ""}`}>
-          <span className="nav-icon orders-icon"></span>
+          <img className="nav-icon-img" src={inversionesIcon} alt="" aria-hidden="true" />
           <span>Inversiones</span>
         </Link>
 
         <div className="nav-section">CONFIGURACIÓN</div>
 
         <Link to="/client/me" className={`nav-link ${isActive("/client/me") ? "active" : ""}`}>
-          <span className="nav-icon settings-icon"></span>
+          <img className="nav-icon-img" src={configuracionIcon} alt="" aria-hidden="true" />
           <span>Configuración</span>
         </Link>
 
         <a href="#" className="nav-link">
-          <span className="nav-icon notification-icon"></span>
+          <img className="nav-icon-img" src={notificacionIcon} alt="" aria-hidden="true" />
           <span>Notificaciones</span>
         </a>
-        
+
       </nav>
 
       <button
@@ -49,7 +54,7 @@ const ClientSideBar = () => {
         onClick={logout}
         disabled={isSubmitting}
       >
-        <span className="logout-icon"></span>
+        <img className="logout-icon-img" src={cerrarSesionIcon} alt="" aria-hidden="true" />
         {isSubmitting ? "Cerrando sesión..." : "Cerrar sesión"}
       </button>
     </aside>

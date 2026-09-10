@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFetch } from "../../hooks/useFetch";
 import { getCurrentUser, getAvatarUrl } from "../../services/authApi";
+import "./Header.css";
+import configuracionIcon from "../../assets/configuracion.png";
+import notificacionIcon from "../../assets/notificacion.png";
 
 const ROLE_LABELS = {
   ADMIN: "Administrador",
@@ -48,7 +51,7 @@ const Header = () => {
 
       <div className="top-actions">
         <button className="notification-button" type="button" aria-label="Notificaciones">
-          <span className="bell-icon" aria-hidden="true" />
+          <img className="notification-icon-img" src={notificacionIcon} alt="" aria-hidden="true" />
           <span className="notification-count">3</span>
         </button>
 
@@ -83,7 +86,7 @@ const Header = () => {
                 role="menuitem"
                 onClick={goToSettings}
               >
-                <span className="nav-icon settings-icon" aria-hidden="true" />
+                <img className="menu-icon-img" src={configuracionIcon} alt="" aria-hidden="true" />
                 <span>Configuración</span>
               </button>
             </div>

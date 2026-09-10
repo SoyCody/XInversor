@@ -1,16 +1,19 @@
-import { getMeClient } from "../../../services/clientApi";
-import { getAvatarUrl } from "../../../services/authApi.js";
-import "../../../App.css";
-import { useFetch } from "../../../hooks/useFetch";
-import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
-import Header from "../../Header/Header.jsx";
-import AccountDetails from "./AccountDetails";
-import "./ClientGetMe.css";
-import EditProfileForm from "../../Auth/EditProfileForm";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ConfirmDeleteModal from "../../Auth/ConfirmDeleteModal";
+import { getMeClient } from "../../../services/clientApi";
 import { deleteAccount } from "../../../services/authApi.js";
+import { useFetch } from "../../../hooks/useFetch";
+import "../../../App.css";
+import "../../Config/config.css";
+import "./ClientGetMe.css";
+import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
+import Header from "../../Header/Header.jsx";
+import AccountDetails from "../../Config/AccountDetails.jsx";
+import ProfilePhoto from "../../Config/ProfilePhoto.jsx";
+import WalletCard from "../../Config/WalletCard.jsx";
+import EditProfileModal from "../../Config/EditProfileModal.jsx";
+import ChangePasswordModal from "../../Config/ChangePasswordModal.jsx";
+import DeleteAccountModal from "../../Config/DeleteAccountModal.jsx";
 
 const formatDate = (isoString) => {
   if (!isoString) return "—";
@@ -23,19 +26,25 @@ const formatDate = (isoString) => {
 
 const ClientGetMe = () => {
   const { data: user, isLoading, error, refetch, setData } = useFetch(getMeClient);
-  const [isEditing, setIsEditing] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [passwordOpen, setPasswordOpen] = useState(false);
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
 
-  
+  const roleLabel = isLoading
+    ? "—"
+    : user?.role === "ADMIN"
+      ? "Administrador"
+      : "Cliente";
+
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
     setDeleteError(null);
     try {
       await deleteAccount();
-      navigate("/", { replace: true }); // ajusta si tu Home vive en otra ruta
+      navigate("/", { replace: true });
     } catch (err) {
       setDeleteError(err.message);
       setIsDeleting(false);
@@ -50,79 +59,98 @@ const ClientGetMe = () => {
         <Header />
 
         <div className="content">
+         <div className="cfg-page">
           <div className="page-heading">
             <div>
-              <h1>Mi perfil</h1>
-              <p>Información de tu cuenta</p>
+              <h1>Configuración</h1>
             </div>
           </div>
-
-          {!isLoading && user?.id && (
-            <div className="profile-avatar-wrapper">
-              <img
-                className="profile-avatar-large"
-                src={getAvatarUrl(user.id, user.avatarUpdatedAt)}
-                alt="Foto de perfil"
-              />
-            </div>
-          )}
 
           {error && <p className="dashboard-error">{error}</p>}
           {deleteError && <p className="dashboard-error">{deleteError}</p>}
 
-          {isEditing ? (
-            <EditProfileForm
-              user={user}
-              onCancel={() => setIsEditing(false)}
-              onSuccess={(updatedUser) => {
-                if (updatedUser) setData(updatedUser);
-                setIsEditing(false);
-              }}
-              onAvatarUpdated={refetch}
-            />
+          {isLoading ? (
+            <p>Cargando tu cuenta...</p>
+          ) : !user ? (
+            <p>No se encontró tu información.</p>
           ) : (
-            <>
-              <section className="profile-card">
-                <AccountDetails user={user} isLoading={isLoading} />
-                <div className="profile-meta">
-                  <span
-                    className={`role-badge role-badge--${(
-                      user?.role ?? "client"
-                    ).toLowerCase()}`}
-                  >
-                    {isLoading
-                      ? "—"
-                      : user?.role === "ADMIN"
-                        ? "Administrador"
-                        : "Cliente"}
-                  </span>
-                  <span className="profile-since">
-                    Miembro desde {isLoading ? "—" : formatDate(user?.createdAt)}
-                  </span>
+            <div className="cfg">
+              <section className="cfg-section">
+                <h2>Mi perfil</h2>
+                <p className="cfg-subtitle">Información de tu cuenta</p>
+
+                <div className="cfg-perfil">
+                  <ProfilePhoto
+                    user={user}
+                    roleLabel={roleLabel}
+                    onUpdated={refetch}
+                  />
+
+                  <div className="cfg-datos">
+                    <AccountDetails user={user} isLoading={isLoading} />
+                    <p className="cfg-since">
+                      Miembro desde {formatDate(user?.createdAt)}
+                    </p>
+                    <div className="cfg-datos-actions">
+                      <button
+                        className="cfg-btn cfg-btn--primary"
+                        onClick={() => setEditOpen(true)}
+                      >
+                        Editar perfil
+                      </button>
+                      <button
+                        className="cfg-btn cfg-btn--primary"
+                        onClick={() => setPasswordOpen(true)}
+                      >
+                        Cambiar contraseña
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </section>
-              <div className="profile-actions">
-                <button className="edit-profile-btn" onClick={() => setIsEditing(true)}>Editar perfil</button>
+
+              <WalletCard
+                initialWallet={user?.client?.wallet}
+                onSaved={(wallet) =>
+                  setData({
+                    ...user,
+                    client: { ...(user?.client ?? {}), wallet },
+                  })
+                }
+              />
+
+              <div className="cfg-danger">
                 <button
-                  className="edit-profile-btn"
-                  onClick={() => navigate("/client/change/password")}
-                >
-                  Cambiar contraseña
-                </button>
-                <button
-                  className="edit-profile-btn edit-profile-btn--danger"
+                  className="cfg-btn cfg-btn--muted"
                   onClick={() => setIsDeleteModalOpen(true)}
                 >
-                  Eliminar cuenta
+                  Eliminar Cuenta
                 </button>
               </div>
-              
-            </>
+            </div>
           )}
+         </div>
+
+          {editOpen && user && (
+            <EditProfileModal
+              user={user}
+              onClose={() => setEditOpen(false)}
+              onSuccess={(updatedUser) => {
+                if (updatedUser) setData(updatedUser);
+                setEditOpen(false);
+              }}
+            />
+          )}
+
+          {passwordOpen && (
+            <ChangePasswordModal onClose={() => setPasswordOpen(false)} />
+          )}
+
           {isDeleteModalOpen && (
-            <ConfirmDeleteModal
+            <DeleteAccountModal
               isDeleting={isDeleting}
-              onCancel={() => setIsDeleteModalOpen(false)}
+              error={deleteError}
+              onClose={() => setIsDeleteModalOpen(false)}
               onConfirm={handleDeleteAccount}
             />
           )}

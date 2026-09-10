@@ -1,0 +1,149 @@
+/* Modal compartido de la configuración (editar perfil, cambiar
+   contraseña). El fondo/overlay deja ver la pantalla que haya detrás. */
+.config-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.config-modal {
+  width: 100%;
+  max-width: 380px;
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 20px 55px rgba(15, 23, 42, 0.28);
+  animation: config-modal-in 0.15s ease-out;
+}
+
+@keyframes config-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Cabecera amarilla con título + subtítulo */
+.config-modal__header {
+  padding: 18px 22px;
+  background: #f0b90b;
+  color: #1e2329;
+}
+
+.config-modal__header h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.config-modal__header p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: rgba(30, 35, 41, 0.72);
+}
+
+.config-modal__body {
+  padding: 22px;
+}
+
+.config-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.config-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.config-modal__field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2d3f;
+}
+
+.config-modal__field input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #d9dfe8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1f2d3f;
+  font-size: 13px;
+}
+
+.config-modal__field input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.config-modal__text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #1f2d3f;
+}
+
+.config-modal__error {
+  margin: 0;
+  font-size: 12px;
+  color: #b42318;
+}
+
+.config-modal__success {
+  margin: 0;
+  font-size: 13px;
+  color: #16a34a;
+}
+
+.config-modal__actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.config-modal__btn {
+  padding: 9px 18px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.config-modal__btn--ghost {
+  background: #9aa3af;
+  color: #ffffff;
+}
+
+.config-modal__btn--ghost:hover:not(:disabled) {
+  background: #FDBC02;
+}
+
+.config-modal__btn--primary {
+  background: #2365d4;
+  color: #ffffff;
+}
+
+.config-modal__btn--primary:hover:not(:disabled) {
+  background: #1b52ad;
+}
+
+.config-modal__btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

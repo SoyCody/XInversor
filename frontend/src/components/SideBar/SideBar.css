@@ -1,0 +1,62 @@
+/* Ajustes del sidebar para el logo oficial y los iconos en PNG.
+   El layout base del sidebar vive en App.css. */
+
+/* Marca: logo oficial + nombre */
+.brand-logo-img {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 0px;
+  object-fit: cover;
+  display: block;
+}
+
+.brand-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Iconos de navegación: PNG de línea negra -> se invierten a blanco
+   para que contrasten sobre el fondo oscuro del sidebar. */
+.nav-icon-img {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.nav-link:hover .nav-icon-img,
+.nav-link.active .nav-icon-img {
+  opacity: 1;
+}
+
+/* Icono de "Cerrar sesión": mismo tratamiento (PNG negro -> blanco). */
+.logout-icon-img {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+/* Títulos de sección (GESTIÓN, CONFIGURACIÓN): mismas características
+   de letra que los párrafos del body (.cfg-subtitle): tamaño 12px,
+   peso normal, sin espaciado extra ni versalitas. */
+.nav-section {
+  color: #8795a6;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/* En modo colapsado (<=850px) el sidebar se reduce a solo iconos:
+   el nombre desaparece y el logo se centra. */
+@media (max-width: 850px) {
+  .brand-logo-img {
+    width: 32px;
+    height: 32px;
+  }
+}

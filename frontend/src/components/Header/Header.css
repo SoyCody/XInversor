@@ -1,0 +1,23 @@
+/* Ajustes del topbar. El layout base vive en App.css. */
+
+/* Icono (PNG) dentro del menú desplegable del perfil: fondo claro,
+   se deja en negro. */
+.menu-icon-img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+/* Campana de notificaciones (PNG) en el topbar claro: gris apagado. */
+.notification-button {
+  display: grid;
+  place-items: center;
+}
+
+.notification-icon-img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  opacity: 0.62;
+}

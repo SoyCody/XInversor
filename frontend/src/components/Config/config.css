@@ -1,0 +1,305 @@
+/* ===== Layout compartido de las pantallas de Configuración =====
+   Lo usan ClientGetMe y AdminGetMe (mismo cuerpo para cliente y admin,
+   cada uno con sus datos).
+
+   .cfg-page centra todo el contenido (encabezado incluido) dentro de
+   .content y le pone un ancho tope, para que no quede pegado a la
+   izquierda con un hueco a la derecha en pantallas anchas. */
+.cfg-page {
+  max-width: 880px;
+  margin-inline: auto;
+}
+
+.cfg {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  color: #1f2d3f;
+}
+
+.cfg-section h2,
+.cfg-billetera h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2d3f;
+}
+
+.cfg-subtitle {
+  margin: 4px 0 20px;
+  font-size: 12px;
+  color: #8795a6;
+}
+
+/* ----- Perfil: foto + datos ----- */
+.cfg-perfil {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.cfg-foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 300px;
+}
+
+/* Un respiro extra entre el selector de archivo y "Cambiar foto",
+   para que ese botón quede a la altura de los de la columna de datos. */
+.cfg-foto > .cfg-btn {
+  margin-top: 10px;
+}
+
+.cfg-foto-circle {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.cfg-foto-circle img,
+.cfg-foto-ph {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  background: #d5d5d5;
+}
+
+.cfg-foto-circle .role-badge {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* Input nativo oculto: se dispara desde el botón "Seleccionar archivo". */
+.cfg-file-native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.cfg-filepicker {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  border: 1px solid #e2e5ea;
+  border-radius: 8px;
+  background: #fafbfc;
+  overflow: hidden;
+}
+
+.cfg-filepicker__btn {
+  flex: 0 0 auto;
+  padding: 7px 11px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #ffffff;
+  /* Mismo gris que el botón "Eliminar Cuenta" (.cfg-btn--muted). */
+  background: #9aa3af;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.cfg-filepicker__btn:hover {
+  background: #7d8792;
+}
+
+.cfg-filepicker__divider {
+  flex: 0 0 1px;
+  background: #e2e5ea;
+}
+
+.cfg-filepicker__status {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: block;
+  padding: 7px 11px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: #55657a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cfg-datos {
+  flex: 0 1 440px;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cfg-since {
+  margin: 2px 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: #8795a6;
+}
+
+.cfg-datos-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* ----- Billetera ----- */
+.cfg-billetera {
+  display: flex;
+  flex-direction: column;
+}
+
+.cfg-wallet-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cfg-wallet-input {
+  position: relative;
+  flex: 0 1 440px;
+}
+
+.cfg-wallet-input input {
+  width: 100%;
+  padding: 9px 42px 9px 12px;
+  border: 1px solid #d9dfe8;
+  border-radius: 8px;
+  background: #fff;
+  color: #1f2d3f;
+  font-size: 13px;
+}
+
+.cfg-wallet-input input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.cfg-eye {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.cfg-eye img {
+  width: 18px;
+  height: 18px;
+  opacity: 0.55;
+}
+
+.cfg-eye:hover img {
+  opacity: 0.85;
+}
+
+/* ----- Eliminar cuenta ----- */
+.cfg-danger {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+/* ----- Botones / mensajes ----- */
+.cfg-btn {
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cfg-btn--primary {
+  background: #2365d4;
+  color: #fff;
+}
+
+.cfg-btn--primary:hover:not(:disabled) {
+  background: #1b52ad;
+}
+
+.cfg-btn--muted {
+  background: #9aa3af;
+  color: #fff;
+}
+
+.cfg-btn--muted:hover:not(:disabled) {
+  background: #FDBC02;
+}
+
+.cfg-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.cfg-error {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #b42318;
+}
+
+.cfg-success {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #16a34a;
+}
+
+@media (max-width: 620px) {
+  .cfg-perfil {
+    gap: 28px;
+  }
+
+  .cfg-foto {
+    width: 100%;
+  }
+
+  .cfg-datos {
+    flex-basis: 100%;
+  }
+}
+
+/* ----- Badge de rol ----- */
+.role-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.role-badge--admin {
+  background: rgb(116, 55, 228);
+  color: #ffffff;
+}
+
+.role-badge--client {
+  background: #12247f;
+  color: #ffffff;
+}

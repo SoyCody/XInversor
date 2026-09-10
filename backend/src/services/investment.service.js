@@ -13,11 +13,21 @@ const fail = (statusCode, message) => {
   return error;
 };
 
+// Una cuenta nace como CLIENT sin wallet. La wallet es donde se le pagan
+// los retiros en BTC, así que hasta no registrar una no puede invertir.
+// (Puede quedar null para siempre si un admin asciende la cuenta.)
+const tieneWallet = (wallet) =>
+  typeof wallet === 'string' && wallet.trim().length > 0;
+
 const newInvestment = async (userId, { monto }) => {
   const client = await investmentRepository.getIdByUser(userId);
 
   if (!client) {
     throw new Error('El usuario no tiene un perfil de cliente');
+  }
+
+  if (!tieneWallet(client.wallet)) {
+    throw fail(409, 'Necesitas registrar tu wallet antes de poder invertir');
   }
 
   const montoNum = Number(monto);
