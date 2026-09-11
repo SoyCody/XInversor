@@ -17,6 +17,15 @@ export const AUDIT_TABLES = {
   SOLICITUD: 'solicitud'
 };
 
+// CONSISTENCIA: hoy los servicios hacen `await mutación` y luego
+// `await registrarAuditoria(...)` como dos operaciones sueltas. Si la
+// mutación funciona y la auditoría falla, el controller responde 500 y el
+// cliente cree que la operación no se hizo, cuando sí quedó aplicada (p.
+// ej. promoteToAdmin, blockClient, updateWallet, newInvestment).
+// Dos caminos, según cuán crítica sea la auditoría:
+//  - Crítica: envolver mutación + createAudit en un mismo prisma.$transaction.
+//  - No crítica: hacerla best-effort (try/catch + log) para que nunca
+//    tumbe la operación principal.
 export const registrarAuditoria = ({ userId, action, tableName, targetId }) => {
   return auditoriasRepository.createAudit({ userId, action, tableName, targetId });
 };

@@ -7,7 +7,6 @@ import Pagination from "../../Pagination/Pagination.jsx";
 import { useNavigate } from "react-router-dom";
 import "../../../App.css";
 import "../../DataTable/DataTable.css";
-import "./Auditorias.css";
 
 const Auditorias = () => {
   const [page, setPage] = useState(1);
@@ -70,7 +69,7 @@ const Auditorias = () => {
                           <td>{auditoria.tabla}</td>
                           <td className="data-table-actions">
                             <button
-                              className="edit-profile-btn"
+                              className="btn btn--primary btn--sm"
                               onClick={() => navigate(`/admin/auditorias/${auditoria.id}`)}
                             >
                               Ver detalles

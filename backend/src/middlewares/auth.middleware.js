@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import userRepository from '../repositories/user.repository.js';
-import clientRepository from '../repositories/client.repository.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN_DAYS = Number(process.env.JWT_EXPIRES_IN_DAYS) || 1;
@@ -56,7 +55,15 @@ const verifyToken = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    const user = await userRepository.findActiveById(decoded.id);
+
+    // Se consulta la BD en cada request a propósito: no basta con confiar
+    // en los claims del JWT. Es lo que hace que un borrado/bloqueo tenga
+    // efecto inmediato sin esperar a que el token expire. `blocked` viene
+    // en el mismo SELECT para que `isnBlocked` no dispare otra consulta.
+    // Si esto se vuelve un cuello de botella, la vía es cachear el par
+    // (id -> {state, role, blocked}) con TTL corto e invalidarlo en los
+    // endpoints que cambian esos campos.
+    const user = await userRepository.findAuthContextById(decoded.id);
 
     if (!user) {
       res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
@@ -69,12 +76,13 @@ const verifyToken = async (req, res, next) => {
       id: user.id,
       email: user.email,
       role: user.role,
-      state: user.state
+      state: user.state,
+      blocked: user.client?.blocked ?? false
     };
     next();
   } catch (error) {
-    return res.status(401).json({ 
-      error: 'Token inválido o expirado' 
+    return res.status(401).json({
+      error: 'Token inválido o expirado'
     });
   }
 };
@@ -88,6 +96,10 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
+// Defensa en profundidad: hoy `findAuthContextById` ya filtra por
+// state ACTIVO, así que un usuario BORRADO nunca llega hasta aquí (corta
+// en verifyToken con 401). Se mantiene por si esa consulta deja de
+// filtrar por state en el futuro.
 const isActive = (req, res, next) => {
   if (req.user?.state !== 'ACTIVO'){
     return res.status(403).json({
@@ -97,21 +109,15 @@ const isActive = (req, res, next) => {
   next();
 };
 
-const isnBlocked = async (req, res, next) => {
-  try {
-    const client = await clientRepository.getBlocked(req.user.id);
-
-    if (client?.blocked) {
-      return res.status(403).json({
-        error: 'Acceso denegado: cuenta bloqueada'
-      });
-    }
-    next();
-  } catch (error) {
-    return res.status(500).json({
-      error: 'No se pudo verificar el estado de la cuenta'
+// `verifyToken` ya trae `blocked` en req.user en el mismo SELECT, así que
+// aquí no se vuelve a tocar la BD.
+const isnBlocked = (req, res, next) => {
+  if (req.user?.blocked) {
+    return res.status(403).json({
+      error: 'Acceso denegado: cuenta bloqueada'
     });
   }
+  next();
 };
 
 export {

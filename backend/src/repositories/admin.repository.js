@@ -87,7 +87,7 @@ const promoteToAdmin = (id) => {
       data: { role: 'ADMIN' }
     });
 
-    // El Client del usuario NO se toca aquí: así conserva su link
+    // El Client del usuario NO se toca aquí: así conserva su wallet
     // e historial aunque ahora también sea admin.
     // upsert por si el usuario ya tuvo un perfil Admin antes
     // (por ejemplo, fue degradado y vuelve a ascender).

@@ -5,7 +5,6 @@ import Header from "../../Header/Header.jsx";
 import { useNavigate } from "react-router-dom";
 import "../../../App.css";
 import "../../DataTable/DataTable.css";
-import "./MakeAdmin.css";
 
 const formatDate = (isoString) => {
   if (!isoString) return "—";
@@ -71,7 +70,7 @@ const MakeAdmin = () => {
                           <td>{formatDate(cliente.createdAt)}</td>
                           <td className="data-table-actions">
                             <button
-                              className="edit-profile-btn"
+                              className="btn btn--primary btn--sm"
                               onClick={() => navigate(`/admin/promote/${cliente.id}`)}
                             >
                               Asignar administración

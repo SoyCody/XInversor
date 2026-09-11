@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { crearInversion } from "../../../services/investmentApi";
-import "../../Auth/EditProfileForm.css";
 
 const NuevaInversionForm = ({ onCancel, onSuccess }) => {
   const [monto, setMonto] = useState("");
@@ -29,14 +28,15 @@ const NuevaInversionForm = ({ onCancel, onSuccess }) => {
   };
 
   return (
-    <form className="edit-profile-form" onSubmit={handleSubmit}>
+    <form className="section-form" onSubmit={handleSubmit}>
       <h2>Nueva inversión</h2>
 
-      {error && <p className="edit-profile-error">{error}</p>}
+      {error && <p className="form-error">{error}</p>}
 
-      <label>
-        Monto a invertir (USD)
+      <div className="field">
+        <label htmlFor="nueva-inversion-monto">Monto a invertir (USD)</label>
         <input
+          id="nueva-inversion-monto"
           type="number"
           name="monto"
           min="1"
@@ -45,13 +45,18 @@ const NuevaInversionForm = ({ onCancel, onSuccess }) => {
           onChange={(e) => setMonto(e.target.value)}
           placeholder="Ej. 100"
         />
-      </label>
+      </div>
 
-      <div className="edit-profile-actions">
-        <button type="button" onClick={onCancel} disabled={isSubmitting}>
+      <div className="form-actions section-actions">
+        <button
+          type="button"
+          className="btn btn--muted"
+          onClick={onCancel}
+          disabled={isSubmitting}
+        >
           Cancelar
         </button>
-        <button type="submit" disabled={isSubmitting}>
+        <button type="submit" className="btn btn--primary" disabled={isSubmitting}>
           {isSubmitting ? "Creando..." : "Crear inversión"}
         </button>
       </div>

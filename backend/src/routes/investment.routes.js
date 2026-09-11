@@ -2,7 +2,7 @@ import express from 'express';
 import investmentController from '../controllers/investment.controller.js';
 import { isAdmin, isActive, isnBlocked, verifyToken } from '../middlewares/auth.middleware.js';
 import validate from '../middlewares/validate.middleware.js';
-import { createApplicationSchema } from '../validators/investment.validator.js';
+import { createInvestmentSchema, createApplicationSchema } from '../validators/investment.validator.js';
 
 const router = express.Router();
 
@@ -10,6 +10,7 @@ router.post('/new',
     verifyToken,
     isActive,
     isnBlocked,
+    validate(createInvestmentSchema),
     investmentController.createInvestment
 );
 
@@ -25,6 +26,15 @@ router.get('/my',
     isActive,
     isnBlocked,
     investmentController.myList
+);
+
+// Resumen agregado (totales + desglose por estado) de las inversiones
+// propias: alimenta las tarjetas y la barra de "Mis inversiones" e Inicio.
+router.get('/summary',
+    verifyToken,
+    isActive,
+    isnBlocked,
+    investmentController.summary
 );
 
 router.get('/:inversionId/watch',

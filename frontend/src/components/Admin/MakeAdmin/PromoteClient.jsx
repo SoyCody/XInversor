@@ -4,9 +4,8 @@ import { verCliente, promoteToAdmin } from "../../../services/adminApi.js";
 import { useFetch } from "../../../hooks/useFetch";
 import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
-import ConfirmAdministracion from "./ConfirmAdministracion.jsx";
+import ConfirmActionModal from "../../Config/ConfirmActionModal.jsx";
 import "../../../App.css";
-import "./MakeAdmin.css";
 
 const PromoteClient = () => {
   const { id } = useParams();
@@ -14,6 +13,7 @@ const PromoteClient = () => {
   const { data, isLoading, error } = useFetch(() => verCliente(id), [id]);
   const [isPromoting, setIsPromoting] = useState(false);
   const [promoteError, setPromoteError] = useState(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const cliente = data?.cliente;
 
@@ -52,28 +52,53 @@ const PromoteClient = () => {
           ) : !cliente ? (
             <p>No se encontró información de este cliente.</p>
           ) : (
-            <>
-              <section className="cliente-detalle-card">
-                <div className="cliente-detalle-row">
-                  <span className="cliente-detalle-label">Nombre</span>
-                  <span className="cliente-detalle-value">{cliente.firstName}</span>
+            <div className="section-band">
+              <div className="detail-list">
+                <div className="detail-row">
+                  <span className="detail-label">Nombre</span>
+                  <span className="detail-value">{cliente.firstName}</span>
                 </div>
-                <div className="cliente-detalle-row">
-                  <span className="cliente-detalle-label">Apellido</span>
-                  <span className="cliente-detalle-value">{cliente.lastName}</span>
+                <div className="detail-row">
+                  <span className="detail-label">Apellido</span>
+                  <span className="detail-value">{cliente.lastName}</span>
                 </div>
-                <div className="cliente-detalle-row">
-                  <span className="cliente-detalle-label">Correo</span>
-                  <span className="cliente-detalle-value">{cliente.email}</span>
+                <div className="detail-row">
+                  <span className="detail-label">Correo</span>
+                  <span className="detail-value">{cliente.email}</span>
                 </div>
-              </section>
+              </div>
 
-              <ConfirmAdministracion
-                isPromoting={isPromoting}
-                onCancel={() => navigate("/admin/solicitudes")}
-                onConfirm={handleConfirm}
-              />
-            </>
+              <div className="form-actions section-actions">
+                <button
+                  type="button"
+                  className="btn btn--muted"
+                  onClick={() => navigate("/admin/solicitudes")}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  className="btn btn--primary"
+                  onClick={() => setIsConfirmOpen(true)}
+                >
+                  Asignar administración
+                </button>
+              </div>
+            </div>
+          )}
+
+          {isConfirmOpen && (
+            <ConfirmActionModal
+              title="Otorgar permisos de administración"
+              subtitle="Confirmación de ascenso"
+              message="Esta acción es permanente y no se puede deshacer. Este nuevo administrador también podrá supervisar la plataforma."
+              confirmLabel="Sí, asignar esta cuenta"
+              confirmingLabel="Procesando..."
+              isBusy={isPromoting}
+              error={promoteError}
+              onClose={() => setIsConfirmOpen(false)}
+              onConfirm={handleConfirm}
+            />
           )}
         </div>
       </main>

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { crearSolicitud } from "../../../services/investmentApi";
-import "../../Auth/EditProfileForm.css";
 
 const NuevaSolicitudForm = ({ inversionId, disponible, onCancel, onSuccess }) => {
   const [montoRetiro, setMonto] = useState("");
@@ -29,14 +28,15 @@ const NuevaSolicitudForm = ({ inversionId, disponible, onCancel, onSuccess }) =>
   };
 
   return (
-    <form className="edit-profile-form" onSubmit={handleSubmit}>
+    <form className="section-form" onSubmit={handleSubmit}>
       <h2>Nueva solicitud de retiro</h2>
 
-      {error && <p className="edit-profile-error">{error}</p>}
+      {error && <p className="form-error">{error}</p>}
 
-      <label>
-        Monto a retirar (BTC)
+      <div className="field">
+        <label htmlFor="nueva-solicitud-monto">Monto a retirar (BTC)</label>
         <input
+          id="nueva-solicitud-monto"
           type="number"
           name="montoRetiro"
           min="0"
@@ -45,19 +45,22 @@ const NuevaSolicitudForm = ({ inversionId, disponible, onCancel, onSuccess }) =>
           onChange={(e) => setMonto(e.target.value)}
           placeholder="Ej. 0.05"
         />
-      </label>
+      </div>
 
       {disponible != null && (
-        <p style={{ color: "#9a9a9a", fontSize: "0.85rem", margin: "4px 0 0" }}>
-          Disponible: {disponible}
-        </p>
+        <p className="form-meta">Disponible: {disponible}</p>
       )}
 
-      <div className="edit-profile-actions">
-        <button type="button" onClick={onCancel} disabled={isSubmitting}>
+      <div className="form-actions section-actions">
+        <button
+          type="button"
+          className="btn btn--muted"
+          onClick={onCancel}
+          disabled={isSubmitting}
+        >
           Cancelar
         </button>
-        <button type="submit" disabled={isSubmitting}>
+        <button type="submit" className="btn btn--primary" disabled={isSubmitting}>
           {isSubmitting ? "Enviando..." : "Solicitar"}
         </button>
       </div>

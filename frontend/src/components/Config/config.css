@@ -23,21 +23,21 @@
 .cfg-wallet-row,
 .cfg-danger {
   width: 100%;
-  max-width: 980px;
+  max-width: var(--band-w);
   margin-inline: auto;
 }
 
 .cfg-section h2,
 .cfg-billetera h2 {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--fs-h2);
   font-weight: 700;
-  color: #1f2d3f;
+  color: var(--detail-value);
 }
 
 .cfg-subtitle {
   margin: 4px 0 20px;
-  font-size: 12px;
+  font-size: var(--fs-meta);
   color: #8795a6;
 }
 
@@ -60,7 +60,7 @@
 
 /* Un respiro extra entre el selector de archivo y "Cambiar foto",
    para que ese botón quede a la altura de los de la columna de datos. */
-.cfg-foto > .cfg-btn {
+.cfg-foto > .btn {
   margin-top: 10px;
 }
 
@@ -114,11 +114,11 @@
 .cfg-filepicker__btn {
   flex: 0 0 auto;
   padding: 7px 11px;
-  font-size: 11px;
+  font-size: var(--fs-input);
   font-weight: 500;
   color: #ffffff;
-  /* Mismo gris que el botón "Eliminar Cuenta" (.cfg-btn--muted). */
-  background: #9aa3af;
+  /* Mismo gris que el botón "Eliminar Cuenta" (.btn--muted). */
+  background: var(--btn-muted);
   border: none;
   cursor: pointer;
   transition: background 0.15s ease;
@@ -138,10 +138,10 @@
   min-width: 0;
   display: block;
   padding: 7px 11px;
-  font-size: 11px;
+  font-size: var(--fs-input);
   font-weight: 500;
   line-height: 1.6;
-  color: #55657a;
+  color: var(--detail-label);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -159,7 +159,7 @@
 .cfg-since {
   margin: 2px 0 0;
   text-align: center;
-  font-size: 12px;
+  font-size: var(--fs-meta);
   color: #8795a6;
 }
 
@@ -192,16 +192,16 @@
 .cfg-wallet-input input {
   width: 100%;
   padding: 9px 42px 9px 12px;
-  border: 1px solid #d9dfe8;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
   background: #fff;
-  color: #1f2d3f;
-  font-size: 13px;
+  color: var(--detail-value);
+  font-size: var(--fs-input);
 }
 
 .cfg-wallet-input input:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: var(--input-focus);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
@@ -237,49 +237,18 @@
   margin-top: 8px;
 }
 
-/* ----- Botones / mensajes ----- */
-.cfg-btn {
-  padding: 10px 20px;
-  border: 0;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.cfg-btn--primary {
-  background: #2365d4;
-  color: #fff;
-}
-
-.cfg-btn--primary:hover:not(:disabled) {
-  background: #1b52ad;
-}
-
-.cfg-btn--muted {
-  background: #9aa3af;
-  color: #fff;
-}
-
-.cfg-btn--muted:hover:not(:disabled) {
-  background: #FDBC02;
-}
-
-.cfg-btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
+/* ----- Mensajes -----
+   Los botones ahora son las primitivas .btn / .btn--primary / .btn--muted
+   de App.css (el JSX de esta sección ya las usa). */
 .cfg-error {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: var(--fs-meta);
   color: #b42318;
 }
 
 .cfg-success {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: var(--fs-meta);
   color: #16a34a;
 }
 
@@ -302,7 +271,7 @@
   display: inline-block;
   padding: 3px 10px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: var(--fs-meta);
   font-weight: 600;
 }
 

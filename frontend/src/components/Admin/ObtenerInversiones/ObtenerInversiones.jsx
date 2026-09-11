@@ -7,7 +7,6 @@ import Header from "../../Header/Header.jsx";
 import Pagination from "../../Pagination/Pagination.jsx";
 import "../../../App.css";
 import "../../DataTable/DataTable.css";
-import "../ObtenerClientes/ObtenerClientes.css";
 
 const FILTROS = [
   { value: "ALL", label: "Todas", titulo: "Inversiones", descripcion: "Listado de todas las inversiones" },

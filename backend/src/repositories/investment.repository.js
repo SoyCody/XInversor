@@ -21,6 +21,13 @@ const getIdByUser = async (userId) => {
   });
 };
 
+// Trae la tabla `inversion` entera (sin skip/take). El servicio filtra y
+// pagina en memoria porque el "estado actual" vive en la relación
+// `estados`. Optimización de fondo: agregar una columna
+// `estadoActual EstadoInversion @default(PENDIENTE)` en Inversion,
+// escribirla en la misma transacción que crea cada Estado, e indexar
+// [estadoActual, createdAt]. Con eso este método pasa a where + skip/take
+// + count y deja de escalar con el tamaño de la tabla.
 const list = async () => {
   return prisma.inversion.findMany({
     orderBy: { createdAt: 'desc' },
@@ -95,6 +102,12 @@ const getInvestment = async (inversionId) => {
   });
 };
 
+// OJO: aquí "pendiente" = campo booleano Solicitud.pendiente, mientras que
+// en getInvestment/puedeSolicitarRetiro "pendiente" = Solicitud.estado ===
+// 'PENDIENTE'. Son dos fuentes de verdad para el mismo concepto; si al
+// implementar la resolución de solicitudes una se actualiza y la otra no,
+// los dos endpoints van a discrepar. Conviene quedarse con una sola
+// (probablemente el enum `estado`, y derivar el índice único de ahí).
 const getInversionParaSolicitud = async (inversionId) => {
   return prisma.inversion.findUnique({
     where: { id: inversionId },
@@ -122,6 +135,9 @@ const crearSolicitud = async (inversionId, montoRetiro) => {
 };
 
 // Inversiones que todavía "envejecen": las retiradas quedan congeladas.
+// Hoy trae TODAS (incluidas las RETIRADO, que se descartan en memoria).
+// Con el `estadoActual` denormalizado, filtrar acá:
+//   where: { estadoActual: { in: ['PENDIENTE', 'EN_PROGRESO'] } }
 const getInversionesActivas = async () => {
   return prisma.inversion.findMany({
     select: {
@@ -135,6 +151,23 @@ const getInversionesActivas = async () => {
       }
     }
   });
+};
+
+// Resumen para el dashboard del cliente: capital invertido (suma de
+// `monto`) y total acumulado en intereses (suma de `intereses`), sobre
+// TODAS las inversiones del cliente sin importar el estado. Se agrega en
+// la base de datos con SUM -- no trae filas a memoria.
+const getTotales = async (clientId) => {
+  const { _sum } = await prisma.inversion.aggregate({
+    where: { clientId },
+    _sum: { monto: true, intereses: true }
+  });
+
+  // _sum.* viene null (no 0) cuando el cliente todavía no tiene inversiones.
+  return {
+    totalInvertido: _sum.monto ?? 0,
+    totalAcumulado: _sum.intereses ?? 0
+  };
 };
 
 // Fija `dias` y, si corresponde, registra el paso a EN_PROGRESO en la
@@ -167,5 +200,6 @@ export default {
   crearSolicitud,
   getInversionesActivas,
   avanzarInversion,
-  getInvestment
+  getInvestment,
+  getTotales
 };

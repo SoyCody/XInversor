@@ -1,6 +1,8 @@
 import { useState } from "react";
 import "./ReferralLinkCard.css";
 
+// Enlace de referido: label + botón "Copiar" en la misma fila, y el
+// enlace debajo en un cuadro con el estilo de los inputs de la app.
 const ReferralLinkCard = ({ link, isLoading }) => {
   const [copied, setCopied] = useState(false);
 
@@ -17,31 +19,23 @@ const ReferralLinkCard = ({ link, isLoading }) => {
   };
 
   return (
-    <article className="referral-card">
+    <section className="section-band referral-card">
       <div className="referral-card-header">
-        <span className="referral-card-label">TU ENLACE DE REFERIDO</span>
-        <span className="referral-card-symbol" aria-hidden="true">↗</span>
-      </div>
-
-      <p className="referral-card-hint">
-        Compártelo para invitar nuevos usuarios a XInversor.
-      </p>
-
-      <div className="referral-card-row">
-        <code className="referral-card-link" title={link || ""}>
-          {isLoading ? "Cargando enlace..." : link || "Sin enlace asignado"}
-        </code>
-
+        <span className="referral-card-label">Tu enlace de referido</span>
         <button
           type="button"
-          className="referral-card-copy"
+          className="btn btn--primary"
           onClick={handleCopy}
           disabled={isLoading || !link}
         >
           {copied ? "Copiado ✓" : "Copiar"}
         </button>
       </div>
-    </article>
+
+      <div className="referral-card-link" title={link || ""}>
+        {isLoading ? "Cargando enlace..." : link || "Sin enlace asignado"}
+      </div>
+    </section>
   );
 };
 

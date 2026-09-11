@@ -65,22 +65,36 @@ const update = async (req, res) => {
     const user = await authService.updateClient(id, req.body);
     return res.status(200).json(user);
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ error: error.message });
+    // Antes: cualquier error caía en 500 con error.message crudo. Eso (a)
+    // filtraba mensajes internos de Prisma al cliente y (b) devolvía 500
+    // cuando el email nuevo ya existía (debería ser 409) o el usuario no
+    // estaba (404).
+    if (error instanceof authService.EmailAlreadyExistsError ||
+        error instanceof authService.UserNotFoundError) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+    if (error?.code === 'P2002') {
+      return res.status(409).json({
+        error: 'Ya existe una cuenta con este correo electrónico'
+      });
+    }
+    console.error('Error al actualizar el usuario:', error);
+    return res.status(500).json({ error: 'Error al actualizar el usuario' });
   }
 };
 
 const changePassword = async (req, res) => {
   try{
     const id = req.user?.id;
-    const newPassword = await authService.changePassword(id, req.body);
+    await authService.changePassword(id, req.body);
     return res.status(200).json({
       message: "La contraseña se ha cambiado correctamente"
     });
   }catch(error){
-    console.log(error);
+    // No se devuelve error.message al cliente: puede traer detalle interno.
+    console.error('Error al cambiar la contraseña:', error);
     return res.status(500).json({
-      message: error.message
+      message: 'Error al cambiar la contraseña'
     })
   }
 };

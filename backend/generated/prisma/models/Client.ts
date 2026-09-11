@@ -39,7 +39,6 @@ export type ClientSumAggregateOutputType = {
 export type ClientMinAggregateOutputType = {
   id: number | null
   userId: number | null
-  link: string | null
   wallet: string | null
   blocked: boolean | null
 }
@@ -47,7 +46,6 @@ export type ClientMinAggregateOutputType = {
 export type ClientMaxAggregateOutputType = {
   id: number | null
   userId: number | null
-  link: string | null
   wallet: string | null
   blocked: boolean | null
 }
@@ -55,7 +53,6 @@ export type ClientMaxAggregateOutputType = {
 export type ClientCountAggregateOutputType = {
   id: number
   userId: number
-  link: number
   wallet: number
   blocked: number
   _all: number
@@ -75,7 +72,6 @@ export type ClientSumAggregateInputType = {
 export type ClientMinAggregateInputType = {
   id?: true
   userId?: true
-  link?: true
   wallet?: true
   blocked?: true
 }
@@ -83,7 +79,6 @@ export type ClientMinAggregateInputType = {
 export type ClientMaxAggregateInputType = {
   id?: true
   userId?: true
-  link?: true
   wallet?: true
   blocked?: true
 }
@@ -91,7 +86,6 @@ export type ClientMaxAggregateInputType = {
 export type ClientCountAggregateInputType = {
   id?: true
   userId?: true
-  link?: true
   wallet?: true
   blocked?: true
   _all?: true
@@ -186,7 +180,6 @@ export type ClientGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 export type ClientGroupByOutputType = {
   id: number
   userId: number
-  link: string
   wallet: string | null
   blocked: boolean
   _count: ClientCountAggregateOutputType | null
@@ -217,7 +210,6 @@ export type ClientWhereInput = {
   NOT?: Prisma.ClientWhereInput | Prisma.ClientWhereInput[]
   id?: Prisma.IntFilter<"Client"> | number
   userId?: Prisma.IntFilter<"Client"> | number
-  link?: Prisma.StringFilter<"Client"> | string
   wallet?: Prisma.StringNullableFilter<"Client"> | string | null
   blocked?: Prisma.BoolFilter<"Client"> | boolean
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -227,7 +219,6 @@ export type ClientWhereInput = {
 export type ClientOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  link?: Prisma.SortOrder
   wallet?: Prisma.SortOrderInput | Prisma.SortOrder
   blocked?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -240,7 +231,6 @@ export type ClientWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ClientWhereInput | Prisma.ClientWhereInput[]
   OR?: Prisma.ClientWhereInput[]
   NOT?: Prisma.ClientWhereInput | Prisma.ClientWhereInput[]
-  link?: Prisma.StringFilter<"Client"> | string
   wallet?: Prisma.StringNullableFilter<"Client"> | string | null
   blocked?: Prisma.BoolFilter<"Client"> | boolean
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -250,7 +240,6 @@ export type ClientWhereUniqueInput = Prisma.AtLeast<{
 export type ClientOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  link?: Prisma.SortOrder
   wallet?: Prisma.SortOrderInput | Prisma.SortOrder
   blocked?: Prisma.SortOrder
   _count?: Prisma.ClientCountOrderByAggregateInput
@@ -266,13 +255,11 @@ export type ClientScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ClientScalarWhereWithAggregatesInput | Prisma.ClientScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"Client"> | number
   userId?: Prisma.IntWithAggregatesFilter<"Client"> | number
-  link?: Prisma.StringWithAggregatesFilter<"Client"> | string
   wallet?: Prisma.StringNullableWithAggregatesFilter<"Client"> | string | null
   blocked?: Prisma.BoolWithAggregatesFilter<"Client"> | boolean
 }
 
 export type ClientCreateInput = {
-  link?: string
   wallet?: string | null
   blocked?: boolean
   user: Prisma.UserCreateNestedOneWithoutClientInput
@@ -282,14 +269,12 @@ export type ClientCreateInput = {
 export type ClientUncheckedCreateInput = {
   id?: number
   userId: number
-  link?: string
   wallet?: string | null
   blocked?: boolean
   inversiones?: Prisma.InversionUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ClientUpdateInput = {
-  link?: Prisma.StringFieldUpdateOperationsInput | string
   wallet?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneRequiredWithoutClientNestedInput
@@ -299,7 +284,6 @@ export type ClientUpdateInput = {
 export type ClientUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
-  link?: Prisma.StringFieldUpdateOperationsInput | string
   wallet?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   inversiones?: Prisma.InversionUncheckedUpdateManyWithoutClientNestedInput
@@ -308,13 +292,11 @@ export type ClientUncheckedUpdateInput = {
 export type ClientCreateManyInput = {
   id?: number
   userId: number
-  link?: string
   wallet?: string | null
   blocked?: boolean
 }
 
 export type ClientUpdateManyMutationInput = {
-  link?: Prisma.StringFieldUpdateOperationsInput | string
   wallet?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
@@ -322,7 +304,6 @@ export type ClientUpdateManyMutationInput = {
 export type ClientUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
-  link?: Prisma.StringFieldUpdateOperationsInput | string
   wallet?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
@@ -335,7 +316,6 @@ export type ClientNullableScalarRelationFilter = {
 export type ClientCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  link?: Prisma.SortOrder
   wallet?: Prisma.SortOrder
   blocked?: Prisma.SortOrder
 }
@@ -348,7 +328,6 @@ export type ClientAvgOrderByAggregateInput = {
 export type ClientMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  link?: Prisma.SortOrder
   wallet?: Prisma.SortOrder
   blocked?: Prisma.SortOrder
 }
@@ -356,7 +335,6 @@ export type ClientMaxOrderByAggregateInput = {
 export type ClientMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  link?: Prisma.SortOrder
   wallet?: Prisma.SortOrder
   blocked?: Prisma.SortOrder
 }
@@ -422,7 +400,6 @@ export type ClientUpdateOneRequiredWithoutInversionesNestedInput = {
 }
 
 export type ClientCreateWithoutUserInput = {
-  link?: string
   wallet?: string | null
   blocked?: boolean
   inversiones?: Prisma.InversionCreateNestedManyWithoutClientInput
@@ -430,7 +407,6 @@ export type ClientCreateWithoutUserInput = {
 
 export type ClientUncheckedCreateWithoutUserInput = {
   id?: number
-  link?: string
   wallet?: string | null
   blocked?: boolean
   inversiones?: Prisma.InversionUncheckedCreateNestedManyWithoutClientInput
@@ -453,7 +429,6 @@ export type ClientUpdateToOneWithWhereWithoutUserInput = {
 }
 
 export type ClientUpdateWithoutUserInput = {
-  link?: Prisma.StringFieldUpdateOperationsInput | string
   wallet?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   inversiones?: Prisma.InversionUpdateManyWithoutClientNestedInput
@@ -461,14 +436,12 @@ export type ClientUpdateWithoutUserInput = {
 
 export type ClientUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  link?: Prisma.StringFieldUpdateOperationsInput | string
   wallet?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   inversiones?: Prisma.InversionUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ClientCreateWithoutInversionesInput = {
-  link?: string
   wallet?: string | null
   blocked?: boolean
   user: Prisma.UserCreateNestedOneWithoutClientInput
@@ -477,7 +450,6 @@ export type ClientCreateWithoutInversionesInput = {
 export type ClientUncheckedCreateWithoutInversionesInput = {
   id?: number
   userId: number
-  link?: string
   wallet?: string | null
   blocked?: boolean
 }
@@ -499,7 +471,6 @@ export type ClientUpdateToOneWithWhereWithoutInversionesInput = {
 }
 
 export type ClientUpdateWithoutInversionesInput = {
-  link?: Prisma.StringFieldUpdateOperationsInput | string
   wallet?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneRequiredWithoutClientNestedInput
@@ -508,7 +479,6 @@ export type ClientUpdateWithoutInversionesInput = {
 export type ClientUncheckedUpdateWithoutInversionesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
-  link?: Prisma.StringFieldUpdateOperationsInput | string
   wallet?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
@@ -547,7 +517,6 @@ export type ClientCountOutputTypeCountInversionesArgs<ExtArgs extends runtime.Ty
 export type ClientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  link?: boolean
   wallet?: boolean
   blocked?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -558,7 +527,6 @@ export type ClientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type ClientSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  link?: boolean
   wallet?: boolean
   blocked?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -567,7 +535,6 @@ export type ClientSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type ClientSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  link?: boolean
   wallet?: boolean
   blocked?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -576,12 +543,11 @@ export type ClientSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type ClientSelectScalar = {
   id?: boolean
   userId?: boolean
-  link?: boolean
   wallet?: boolean
   blocked?: boolean
 }
 
-export type ClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "link" | "wallet" | "blocked", ExtArgs["result"]["client"]>
+export type ClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "wallet" | "blocked", ExtArgs["result"]["client"]>
 export type ClientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   inversiones?: boolean | Prisma.Client$inversionesArgs<ExtArgs>
@@ -603,7 +569,6 @@ export type $ClientPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     userId: number
-    link: string
     wallet: string | null
     blocked: boolean
   }, ExtArgs["result"]["client"]>
@@ -1033,7 +998,6 @@ export interface Prisma__ClientClient<T, Null = never, ExtArgs extends runtime.T
 export interface ClientFieldRefs {
   readonly id: Prisma.FieldRef<"Client", 'Int'>
   readonly userId: Prisma.FieldRef<"Client", 'Int'>
-  readonly link: Prisma.FieldRef<"Client", 'String'>
   readonly wallet: Prisma.FieldRef<"Client", 'String'>
   readonly blocked: Prisma.FieldRef<"Client", 'Boolean'>
 }

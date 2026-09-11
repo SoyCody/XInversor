@@ -6,9 +6,12 @@ const createInvestment = async (req, res) => {
     const inversion = await InvestmentService.newInvestment(id, req.body);
     return res.status(201).json(inversion)
   } catch ( error ) {
-    console.log(error.message)
+    // Con statusCode (errores de dominio via fail()) se devuelve el
+    // mensaje; sin él es un error inesperado -> 500 genérico sin filtrar
+    // detalle interno.
+    if (!error.statusCode) console.error(error);
     return res.status(error.statusCode || 500).json({
-      message: error.message
+      message: error.statusCode ? error.message : 'Error al crear la inversión.'
     })
   }
 };
@@ -18,8 +21,9 @@ const list = async(req, res) => {
         const data = await InvestmentService.list(req.query.tipo, req.query.page);
         return res.status(200).json(data);
     } catch( error ) {
+        console.error(error);
         return res.status(500).json({
-            message: error.message
+            message: 'Error al obtener las inversiones'
         })
     };
 };
@@ -27,19 +31,32 @@ const list = async(req, res) => {
 const myList = async(req, res) => {
   try {
     const { id } = req.user;
+    // myList siempre devuelve un objeto (listado paginado, aunque venga
+    // vacío) o lanza; el chequeo `if (!data) -> 404` anterior era código
+    // muerto.
     const data = await InvestmentService.myList(id, req.query.tipo, req.query.page);
-    if (!data) {
-      return res.status(404).json({
-        message:"No se encontraron inversiones"
-      });
-    };
     return res.status(200).json(data);
   } catch ( error ) {
-    console.log(error.message);
+    console.error(error);
     return res.status(500).json({
       message: "Error al obtener inversiones"
     })
   };
+};
+
+// Resumen agregado (totales + desglose por estado) para "Mis inversiones"
+// e Inicio. No pagina: son unos pocos números, no una lista.
+const summary = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const data = await InvestmentService.resumenInversiones(id);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: 'Error al obtener el resumen de inversiones'
+    });
+  }
 };
 
 const createApplication = async (req, res) => {
@@ -50,7 +67,7 @@ const createApplication = async (req, res) => {
     const solicitud = await InvestmentService.createApplication(id, inversionId, montoRetiro);
     return res.status(201).json(solicitud);
   } catch ( error ) {
-    console.log(error.message);
+    if (!error.statusCode) console.error(error);
     return res.status(error.statusCode || 500).json({
       message: error.statusCode ? error.message : 'Error en la nueva solicitud.'
     });
@@ -64,7 +81,7 @@ const getInvestment = async (req, res) => {
     const data = await InvestmentService.getInvestment(id, inversionId);
     return res.status(200).json(data);
   } catch ( error ) {
-    console.log(error.message);
+    if (!error.statusCode) console.error(error);
     return res.status(error.statusCode || 500).json({
       message: error.statusCode ? error.message : 'Error al obtener la inversión.'
     });
@@ -75,6 +92,7 @@ export default {
     createInvestment,
     list,
     myList,
+    summary,
     createApplication,
     getInvestment
 }

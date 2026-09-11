@@ -1,72 +1,23 @@
-/* ===== Ver Cliente (panel de administrador) ===== */
+/* ===== Ver Cliente (panel de administrador) =====
+   Botones, lista de datos (.detail-list) y layout zona-A/zona-B vienen de
+   App.css. Aquí solo queda lo propio de esta pantalla: el bloque de
+   perfil (nombre + datos + foto) y sus ajustes responsive. */
 
-.vc-back {
-  padding: 9px 18px;
-  background: #2365d4;
-  color: #fff;
-  border: 1;
-  border-color: black;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.vc-back:hover {
-  background: #1b4fa8;
-}
-
-.vc-heading {
-  margin: 18px 0 10px;
-}
-
-.vc-heading h1 {
-  margin: 0;
-  font-size: 18px;
-  letter-spacing: -0.02em;
-}
-
-.vc-heading p {
-  margin: 4px 0 0;
-  color: #8795a6;
-  font-size: 12px;
-}
-
-.vc-alert {
-  margin: 10px 0;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: #fff0f0;
-  color: #b42318;
-  border: 1px solid #f1c7c2;
-  font-size: 13px;
-}
-
-.vc-muted {
-  color: #6b7a8d;
-  font-size: 13px;
-}
-
-/* ===== Cuerpo: columna centrada de ancho acotado ===== */
-.vc-body {
-  width: 100%;
-  max-width: 980px;
-  margin: 14px auto 0;
+.vc-perfil-band {
   display: flex;
   flex-direction: column;
-  gap: 34px;
+  gap: 24px;
+  margin-top: 14px;
 }
 
 .vc-nombre {
   margin: 0;
-  font-size: 20px;
+  font-size: var(--fs-h2);
   font-weight: 700;
   text-align: center;
-  color: #1f2d3f;
+  color: var(--detail-value);
 }
 
-/* ===== Datos + foto ===== */
 .vc-perfil {
   display: flex;
   align-items: center;
@@ -81,29 +32,6 @@
   flex: 1 1 420px;
   min-width: 280px;
   max-width: 560px;
-}
-
-.vc-dato {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 24px;
-  padding: 16px 4px;
-  border-bottom: 1px solid #c9d2df;
-}
-
-.vc-dato dt {
-  color: #55657a;
-  font-size: 14px;
-}
-
-.vc-dato dd {
-  margin: 0;
-  font-weight: 600;
-  font-size: 14px;
-  text-align: right;
-  color: #1f2d3f;
-  word-break: break-word;
 }
 
 .vc-foto {
@@ -127,68 +55,12 @@
   background: #d5d5d5;
 }
 
-/* ===== Inversiones ===== */
-.vc-inversiones {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+/* Encabezado de la sección "Inversiones" (zona A, ancho completo). */
+.vc-inv-heading {
+  margin-top: 34px;
+  align-items: center;
 }
 
-.vc-inversiones h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  text-align: center;
-  color: #1f2d3f;
-}
-
-.vc-inv-filtro {
-  align-self: flex-end;
-}
-
-.vc-detalles-btn {
-  padding: 9px 20px;
-  background: #2365d4;
-  color: #fff;
-  border: 1;
-  border-color: black;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.vc-detalles-btn:hover {
-  background: #1b52ad;
-}
-
-/* ===== Acción de bloqueo ===== */
-.vc-acciones {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.vc-bloquear-btn {
-  padding: 10px 24px;
-  background: #8E8C8C;
-  color: #fff;
-  border: 1;
-  border-color: black;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.vc-bloquear-btn:hover {
-  background: #a02727;
-}
-
-/* ===== Responsive ===== */
 @media (max-width: 720px) {
   .vc-perfil {
     flex-direction: column-reverse;

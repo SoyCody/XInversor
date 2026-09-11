@@ -88,13 +88,13 @@ const AdminGetMe = () => {
                     </p>
                     <div className="cfg-datos-actions">
                       <button
-                        className="cfg-btn cfg-btn--primary"
+                        className="btn btn--primary"
                         onClick={() => setEditOpen(true)}
                       >
                         Editar perfil
                       </button>
                       <button
-                        className="cfg-btn cfg-btn--primary"
+                        className="btn btn--primary"
                         onClick={() => setPasswordOpen(true)}
                       >
                         Cambiar contraseña
@@ -116,7 +116,7 @@ const AdminGetMe = () => {
 
               <div className="cfg-danger">
                 <button
-                  className="cfg-btn cfg-btn--muted"
+                  className="btn btn--muted"
                   onClick={() => setIsDeleteModalOpen(true)}
                 >
                   Eliminar Cuenta

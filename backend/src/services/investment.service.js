@@ -23,21 +23,35 @@ const newInvestment = async (userId, { monto }) => {
   const client = await investmentRepository.getIdByUser(userId);
 
   if (!client) {
-    throw new Error('El usuario no tiene un perfil de cliente');
+    // fail() adjunta statusCode; con `new Error` plano el controller caía
+    // siempre a 500 aunque el problema fuese de la request.
+    throw fail(404, 'El usuario no tiene un perfil de cliente');
   }
 
   if (!tieneWallet(client.wallet)) {
     throw fail(409, 'Necesitas registrar tu wallet antes de poder invertir');
   }
 
+  // Defensa en profundidad: la ruta ya valida `monto` con Joi
+  // (createInvestmentSchema), esto cubre llamadas internas al servicio.
   const montoNum = Number(monto);
 
   if (!Number.isFinite(montoNum) || montoNum <= 0) {
-    throw new Error('El monto debe ser un número mayor a 0');
+    throw fail(400, 'El monto debe ser un número mayor a 0');
   }
 
   // Un cliente no puede acumular más de MAX_INVERSIONES_ACTIVAS
   // inversiones activas (PENDIENTE o EN_PROGRESO) al mismo tiempo.
+  //
+  // Race condition conocida: dos POST /investment/new en paralelo pueden
+  // pasar los dos este chequeo y dejar al cliente con activas+1. Si el
+  // límite tiene que ser estricto, hay que contarlo y crear la inversión
+  // dentro de una misma transacción con SELECT ... FOR UPDATE sobre el
+  // Client, o un índice/constraint que lo garantice.
+  //
+  // Perf: myList trae TODAS las inversiones del cliente para contar. Con
+  // el denormalizado de estado (ver investment.repository.js) esto sería
+  // un simple prisma.inversion.count({ where: { clientId, estadoActual: { in: [...] } } }).
   const inversiones = await investmentRepository.myList(client.id);
   const activas = inversiones.filter((inv) =>
     ESTADOS_ACTIVOS.includes(inv.estados[0]?.estado ?? DEFAULT_ESTADO)
@@ -50,6 +64,10 @@ const newInvestment = async (userId, { monto }) => {
     );
   }
 
+  // OJO: aritmética en punto flotante sobre dinero. montoNum * 0.1 puede
+  // dar 0.30000000000000004 y se guarda en Decimal(18,8). Para importes
+  // grandes o si la tasa deja de ser "redonda", conviene calcular
+  // intereses/total con Prisma.Decimal (o strings) y no con Number.
   const intereses = montoNum * INTERES_RATE;
   const total = montoNum + intereses;
 
@@ -94,6 +112,14 @@ const list = async (tipo = 'ALL', rawPage) => {
     : 'ALL';
 
   const page = parsePage(rawPage);
+  // ATENCIÓN (escala): esto trae la tabla `inversion` COMPLETA en cada
+  // request de este listado de admin, la mapea y la pagina en memoria,
+  // solo porque el estado actual vive en la relación `estados` y no se
+  // puede filtrar/paginar directo en SQL. Con "medio flujo" y crecimiento
+  // esto se vuelve el primer cuello de botella del panel de admin.
+  // Solución recomendada: denormalizar `estadoActual` (EstadoInversion) en
+  // la tabla Inversion, mantenerlo en la misma transacción que crea el
+  // Estado, y aquí pasar a where + skip/take + count reales.
   const rows = await investmentRepository.list();
 
   // Se aplana el cliente a su nombre y el estado actual a un string;
@@ -177,6 +203,11 @@ const getInvestment = async (userId, inversionId) => {
 
   const estadoActual = inversion.estados[0]?.estado ?? DEFAULT_ESTADO;
 
+  // NOTA: `dias` y `diasParaHabilitar` salen del contador persistido, que
+  // solo se refresca a medianoche (job incrementarDias). Entre corridas el
+  // valor puede estar hasta ~24h desactualizado. Si el frontend necesita
+  // exactitud, usar diasTranscurridos(inversion.createdAt) en lugar de
+  // inversion.dias.
   return {
     inversion: {
       id: inversion.id,
@@ -274,6 +305,17 @@ const diasTranscurridos = (createdAt) => {
   return Math.max(0, Math.floor(diff / MS_POR_DIA));
 };
 
+// Job idempotente: se puede correr N veces el mismo día sin efectos
+// secundarios (fija `dias` al valor calculado y solo agrega EN_PROGRESO
+// si aún no está).
+//
+// Perf: recorre TODAS las inversiones y hace un $transaction por cada una
+// que cambia (N+1 escrituras secuenciales). Con pocos miles va bien; si
+// crece, conviene: (1) filtrar en SQL las que ya están RETIRADO,
+// (2) agrupar los UPDATE de `dias` por valor con updateMany, y
+// (3) createMany para los Estado nuevos. Como el estado transiciona solo
+// hacia adelante, el paso a EN_PROGRESO también se podría derivar en
+// lectura desde createdAt y dejar el job solo para el panel de admin.
 const incrementarDias = async () => {
   const inversiones = await investmentRepository.getInversionesActivas();
 
@@ -325,6 +367,55 @@ const inversionesCliente = async (userId, tipo = 'ALL', rawPage) => {
   return listInversionesCliente(client.id, tipo, rawPage);
 };
 
+// Resumen para el dashboard/inicio y para "Mis inversiones" del cliente:
+// capital invertido (suma de `monto`) y total acumulado (suma de
+// `intereses`) de TODAS sus inversiones, sin filtrar por estado; el
+// desglose por estado (en progreso / pendientes / retiradas); y el cupo
+// de inversiones activas (en progreso + pendientes vs. disponibles) que
+// alimenta la barra de progreso.
+const resumenInversiones = async (userId) => {
+  const client = await investmentRepository.getIdByUser(userId);
+
+  // Un usuario sin perfil de cliente (p. ej. un admin puro) no tiene
+  // inversiones que sumar ni cupo que mostrar.
+  if (!client) {
+    return {
+      totalInvertido: 0,
+      totalAcumulado: 0,
+      enProgreso: 0,
+      pendientes: 0,
+      retiradas: 0,
+      disponibles: MAX_INVERSIONES_ACTIVAS,
+      limiteActivas: MAX_INVERSIONES_ACTIVAS,
+      tieneWallet: false
+    };
+  }
+
+  const [totales, inversiones] = await Promise.all([
+    investmentRepository.getTotales(client.id),
+    investmentRepository.myList(client.id)
+  ]);
+
+  const estadoDe = (inv) => inv.estados[0]?.estado ?? DEFAULT_ESTADO;
+  const enProgreso = inversiones.filter((inv) => estadoDe(inv) === 'EN_PROGRESO').length;
+  const pendientes = inversiones.filter((inv) => estadoDe(inv) === 'PENDIENTE').length;
+  const retiradas = inversiones.filter((inv) => estadoDe(inv) === 'RETIRADO').length;
+  const disponibles = Math.max(0, MAX_INVERSIONES_ACTIVAS - (enProgreso + pendientes));
+
+  return {
+    ...totales,
+    enProgreso,
+    pendientes,
+    retiradas,
+    disponibles,
+    limiteActivas: MAX_INVERSIONES_ACTIVAS,
+    // Aviso de bienvenida del inicio: mientras no tenga wallet no puede
+    // invertir (ver newInvestment), así que el frontend usa esto para
+    // seguir recordándoselo, sin importar cuándo se creó la cuenta.
+    tieneWallet: tieneWallet(client.wallet)
+  };
+};
+
 export default {
   newInvestment,
   list,
@@ -332,5 +423,6 @@ export default {
   createApplication,
   incrementarDias,
   getInvestment,
-  inversionesCliente
+  inversionesCliente,
+  resumenInversiones
 };

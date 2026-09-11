@@ -46,7 +46,7 @@
    peso normal, sin espaciado extra ni versalitas. */
 .nav-section {
   color: #8795a6;
-  font-size: 12px;
+  font-size: var(--fs-meta);
   font-weight: 400;
   letter-spacing: normal;
   text-transform: none;

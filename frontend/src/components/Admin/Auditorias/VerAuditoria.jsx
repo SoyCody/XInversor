@@ -4,7 +4,6 @@ import { useFetch } from "../../../hooks/useFetch";
 import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import "../../../App.css";
-import "./Auditorias.css";
 
 const formatDate = (isoString) => {
   if (!isoString) return "—";
@@ -30,7 +29,7 @@ const VerAuditoria = () => {
         <Header />
 
         <div className="content">
-          <button type="button" className="back-btn" onClick={() => navigate(-1)}>
+          <button type="button" className="btn btn--muted btn--back" onClick={() => navigate(-1)}>
             ← Volver
           </button>
 
@@ -41,46 +40,44 @@ const VerAuditoria = () => {
             </div>
           </div>
 
-          <div className="detalle-center">
-            {error && <p className="dashboard-error">{error}</p>}
+          {error && <p className="dashboard-error">{error}</p>}
 
-            {isLoading ? (
-              <p>Cargando auditoría...</p>
-            ) : !auditoria ? (
-              <p>No se encontró información de esta auditoría.</p>
-            ) : (
-              <section className="cliente-detalle-card">
-                <div className="cliente-detalle-row">
-                  <span className="cliente-detalle-label">Usuario</span>
-                  <span className="cliente-detalle-value">{auditoria.nombre}</span>
-                </div>
-                <div className="cliente-detalle-row">
-                  <span className="cliente-detalle-label">Rol</span>
-                  <span className="cliente-detalle-value">{auditoria.rol}</span>
-                </div>
-                <div className="cliente-detalle-row">
-                  <span className="cliente-detalle-label">Correo</span>
-                  <span className="cliente-detalle-value">{auditoria.correo}</span>
-                </div>
-                <div className="cliente-detalle-row">
-                  <span className="cliente-detalle-label">Acción</span>
-                  <span className="cliente-detalle-value">{auditoria.accion}</span>
-                </div>
-                <div className="cliente-detalle-row">
-                  <span className="cliente-detalle-label">Tabla afectada</span>
-                  <span className="cliente-detalle-value">{auditoria.tabla}</span>
-                </div>
-                <div className="cliente-detalle-row">
-                  <span className="cliente-detalle-label">Registro afectado (ID)</span>
-                  <span className="cliente-detalle-value">{auditoria.targetId}</span>
-                </div>
-                <div className="cliente-detalle-row">
-                  <span className="cliente-detalle-label">Fecha</span>
-                  <span className="cliente-detalle-value">{formatDate(auditoria.createdAt)}</span>
-                </div>
-              </section>
-            )}
-          </div>
+          {isLoading ? (
+            <p>Cargando auditoría...</p>
+          ) : !auditoria ? (
+            <p>No se encontró información de esta auditoría.</p>
+          ) : (
+            <section className="section-band detail-list">
+              <div className="detail-row">
+                <span className="detail-label">Usuario</span>
+                <span className="detail-value">{auditoria.nombre}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Rol</span>
+                <span className="detail-value">{auditoria.rol}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Correo</span>
+                <span className="detail-value">{auditoria.correo}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Acción</span>
+                <span className="detail-value">{auditoria.accion}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Tabla afectada</span>
+                <span className="detail-value">{auditoria.tabla}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Registro afectado (ID)</span>
+                <span className="detail-value">{auditoria.targetId}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Fecha</span>
+                <span className="detail-value">{formatDate(auditoria.createdAt)}</span>
+              </div>
+            </section>
+          )}
         </div>
       </main>
     </div>

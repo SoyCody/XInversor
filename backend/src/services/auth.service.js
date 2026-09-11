@@ -40,6 +40,12 @@ class InvalidPasswordError extends Error {
 
 const registerClient = async ({ firstName, lastName, email, password }) => {
 
+  // findByEmail filtra state=ACTIVO, pero User.email es @unique global (sin
+  // filtro de state). Si el email pertenece a una cuenta BORRADA, este
+  // check pasa y luego el create revienta con P2002 -> el controller
+  // responde 409 "ya existe una cuenta" sin que el usuario entienda por
+  // qué. Decidir producto: ¿se permite reusar el email de una cuenta
+  // borrada? Si sí, hay que reactivar esa fila en vez de crear otra.
   const existingUser = await userRepository.findByEmail(email);
   if (existingUser) {
     throw new EmailAlreadyExistsError();
@@ -57,9 +63,7 @@ const registerClient = async ({ firstName, lastName, email, password }) => {
     avatarType: defaultAvatarType,
     avatarUpdatedAt: new Date(),
     client: {
-      create: {
-        link: `https://accounts.binance.bh/en-BH/register?ref=XZV234DGDGD2&registerChannel=&return_to=aHR0cHM6Ly93d3cuYmluYW5jZS5iaC9lbi1CSC92aXAtaW5zdGl0dXRpb25hbC1zZXJ2aWNlcz9yZWY9WkhIRlNZSU0%3D`
-      }
+      create: {}
     }
   };
 
@@ -79,6 +83,12 @@ const registerClient = async ({ firstName, lastName, email, password }) => {
 const logClient = async ({ email, password }) => {
   const existingUser = await userRepository.findByEmail(email);
   if (!existingUser) {
+    // User enumeration: este camino lanza 404 y no ejecuta bcrypt.compare,
+    // mientras que "password incorrecta" lanza 401 y sí lo ejecuta. Un
+    // atacante distingue "email existe" de "no existe" por el status y por
+    // el tiempo de respuesta. Endurecimiento: mismo status (401) y mismo
+    // mensaje en ambos casos, y correr un bcrypt.compare contra un hash
+    // dummy cuando el email no existe para igualar la latencia.
     throw new EmailDoesntExistError();
   }
 
@@ -113,6 +123,10 @@ const updateClient = async (id, { firstName, lastName, email }) => {
     ...(email !== undefined && { email }),
   };
 
+  // updateSchema no exige .min(1): un PUT /users/edit con body {} pasa la
+  // validación, hace un UPDATE sin cambios y aun así escribe una fila de
+  // auditoría. Conviene rechazar el body vacío en el schema (o salir
+  // temprano si no hay campos que actualizar).
   const updatedUser = await userRepository.updateUser(userData);
 
   await registrarAuditoria({
@@ -127,9 +141,19 @@ const updateClient = async (id, { firstName, lastName, email }) => {
 };
 
 const changePassword = async (id, { password }) => {
+  // SEGURIDAD: no se pide ni se verifica la contraseña actual. Con una
+  // sesión válida (cookie) cualquiera puede cambiarla. Sumado a que no hay
+  // protección CSRF explícita y sameSite es 'lax', el riesgo sube.
+  // Además no se invalidan las demás sesiones: los JWT ya emitidos siguen
+  // válidos hasta expirar (no hay tokenVersion ni lista de revocación).
+  // Recomendado: exigir `currentPassword`, compararla con bcrypt, y
+  // bumpear un `tokenVersion` en User que verifyToken chequee.
   const passwordHash = await bcrypt.hash(password, 12);
-  const userData = { id, passwordHash }; 
-  
+  const userData = { id, passwordHash };
+
+  // changePassword usa updateMany -> devuelve { count }. Si count === 0
+  // (usuario inexistente/borrado) no se entera nadie; hoy isActive lo
+  // previene, pero conviene tratar count===0 como 404.
   const updatePassword = await userRepository.changePassword(userData);
   return updatePassword;
 };

@@ -43,6 +43,11 @@ model User {
   passwordHash    String
   role            Role      @default(CLIENT)
   createdAt       DateTime  @default(now())
+  // NOTA: el campo está mal escrito ("apdatedAt" en vez de "updatedAt").
+  // Renombrarlo es un cambio de contrato (el JSON de /admin/watch/user/:id
+  // expone esta clave y el frontend la consume), así que se deja como
+  // está; si algún día se renombra, hacerlo con @map("apdatedAt") para no
+  // romper una cosa ni la otra de golpe.
   apdatedAt       DateTime  @updatedAt
   state           State     @default(ACTIVO)
   avatar          Bytes?
@@ -51,12 +56,14 @@ model User {
   client          Client?
   admin           Admin?
   audits          Audit[]
+
+  // Listado de admin: WHERE state = ? ORDER BY createdAt DESC + paginado.
+  @@index([state, createdAt])
 }
 
 model Client {
   id          Int         @id @default(autoincrement())
   userId      Int         @unique
-  link        String      @default("https://accounts.binance.bh/en-BH/register?ref=XZV234DGDGD2&registerChannel=&return_to=aHR0cHM6Ly93d3cuYmluYW5jZS5iaC9lbi1CSC92aXAtaW5zdGl0dXRpb25hbC1zZXJ2aWNlcz9yZWY9WkhIRlNZSU0%3D")
   // Puede ser null: una cuenta nace como CLIENT sin wallet; recién se
   // exige tenerla para poder crear inversiones. Además, si un admin
   // asciende a la cuenta al instante, puede que nunca la configure.
@@ -81,19 +88,27 @@ model Audit {
   targetId  Int
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Postgres NO indexa las FK por sí solo. El listado ordena por createdAt
+  // y hace JOIN con user en cada fila.
+  @@index([createdAt])
+  @@index([userId])
 }
 
 model Inversion {
   id          Int         @id @default(autoincrement())
   clientId    Int
-  monto       Decimal     @db.Decimal(14, 2) 
+  monto       Decimal     @db.Decimal(14, 2)
   dias        Int         @default(0)
   total       Decimal     @default(0) @db.Decimal(18, 8)
-  intereses   Decimal     @default(0) @db.Decimal(18, 8) 
+  intereses   Decimal     @default(0) @db.Decimal(18, 8)
   createdAt   DateTime    @default(now())
   client      Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
   estados     Estado[]
   solicitudes Solicitud[]
+
+  // myList: WHERE clientId = ? ORDER BY createdAt DESC.
+  @@index([clientId, createdAt])
 }
 
 model Solicitud {
@@ -108,7 +123,13 @@ model Solicitud {
   inversion   Inversion       @relation(fields: [inversionId], references: [id], onDelete: Cascade)
   admin       Admin?          @relation(fields: [adminId], references: [id], onDelete: SetNull)
 
+  // `pendiente` es Boolean? a propósito: el índice único garantiza "una
+  // sola solicitud pendiente por inversión" mientras vale true. Al
+  // resolver una solicitud hay que poner pendiente = NULL (no false),
+  // porque Postgres trata cada NULL como distinto y así se permiten
+  // varias solicitudes resueltas para la misma inversión.
   @@unique([inversionId, pendiente])
+  @@index([adminId])
 }
 
 model Estado {
@@ -117,4 +138,8 @@ model Estado {
   estado      EstadoInversion @default(PENDIENTE)
   createdAt   DateTime        @default(now())
   inversion   Inversion       @relation(fields: [inversionId], references: [id], onDelete: Cascade)
+
+  // Se lee siempre como "último estado por inversión":
+  // WHERE inversionId = ? ORDER BY createdAt DESC LIMIT 1.
+  @@index([inversionId, createdAt])
 }

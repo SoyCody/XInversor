@@ -24,6 +24,24 @@ const findById = (id, state = ACTIVE_STATE) => {
   return prisma.user.findFirst({ where: { id, state }, omit: { avatar: true } });
 };
 
+// Contexto mínimo de autenticación: se ejecuta en CADA request autenticado
+// (verifyToken), así que solo se piden las columnas que consumen los
+// middlewares + `client.blocked`. Evita traer en cada request firstName,
+// lastName, passwordHash, avatarType, etc. y le ahorra a `isnBlocked` una
+// segunda consulta a la tabla Client.
+const findAuthContextById = (id, state = ACTIVE_STATE) => {
+  return prisma.user.findFirst({
+    where: { id, state },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      state: true,
+      client: { select: { blocked: true } }
+    }
+  });
+};
+
 const updateUser = (userData) => {
   const { id, ...data } = userData;
   return prisma.user.update({
@@ -69,10 +87,10 @@ const deleteUser = (id)=> {
 export default {
   findById,
   findActiveById,
+  findAuthContextById,
   updateUser,
   findByEmail,
   createUser,
-  updateUser,
   changePassword,
   deleteUser,
   updateAvatar,

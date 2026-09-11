@@ -93,7 +93,7 @@ const EditProfileModal = ({ user, onClose, onSuccess }) => {
         <div className="config-modal__actions">
           <button
             type="button"
-            className="config-modal__btn config-modal__btn--ghost"
+            className="btn btn--muted"
             onClick={onClose}
             disabled={isSubmitting}
           >
@@ -101,7 +101,7 @@ const EditProfileModal = ({ user, onClose, onSuccess }) => {
           </button>
           <button
             type="submit"
-            className="config-modal__btn config-modal__btn--primary"
+            className="btn btn--primary"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Guardando..." : "Confirmar"}

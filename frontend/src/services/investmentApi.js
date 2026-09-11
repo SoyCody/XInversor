@@ -15,6 +15,12 @@ export function misInversiones(tipo = "ALL", page = 1) {
   );
 }
 
+// Resumen agregado (totales + desglose por estado) del cliente
+// autenticado: alimenta las tarjetas y la barra de "Mis inversiones".
+export function resumenInversiones() {
+  return apiFetch("/investment/summary");
+}
+
 export function crearInversion(monto) {
   return apiFetch("/investment/new", { method: "POST", body: { monto } });
 }

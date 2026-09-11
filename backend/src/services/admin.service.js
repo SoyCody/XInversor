@@ -81,6 +81,10 @@ const promoteToAdmin = async (id, actingAdminUserId) => {
     throw new AlreadyAdminError();
   }
 
+  // TOCTOU menor: si el usuario se borra entre este check y el update,
+  // adminRepository.promoteToAdmin lanza P2025 y el controller responde
+  // 500. La verificación de existencia/rol podría moverse dentro de la
+  // transacción del repo.
   const updatedUser = await adminRepository.promoteToAdmin(id);
 
   await registrarAuditoria({
@@ -95,6 +99,13 @@ const promoteToAdmin = async (id, actingAdminUserId) => {
 };
 
 const blockClient = async (id, actingAdminUserId) => {
+  // 3 lecturas para un toggle: findActiveById aquí + findUnique(client) y
+  // update dentro de adminRepository.block. Se puede colapsar en una sola
+  // transacción en el repo. Además block() lee `blocked` y escribe su
+  // negación: dos requests simultáneos (doble click) pueden leer el mismo
+  // valor y dejar el estado sin cambios o mal. Si importa, actualizar con
+  // `data: { blocked: { set: ... } }` a un valor explícito recibido, no a
+  // un toggle.
   const user = await userRepository.findActiveById(id);
   if (!user || user.role !== 'CLIENT') {
     throw new UserNotFoundError();

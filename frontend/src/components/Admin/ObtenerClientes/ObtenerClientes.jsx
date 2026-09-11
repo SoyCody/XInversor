@@ -7,7 +7,6 @@ import Pagination from "../../Pagination/Pagination.jsx";
 import { useNavigate } from "react-router-dom";
 import "../../../App.css";
 import "../../DataTable/DataTable.css";
-import "./ObtenerClientes.css";
 
 const FILTROS = [
   { value: "CLIENT", label: "Clientes", titulo: "Clientes", descripcion: "Listado de todos los clientes registrados" },
@@ -131,7 +130,7 @@ const ObtenerClientes = () => {
                           <td>{usuario.blocked ? "Sí" : "—"}</td>
                           <td className="data-table-actions">
                             <button
-                              className="edit-profile-btn"
+                              className="btn btn--primary btn--sm"
                               onClick={() => navigate(`/admin/clientes/${usuario.id}`)}
                             >
                               Ver detalles

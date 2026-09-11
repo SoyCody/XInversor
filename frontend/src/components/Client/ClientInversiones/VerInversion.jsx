@@ -54,7 +54,11 @@ const VerInversion = () => {
         <Header />
 
         <div className="content">
-          <button type="button" className="back-btn" onClick={() => navigate(-1)}>
+          <button
+            type="button"
+            className="btn btn--muted btn--back"
+            onClick={() => navigate(-1)}
+          >
             ← Volver
           </button>
 
@@ -65,100 +69,99 @@ const VerInversion = () => {
             </div>
           </div>
 
-          <div className="vercliente-center">
-            {error && <p className="dashboard-error">{error}</p>}
-            {successMsg && <p className="edit-avatar-success">{successMsg}</p>}
+          {error && <p className="dashboard-error">{error}</p>}
+          {successMsg && <p className="form-success">{successMsg}</p>}
 
-            {isLoading ? (
-              <p>Cargando inversión...</p>
-            ) : !inversion ? (
-              <p>No se encontró información de esta inversión.</p>
-            ) : (
-              <>
-                <section className="cliente-detalle-card">
-                  <div className="cliente-detalle-row">
-                    <span className="cliente-detalle-label">Monto invertido (USD)</span>
-                    <span className="cliente-detalle-value">{formatUsd(inversion.monto)}</span>
-                  </div>
-                  <div className="cliente-detalle-row">
-                    <span className="cliente-detalle-label">Intereses generados (BTC)</span>
-                    <span className="cliente-detalle-value">{formatBtc(inversion.intereses)}</span>
-                  </div>
-                  <div className="cliente-detalle-row">
-                    <span className="cliente-detalle-label">Total a retirar (BTC)</span>
-                    <span className="cliente-detalle-value">{formatBtc(inversion.total)}</span>
-                  </div>
-                  <div className="cliente-detalle-row">
-                    <span className="cliente-detalle-label">Días transcurridos</span>
-                    <span className="cliente-detalle-value">{inversion.dias}</span>
-                  </div>
-                  <div className="cliente-detalle-row">
-                    <span className="cliente-detalle-label">Estado</span>
-                    <span className="cliente-detalle-value">
-                      {ESTADO_INVERSION[inversion.estado] ?? inversion.estado}
-                    </span>
-                  </div>
-                  {inversion.estado === "PENDIENTE" && (
-                    <div className="cliente-detalle-row">
-                      <span className="cliente-detalle-label">Días para habilitar retiros</span>
-                      <span className="cliente-detalle-value">{inversion.diasParaHabilitar}</span>
-                    </div>
-                  )}
-                  <div className="cliente-detalle-row">
-                    <span className="cliente-detalle-label">Creada</span>
-                    <span className="cliente-detalle-value">{formatDateTime(inversion.createdAt)}</span>
-                  </div>
-                </section>
-
-                {inversion.puedeSolicitarRetiro && !isSolicitando && (
-                  <div className="vercliente-actions">
-                    <button
-                      type="button"
-                      className="edit-profile-btn"
-                      onClick={() => {
-                        setSuccessMsg(null);
-                        setIsSolicitando(true);
-                      }}
-                    >
-                      Solicitar retiro
-                    </button>
+          {isLoading ? (
+            <p>Cargando inversión...</p>
+          ) : !inversion ? (
+            <p>No se encontró información de esta inversión.</p>
+          ) : (
+            <>
+              <section className="section-band detail-list">
+                <div className="detail-row">
+                  <span className="detail-label">Monto invertido (USD)</span>
+                  <span className="detail-value">{formatUsd(inversion.monto)}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Intereses generados (BTC)</span>
+                  <span className="detail-value">{formatBtc(inversion.intereses)}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Total a retirar (BTC)</span>
+                  <span className="detail-value">{formatBtc(inversion.total)}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Días transcurridos</span>
+                  <span className="detail-value">{inversion.dias}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Estado</span>
+                  <span className="detail-value">
+                    {ESTADO_INVERSION[inversion.estado] ?? inversion.estado}
+                  </span>
+                </div>
+                {inversion.estado === "PENDIENTE" && (
+                  <div className="detail-row">
+                    <span className="detail-label">Días para habilitar retiros</span>
+                    <span className="detail-value">{inversion.diasParaHabilitar}</span>
                   </div>
                 )}
+                <div className="detail-row">
+                  <span className="detail-label">Creada</span>
+                  <span className="detail-value">{formatDateTime(inversion.createdAt)}</span>
+                </div>
+              </section>
 
-                {isSolicitando && (
-                  <div className="inversion-solicitud-form">
-                    <NuevaSolicitudForm
-                      inversionId={inversion.id}
-                      disponible={formatBtc(inversion.total)}
-                      onCancel={() => setIsSolicitando(false)}
-                      onSuccess={() => {
-                        setIsSolicitando(false);
-                        setSuccessMsg("Solicitud de retiro enviada. Un administrador la revisará.");
-                        refetch();
-                      }}
-                    />
-                  </div>
-                )}
+              {inversion.puedeSolicitarRetiro && !isSolicitando && (
+                <div className="section-band form-actions section-actions">
+                  <button
+                    type="button"
+                    className="btn btn--primary"
+                    onClick={() => {
+                      setSuccessMsg(null);
+                      setIsSolicitando(true);
+                    }}
+                  >
+                    Solicitar retiro
+                  </button>
+                </div>
+              )}
 
-                <section className="inversion-bloque">
-                  <h2>Historial de estados</h2>
-                  <ul className="inversion-historial">
-                    {inversion.historialEstados.map((h, i) => (
-                      <li key={i}>
-                        <span>{ESTADO_INVERSION[h.estado] ?? h.estado}</span>
-                        <span className="inversion-historial-fecha">{formatDateTime(h.fecha)}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
+              {isSolicitando && (
+                <div className="section-band inversion-solicitud-form">
+                  <NuevaSolicitudForm
+                    inversionId={inversion.id}
+                    disponible={formatBtc(inversion.total)}
+                    onCancel={() => setIsSolicitando(false)}
+                    onSuccess={() => {
+                      setIsSolicitando(false);
+                      setSuccessMsg("Solicitud de retiro enviada. Un administrador la revisará.");
+                      refetch();
+                    }}
+                  />
+                </div>
+              )}
 
-                <section className="inversion-bloque">
-                  <h2>Solicitudes de retiro</h2>
-                  {inversion.solicitudes.length === 0 ? (
-                    <p>Esta inversión no tiene solicitudes de retiro.</p>
-                  ) : (
-                    <div className="data-table-wrap">
-                      <table className="data-table">
+              <section className="section-band inversion-bloque">
+                <h2>Historial de estados</h2>
+                <ul className="inversion-historial">
+                  {inversion.historialEstados.map((h, i) => (
+                    <li key={i}>
+                      <span>{ESTADO_INVERSION[h.estado] ?? h.estado}</span>
+                      <span className="inversion-historial-fecha">{formatDateTime(h.fecha)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+              <section className="inversion-bloque">
+                <h2>Solicitudes de retiro</h2>
+                {inversion.solicitudes.length === 0 ? (
+                  <p>Esta inversión no tiene solicitudes de retiro.</p>
+                ) : (
+                  <div className="data-table-wrap">
+                    <table className="data-table">
                         <thead>
                           <tr>
                             <th>Monto (BTC)</th>
@@ -183,7 +186,6 @@ const VerInversion = () => {
                 </section>
               </>
             )}
-          </div>
         </div>
       </main>
     </div>

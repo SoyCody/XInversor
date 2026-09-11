@@ -14,8 +14,12 @@ const obtenerAuditorias = async (req, res) => {
 
 const verAuditoria = async (req, res) => {
     try{
-        const { id } = req.params;
-        const auditoria = await auditService.verAuditoria(Number(id));
+        const id = Number(req.params.id);
+        // Evita que un :id no numérico llegue como NaN a Prisma (500 -> 400).
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({ message: 'Id inválido' });
+        }
+        const auditoria = await auditService.verAuditoria(id);
 
         if (!auditoria.auditoria) {
             return res.status(404).json({

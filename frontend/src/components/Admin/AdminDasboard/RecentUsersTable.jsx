@@ -11,7 +11,7 @@ const formatDate = (isoString) => {
 
 const RecentUsersTable = ({ users, isLoading }) => {
   return (
-    <article className="metric-card">
+    <article className="panel recent-users-panel">
         <section className="recent-users">
         <div className="recent-users-header">
             <h2>Usuarios recientes</h2>

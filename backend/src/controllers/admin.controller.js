@@ -25,8 +25,15 @@ const obtenerPersonas = async (req, res) => {
 
 const verCliente = async (req, res) => {
   try{
-    const { id } = req.params;
-    const cliente = await adminService.verCliente(Number(id));
+    const id = Number(req.params.id);
+    // Sin este guard, un :id no numérico llega como NaN a
+    // prisma.user.findUnique y Prisma lanza un PrismaClientValidationError
+    // que se traducía a un 500 en vez de a un 400.
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ message: 'Id inválido' });
+    }
+
+    const cliente = await adminService.verCliente(id);
 
     if (!cliente.cliente) {
       return res.status(404).json({
@@ -35,14 +42,15 @@ const verCliente = async (req, res) => {
     }
 
     const inversiones = await investmentService.inversionesCliente(
-      Number(id),
+      id,
       req.query.tipo,
       req.query.page
     );
 
     return res.status(200).json({ ...cliente, inversiones })
-    
+
   }catch(error){
+    console.error('Error al buscar el cliente:', error);
     return res.status(500).json({
       message: "Error al buscar el cliente"
     })
@@ -51,8 +59,11 @@ const verCliente = async (req, res) => {
 
 const promoteToAdmin = async (req, res) => {
   try {
-    const { id } = req.params;
-    const user = await adminService.promoteToAdmin(Number(id), req.user.id);
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ message: 'Id inválido' });
+    }
+    const user = await adminService.promoteToAdmin(id, req.user.id);
     return res.status(200).json(user);
   } catch (error) {
     if (error instanceof adminService.UserNotFoundError ||
@@ -69,8 +80,11 @@ const promoteToAdmin = async (req, res) => {
 
 const blockClient = async (req, res) => {
   try{
-    const { id } = req.params;
-    const blocked = await adminService.blockClient(Number(id), req.user.id);
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ message: 'Id inválido' });
+    }
+    const blocked = await adminService.blockClient(id, req.user.id);
     return res.status(200).json(blocked);
   } catch ( error ) {
     if (error instanceof adminService.UserNotFoundError) {

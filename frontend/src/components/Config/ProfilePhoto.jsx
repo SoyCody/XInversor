@@ -99,7 +99,7 @@ const ProfilePhoto = ({ user, roleLabel, onUpdated }) => {
 
       <button
         type="button"
-        className="cfg-btn cfg-btn--primary"
+        className="btn btn--primary"
         onClick={handleUpload}
         disabled={!file || isUploading}
       >

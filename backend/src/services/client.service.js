@@ -1,12 +1,18 @@
 import clientRepository from '../repositories/client.repository.js';
+import investmentService from './investment.service.js';
 import { registrarAuditoria, AUDIT_ACTIONS, AUDIT_TABLES } from './auditorias.service.js';
 
 
+// El link de referido es único para todos los clientes: vive en
+// CLIENT_REFERRAL_LINK, no en la base de datos. El resto (totales y cupo
+// de inversiones activas) sí es por cliente: ver
+// investmentService.resumenInversiones.
 const readDashboard = async (userId) => {
-  const client = await clientRepository.getLink(userId);
+  const resumen = await investmentService.resumenInversiones(userId);
 
   return {
-    link: client?.link ?? null,
+    link: process.env.CLIENT_REFERRAL_LINK ?? null,
+    ...resumen
   };
 };
 

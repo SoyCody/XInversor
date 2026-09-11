@@ -1,15 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap');
+/* Única fuente de toda la app autenticada. Se carga una sola vez aquí.
+   (Home tiene su propio import en Home.css y queda fuera de este estándar.) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 * {
   margin: 0;
-  padding: 0; 
+  padding: 0;
   box-sizing: border-box;
 }
 
 html,
 body,
 #root {
-  font-family: "Roboto", sans-serif;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
   width: 100%;
   min-width: 100%;
   min-height: 100%;

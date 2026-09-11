@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { changePassword } from "../../../services/authApi.js";
 import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
-import Header from "../../Header/Header.jsx"
-import "../../../components/Auth/EditProfileForm.css";
+import Header from "../../Header/Header.jsx";
+import "../../../App.css";
 
 const AdminChangePassword = () => {
   const navigate = useNavigate();
@@ -65,36 +65,45 @@ const AdminChangePassword = () => {
             </div>
           </div>
 
-          <form className="edit-profile-form" onSubmit={handleSubmit}>
-            {error && <p className="edit-profile-error">{error}</p>}
+          <form className="section-form" onSubmit={handleSubmit}>
+            {error && <p className="form-error">{error}</p>}
 
-            <label>
-              Nueva Contraseña
+            <div className="field">
+              <label htmlFor="admin-pwd-new">Nueva contraseña</label>
               <input
+                id="admin-pwd-new"
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Mínimo 8 caracteres"
+                autoComplete="new-password"
               />
-            </label>
+            </div>
 
-            <label>
-              Confirmar Nueva Contraseña
+            <div className="field">
+              <label htmlFor="admin-pwd-confirm">Confirmar nueva contraseña</label>
               <input
+                id="admin-pwd-confirm"
                 type="password"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Repite la contraseña"
+                autoComplete="new-password"
               />
-            </label>
+            </div>
 
-            <div className="edit-profile-actions">
-              <button type="button" onClick={() => navigate("/admin/me")} disabled={isSubmitting}>
+            <div className="form-actions section-actions">
+              <button
+                type="button"
+                className="btn btn--muted"
+                onClick={() => navigate("/admin/me")}
+                disabled={isSubmitting}
+              >
                 Cancelar
               </button>
-              <button type="submit" disabled={isSubmitting}>
+              <button type="submit" className="btn btn--primary" disabled={isSubmitting}>
                 {isSubmitting ? "Guardando..." : "Guardar contraseña"}
               </button>
             </div>

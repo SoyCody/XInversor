@@ -5,7 +5,6 @@ import { deleteAccount } from "../../../services/authApi.js";
 import { useFetch } from "../../../hooks/useFetch";
 import "../../../App.css";
 import "../../Config/config.css";
-import "./ClientGetMe.css";
 import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import AccountDetails from "../../Config/AccountDetails.jsx";
@@ -93,13 +92,13 @@ const ClientGetMe = () => {
                     </p>
                     <div className="cfg-datos-actions">
                       <button
-                        className="cfg-btn cfg-btn--primary"
+                        className="btn btn--primary"
                         onClick={() => setEditOpen(true)}
                       >
                         Editar perfil
                       </button>
                       <button
-                        className="cfg-btn cfg-btn--primary"
+                        className="btn btn--primary"
                         onClick={() => setPasswordOpen(true)}
                       >
                         Cambiar contraseña
@@ -121,7 +120,7 @@ const ClientGetMe = () => {
 
               <div className="cfg-danger">
                 <button
-                  className="cfg-btn cfg-btn--muted"
+                  className="btn btn--muted"
                   onClick={() => setIsDeleteModalOpen(true)}
                 >
                   Eliminar Cuenta

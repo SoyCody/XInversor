@@ -57,7 +57,7 @@ const ChangePasswordModal = ({ onClose }) => {
           <div className="config-modal__actions">
             <button
               type="button"
-              className="config-modal__btn config-modal__btn--primary"
+              className="btn btn--primary"
               onClick={onClose}
             >
               Listo
@@ -106,7 +106,7 @@ const ChangePasswordModal = ({ onClose }) => {
         <div className="config-modal__actions">
           <button
             type="button"
-            className="config-modal__btn config-modal__btn--ghost"
+            className="btn btn--muted"
             onClick={onClose}
             disabled={isSubmitting}
           >
@@ -114,7 +114,7 @@ const ChangePasswordModal = ({ onClose }) => {
           </button>
           <button
             type="submit"
-            className="config-modal__btn config-modal__btn--primary"
+            className="btn btn--primary"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Guardando..." : "Confirmar"}

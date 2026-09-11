@@ -18,8 +18,8 @@
 
 .pagination__item {
   min-width: 38px;
-  padding: 0.5rem 0.7rem;
-  font-size: 0.85rem;
+  padding: 8px 11px;
+  font-size: var(--fs-input);
   font-weight: 500;
   line-height: 1;
   color: #6b7280; /* gris claro */

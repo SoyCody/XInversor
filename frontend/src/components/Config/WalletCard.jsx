@@ -47,7 +47,7 @@ const WalletCard = ({ initialWallet, onSaved }) => {
       <div className="cfg-wallet-row">
         <button
           type="button"
-          className="cfg-btn cfg-btn--primary"
+          className="btn btn--primary"
           onClick={handleSave}
           disabled={isSaving || sinCambios || !trimmed}
         >

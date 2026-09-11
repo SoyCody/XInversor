@@ -24,6 +24,39 @@
   --muted: #72839a;
   --shadow: 0 5px 18px rgba(26, 58, 93, .055);
   --sidebar-w: 230px;
+
+  /* ===== Sistema de diseño (referencia: pantalla de Configuración) =====
+     Una sola fuente y una sola escala de tamaños para toda la app. Los
+     componentes NO vuelven a declarar font-family ni font-size salvo para
+     mapear a estos tokens. */
+  --font: "Inter", "Segoe UI", Arial, sans-serif;
+  --fs-h1: 21px;    /* título de página */
+  --fs-h2: 16px;    /* título de sección */
+  --fs-h3: 14px;    /* subsección */
+  --fs-body: 14px;  /* texto, celdas de tabla, datos label/valor */
+  --fs-input: 13px; /* inputs, selects */
+  --fs-btn: 14px;   /* botones */
+  --fs-th: 13px;    /* encabezados de tabla */
+  --fs-meta: 12px;  /* descripciones, "miembro desde", errores, resúmenes */
+
+  /* Colores de botón e input, tomados de Configuración. */
+  --btn-primary: #2365d4;
+  --btn-primary-hover: #1b52ad;
+  --btn-muted: #9aa3af;
+  --btn-muted-hover: #FDBC02;
+  --input-border: #d9dfe8;
+  --input-focus: #3b82f6;
+  --detail-border: #c9d2df;
+  --detail-label: #55657a;
+  --detail-value: #1f2d3f;
+
+  /* Ancho de la banda centrada (zona B: todo lo que no es título ni tabla). */
+  --band-w: 980px;
+
+  /* Acentos del resumen de inicio del cliente (tarjetas de capital y
+     barra de cupo de inversiones activas). */
+  --accent-amber: #f5a623;
+  --accent-teal: #14b8a6;
 }
 
 html,
@@ -33,20 +66,210 @@ body {
 }
 
 body {
-  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  font-family: var(--font);
   background: var(--background);
   color: var(--text);
-  font-size: 13px;
+  font-size: var(--fs-body);
 }
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
 a {
   color: inherit;
+}
+
+/* ===== Base tipográfica: una escala fija por rol ===== */
+h1 { font-size: var(--fs-h1); font-weight: 700; letter-spacing: -.02em; }
+h2 { font-size: var(--fs-h2); font-weight: 700; }
+h3 { font-size: var(--fs-h3); font-weight: 700; }
+
+/* ===== Primitiva de botón: solo dos, los de Configuración ===== */
+.btn {
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: var(--fs-btn);
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color .2s ease;
+}
+
+.btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+/* Acción principal (la mayoría de las funciones). */
+.btn--primary {
+  background: var(--btn-primary);
+  color: #fff;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--btn-primary-hover);
+}
+
+/* Volver / cancelar / descartar. */
+.btn--muted {
+  background: var(--btn-muted);
+  color: #fff;
+}
+
+.btn--muted:hover:not(:disabled) {
+  background: var(--btn-muted-hover);
+}
+
+/* Botón dentro de una fila de tabla ("Ver detalles", "Asignar..."). */
+.btn--sm {
+  padding: 7px 14px;
+  font-size: var(--fs-input);
+}
+
+/* Botón "← Volver" arriba de una pantalla de detalle: separa del título. */
+.btn--back {
+  margin-bottom: 16px;
+}
+
+/* ===== Primitiva de input: el de Configuración ===== */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: var(--fs-input);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--detail-value);
+  font-size: var(--fs-input);
+}
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, .15);
+}
+
+.form-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* Fila de acciones al final de una sección de la banda centrada
+   (alineada a la derecha, con aire arriba). */
+.section-actions {
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.form-error {
+  margin: 4px 0 0;
+  font-size: var(--fs-meta);
+  color: #b42318;
+}
+
+.form-success {
+  margin: 4px 0 0;
+  font-size: var(--fs-meta);
+  color: #16a34a;
+}
+
+.form-meta {
+  margin: 4px 0 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+/* Mensaje de error a nivel de página. Se usaba en ~8 pantallas
+   (.dashboard-error) pero nunca estuvo definido: renderizaba como texto
+   negro suelto. */
+.dashboard-error,
+.page-alert {
+  margin: 10px 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #fff0f0;
+  color: #b42318;
+  border: 1px solid #f1c7c2;
+  font-size: var(--fs-meta);
+}
+
+/* ===== Layout zona-A / zona-B =====
+   Zona A (títulos, descripciones y TABLAS): ancho completo de .content.
+   Zona B (todo lo demás): banda centrada de ancho acotado. */
+.section-band {
+  width: 100%;
+  max-width: var(--band-w);
+  margin-inline: auto;
+}
+
+/* Formulario dentro de la zona B: columna centrada más angosta. */
+.section-form {
+  width: 100%;
+  max-width: 460px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===== Lista de datos label -> valor (pantallas de detalle) =====
+   Mismo tratamiento que .account-details-list de Configuración. */
+.detail-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 2px;
+  border-bottom: 1px solid var(--detail-border);
+  font-size: var(--fs-body);
+}
+
+.detail-label {
+  color: var(--detail-label);
+}
+
+.detail-value {
+  margin: 0;
+  color: var(--detail-value);
+  text-align: right;
+  word-break: break-word;
+}
+
+@media (max-width: 520px) {
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .detail-value {
+    text-align: left;
+  }
 }
 
 .app {
@@ -488,7 +711,7 @@ a {
   outline: 0;
   background: transparent;
   color: var(--text);
-  font-size: 11px;
+  font-size: var(--fs-input);
 }
 
 .search input::placeholder {
@@ -658,7 +881,7 @@ a {
 /* CONTENT */
 
 .content {
-  padding: 27px 27px 22px;
+  padding: 35px 90px 30px;
 }
 
 .page-heading {
@@ -670,14 +893,14 @@ a {
 
 .page-heading h1 {
   margin: 0;
-  font-size: 21px;
-  letter-spacing: -.03em;
+  font-size: var(--fs-h1);
+  letter-spacing: -.02em;
 }
 
 .page-heading p {
   margin: 5px 0 0;
   color: #8795a6;
-  font-size: 11px;
+  font-size: var(--fs-meta);
 }
 
 .date-picker {
@@ -751,7 +974,7 @@ a {
 .metric-label {
   display: block;
   color: #72859b;
-  font-size: 9px;
+  font-size: var(--fs-meta);
   font-weight: 600;
   margin-bottom: 8px;
 }
@@ -759,15 +982,15 @@ a {
 .metric-top strong {
   display: block;
   color: #17365a;
-  font-size: 23px;
+  font-size: 20px;
   line-height: 1.1;
-  letter-spacing: -.03em;
+  letter-spacing: -.02em;
 }
 
 .metric-top small {
   display: block;
   margin-top: 6px;
-  font-size: 9px;
+  font-size: var(--fs-meta);
   font-weight: 600;
 }
 
@@ -1112,7 +1335,7 @@ table {
 
 th {
   color: #74869b;
-  font-size: 8px;
+  font-size: var(--fs-th);
   text-align: left;
   font-weight: 600;
   padding: 9px 7px;
@@ -1121,7 +1344,7 @@ th {
 
 td {
   color: #50667d;
-  font-size: 8.5px;
+  font-size: var(--fs-body);
   padding: 10px 7px;
   border-bottom: 1px solid #edf1f5;
   white-space: nowrap;
@@ -1136,7 +1359,7 @@ td {
   display: inline-block;
   padding: 4px 7px;
   border-radius: 4px;
-  font-size: 7.5px;
+  font-size: 11px;
   font-weight: 600;
 }
 
@@ -1193,7 +1416,7 @@ td {
 footer {
   text-align: center;
   color: #8291a4;
-  font-size: 9px;
+  font-size: var(--fs-meta);
   padding: 27px 0 2px;
 }
 
@@ -1310,7 +1533,7 @@ footer {
 .content {
   width: 100%;
   max-width: none;
-  padding: 27px 31px 22px;
+  padding: 28px 36px 24px;
 }
 }
 
@@ -1329,7 +1552,7 @@ footer {
   }
 
   .content {
-    padding: 20px 15px 18px;
+    padding: 20px 20px 18px;
   }
 
   .topbar {

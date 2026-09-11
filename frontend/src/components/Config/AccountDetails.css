@@ -9,17 +9,17 @@
   justify-content: space-between;
   gap: 24px;
   padding: 14px 2px;
-  border-bottom: 1px solid #c9d2df;
-  font-size: 14px;
+  border-bottom: 1px solid var(--detail-border);
+  font-size: var(--fs-body);
 }
 
 .account-details-label {
-  color: #55657a;
+  color: var(--detail-label);
 }
 
 .account-details-value {
-  color: #1f2d3f;
-  font-weight: 600;
+  color: var(--detail-value);
+  font-weight: 400;
   text-align: right;
   word-break: break-word;
 }

@@ -41,13 +41,13 @@
 
 .config-modal__header h2 {
   margin: 0;
-  font-size: 17px;
+  font-size: var(--fs-h2);
   font-weight: 700;
 }
 
 .config-modal__header p {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: var(--fs-meta);
   color: rgba(30, 35, 41, 0.72);
 }
 
@@ -68,82 +68,51 @@
 }
 
 .config-modal__field label {
-  font-size: 13px;
+  font-size: var(--fs-input);
   font-weight: 600;
-  color: #1f2d3f;
+  color: var(--detail-value);
 }
 
 .config-modal__field input {
   width: 100%;
   padding: 9px 12px;
-  border: 1px solid #d9dfe8;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
   background: #ffffff;
-  color: #1f2d3f;
-  font-size: 13px;
+  color: var(--detail-value);
+  font-size: var(--fs-input);
 }
 
 .config-modal__field input:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: var(--input-focus);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 .config-modal__text {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--fs-body);
   line-height: 1.5;
-  color: #1f2d3f;
+  color: var(--detail-value);
 }
 
 .config-modal__error {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--fs-meta);
   color: #b42318;
 }
 
 .config-modal__success {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--fs-meta);
   color: #16a34a;
 }
 
+/* Los botones del modal usan las primitivas .btn / .btn--primary /
+   .btn--muted de App.css; aquí solo se centran. */
 .config-modal__actions {
   display: flex;
   gap: 12px;
   justify-content: center;
   margin-top: 4px;
-}
-
-.config-modal__btn {
-  padding: 9px 18px;
-  border: 0;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.config-modal__btn--ghost {
-  background: #9aa3af;
-  color: #ffffff;
-}
-
-.config-modal__btn--ghost:hover:not(:disabled) {
-  background: #FDBC02;
-}
-
-.config-modal__btn--primary {
-  background: #2365d4;
-  color: #ffffff;
-}
-
-.config-modal__btn--primary:hover:not(:disabled) {
-  background: #1b52ad;
-}
-
-.config-modal__btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
 }
