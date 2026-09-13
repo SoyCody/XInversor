@@ -28,12 +28,10 @@ router.get('/my',
     investmentController.myList
 );
 
-// Resumen agregado (totales + desglose por estado) de las inversiones
-// propias: alimenta las tarjetas y la barra de "Mis inversiones" e Inicio.
+// totales + desglose por estado de las inversiones propias
 router.get('/summary',
     verifyToken,
     isActive,
-    isnBlocked,
     investmentController.summary
 );
 
@@ -44,7 +42,6 @@ router.get('/:inversionId/watch',
     investmentController.getInvestment
 )
 
-// Crear una solicitud de retiro sobre una inversión propia.
 router.post('/:inversionId/application',
     verifyToken,
     isActive,

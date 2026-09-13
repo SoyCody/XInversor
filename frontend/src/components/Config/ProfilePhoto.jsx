@@ -5,23 +5,26 @@ import {
   ALLOWED_AVATAR_TYPES,
   MAX_AVATAR_SIZE_BYTES,
 } from "../../services/authApi.js";
+import BlockedActionModal from "./BlockedActionModal.jsx";
 
 // Foto de perfil + selector de archivo + botón "Cambiar foto".
 // Compartido por la configuración del cliente y la del administrador.
-const ProfilePhoto = ({ user, roleLabel, onUpdated }) => {
+// `blocked` solo lo manda la config del cliente (un admin nunca lo está).
+// El aviso de éxito no se muestra aquí: se avisa al padre (`onSuccess`)
+// para que lo muestre con el banner debajo del header.
+const ProfilePhoto = ({ user, roleLabel, onUpdated, onSuccess, blocked = false }) => {
   const fileInputRef = useRef(null);
   const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [broken, setBroken] = useState(false);
+  const [blockedModalOpen, setBlockedModalOpen] = useState(false);
 
   const handleChange = (e) => {
     const picked = e.target.files?.[0];
     if (!picked) return;
 
     setError(null);
-    setSuccess(false);
 
     if (!ALLOWED_AVATAR_TYPES.includes(picked.type)) {
       setError("Formato no permitido. Solo se aceptan imágenes PNG, JPG o WEBP");
@@ -40,15 +43,20 @@ const ProfilePhoto = ({ user, roleLabel, onUpdated }) => {
   const handleUpload = async () => {
     if (!file) return;
 
+    if (blocked) {
+      setBlockedModalOpen(true);
+      return;
+    }
+
     setError(null);
     setIsUploading(true);
     try {
       await uploadAvatar(file);
       setFile(null);
-      setSuccess(true);
       setBroken(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
       onUpdated?.();
+      onSuccess?.("Foto de perfil actualizada");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -107,8 +115,12 @@ const ProfilePhoto = ({ user, roleLabel, onUpdated }) => {
       </button>
 
       {error && <p className="cfg-error">{error}</p>}
-      {success && !error && (
-        <p className="cfg-success">Foto de perfil actualizada</p>
+
+      {blockedModalOpen && (
+        <BlockedActionModal
+          message="Tu cuenta está bloqueada: no puedes cambiar tu foto de perfil mientras el bloqueo esté activo."
+          onClose={() => setBlockedModalOpen(false)}
+        />
       )}
     </div>
   );

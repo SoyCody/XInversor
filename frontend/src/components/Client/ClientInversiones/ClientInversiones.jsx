@@ -6,10 +6,13 @@ import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import Pagination from "../../Pagination/Pagination.jsx";
 import NuevaInversionModal from "./NuevaInversionModal.jsx";
+import BlockedActionModal from "../../Config/BlockedActionModal.jsx";
+import SuccessBanner from "../../SuccessBanner/SuccessBanner.jsx";
 import InvestmentOverview from "../ClientDashboard/InvestmentOverview.jsx";
 import { misInversiones, resumenInversiones } from "../../../services/investmentApi.js";
 import { useFetch } from "../../../hooks/useFetch";
 import { formatBtc } from "../../../utils/format.js";
+import { isBlockedError } from "../../../utils/blockedError.js";
 
 const FILTROS = [
   { value: "ALL", label: "Todas" },
@@ -30,6 +33,7 @@ const ClientInversiones = () => {
   const [tipo, setTipo] = useState("ALL");
   const [page, setPage] = useState(1);
   const [reloadKey, setReloadKey] = useState(0);
+  const [blockedModalDismissed, setBlockedModalDismissed] = useState(false);
   const navigate = useNavigate();
 
   // El resumen (tarjetas, barra, gráfico) no depende del filtro/página,
@@ -60,12 +64,20 @@ const ClientInversiones = () => {
   const limiteActivas = resumen?.limiteActivas ?? 5;
   const limiteAlcanzado = !isResumenLoading && activas >= limiteActivas;
 
+  // El backend rechaza /investment/my (la lista) para clientes bloqueados
+  // con este mismo mensaje; se usa como señal para mostrar el aviso de
+  // bloqueo en vez del texto de error normal.
+  const isBlocked = isBlockedError(error);
+  const showBlockedModal = isBlocked && !blockedModalDismissed;
+
   return (
     <div className="app">
       <ClientSideBar />
 
       <main className="main">
         <Header />
+
+        <SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 
         <div className="content">
           <div className="page-heading">
@@ -75,8 +87,7 @@ const ClientInversiones = () => {
             </div>
           </div>
 
-          {error && <p className="dashboard-error">{error}</p>}
-          {successMsg && <p className="form-success">{successMsg}</p>}
+          {error && !isBlocked && <p className="dashboard-error">{error}</p>}
           {!isCreating && limiteAlcanzado && (
             <p className="dashboard-error">
               Llegaste al máximo de {limiteActivas} inversiones activas. Debes
@@ -93,6 +104,13 @@ const ClientInversiones = () => {
                 setPage(1);
                 setReloadKey((k) => k + 1);
               }}
+            />
+          )}
+
+          {showBlockedModal && (
+            <BlockedActionModal
+              message="Tu cuenta está bloqueada: no puedes crear nuevas inversiones ni ver el detalle de las existentes mientras el bloqueo esté activo."
+              onClose={() => setBlockedModalDismissed(true)}
             />
           )}
 
@@ -134,6 +152,10 @@ const ClientInversiones = () => {
                   : undefined
               }
               onClick={() => {
+                if (isBlocked) {
+                  setBlockedModalDismissed(false);
+                  return;
+                }
                 setSuccessMsg(null);
                 setIsCreating(true);
               }}

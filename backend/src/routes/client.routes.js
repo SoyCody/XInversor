@@ -9,7 +9,6 @@ import ClientController from '../controllers/client.controller.js';
 router.get('/dashboard',
     verifyToken,
     isActive,
-    isnBlocked,
     ClientController.dashboard
 );
 

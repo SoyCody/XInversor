@@ -13,6 +13,7 @@ import WalletCard from "../../Config/WalletCard.jsx";
 import EditProfileModal from "../../Config/EditProfileModal.jsx";
 import ChangePasswordModal from "../../Config/ChangePasswordModal.jsx";
 import DeleteAccountModal from "../../Config/DeleteAccountModal.jsx";
+import SuccessBanner from "../../SuccessBanner/SuccessBanner.jsx";
 
 const formatDate = (isoString) => {
   if (!isoString) return "—";
@@ -30,6 +31,7 @@ const AdminGetMe = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
+  const [successMsg, setSuccessMsg] = useState(null);
   const navigate = useNavigate();
 
   const roleLabel = user?.role === "ADMIN" ? "Administrador" : "Cliente";
@@ -52,6 +54,8 @@ const AdminGetMe = () => {
 
       <main className="main">
         <Header />
+
+        <SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 
         <div className="content">
          <div className="cfg-page">
@@ -79,6 +83,7 @@ const AdminGetMe = () => {
                     user={user}
                     roleLabel={roleLabel}
                     onUpdated={refetch}
+                    onSuccess={setSuccessMsg}
                   />
 
                   <div className="cfg-datos">
@@ -112,6 +117,7 @@ const AdminGetMe = () => {
                     client: { ...(user?.client ?? {}), wallet },
                   })
                 }
+                onSuccess={setSuccessMsg}
               />
 
               <div className="cfg-danger">

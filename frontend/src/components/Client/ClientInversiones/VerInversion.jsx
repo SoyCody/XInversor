@@ -6,8 +6,11 @@ import { formatUsd, formatBtc } from "../../../utils/format.js";
 import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import NuevaSolicitudModal from "../ClientSolicitudes/NuevaSolicitudModal.jsx";
+import BlockedActionModal from "../../Config/BlockedActionModal.jsx";
+import SuccessBanner from "../../SuccessBanner/SuccessBanner.jsx";
 import InvestmentStatusProgress from "./InvestmentStatusProgress.jsx";
 import InvestmentRetirosCharts from "./InvestmentRetirosCharts.jsx";
+import { isBlockedError } from "../../../utils/blockedError.js";
 import "../../../App.css";
 import "../../DataTable/DataTable.css";
 import "./VerInversion.css";
@@ -63,8 +66,11 @@ const VerInversion = () => {
 
   const [isSolicitando, setIsSolicitando] = useState(false);
   const [successMsg, setSuccessMsg] = useState(null);
+  const [blockedModalDismissed, setBlockedModalDismissed] = useState(false);
 
   const inversion = data?.inversion;
+  const isBlocked = isBlockedError(error);
+  const showBlockedModal = isBlocked && !blockedModalDismissed;
 
   return (
     <div className="app">
@@ -72,6 +78,8 @@ const VerInversion = () => {
 
       <main className="main">
         <Header />
+
+        <SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 
         <div className="content">
           <button
@@ -89,8 +97,17 @@ const VerInversion = () => {
             </div>
           </div>
 
-          {error && <p className="dashboard-error">{error}</p>}
-          {successMsg && <p className="form-success">{successMsg}</p>}
+          {error && !isBlocked && <p className="dashboard-error">{error}</p>}
+
+          {showBlockedModal && (
+            <BlockedActionModal
+              message="Tu cuenta está bloqueada: no puedes ver el detalle de esta inversión ni solicitar retiros mientras el bloqueo esté activo."
+              onClose={() => {
+                setBlockedModalDismissed(true);
+                navigate(-1);
+              }}
+            />
+          )}
 
           {isLoading ? (
             <p>Cargando inversión...</p>

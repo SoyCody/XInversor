@@ -13,6 +13,8 @@ import WalletCard from "../../Config/WalletCard.jsx";
 import EditProfileModal from "../../Config/EditProfileModal.jsx";
 import ChangePasswordModal from "../../Config/ChangePasswordModal.jsx";
 import DeleteAccountModal from "../../Config/DeleteAccountModal.jsx";
+import BlockedActionModal from "../../Config/BlockedActionModal.jsx";
+import SuccessBanner from "../../SuccessBanner/SuccessBanner.jsx";
 
 const formatDate = (isoString) => {
   if (!isoString) return "—";
@@ -31,6 +33,18 @@ const ClientGetMe = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
+  const [blockedModalOpen, setBlockedModalOpen] = useState(false);
+  const [successMsg, setSuccessMsg] = useState(null);
+
+  const isBlocked = user?.client?.blocked === true;
+
+  const openIfNotBlocked = (openFn) => () => {
+    if (isBlocked) {
+      setBlockedModalOpen(true);
+      return;
+    }
+    openFn();
+  };
 
   const roleLabel = isLoading
     ? "—"
@@ -56,6 +70,8 @@ const ClientGetMe = () => {
 
       <main className="main">
         <Header />
+
+        <SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 
         <div className="content">
          <div className="cfg-page">
@@ -83,6 +99,8 @@ const ClientGetMe = () => {
                     user={user}
                     roleLabel={roleLabel}
                     onUpdated={refetch}
+                    onSuccess={setSuccessMsg}
+                    blocked={isBlocked}
                   />
 
                   <div className="cfg-datos">
@@ -93,13 +111,13 @@ const ClientGetMe = () => {
                     <div className="cfg-datos-actions">
                       <button
                         className="btn btn--primary"
-                        onClick={() => setEditOpen(true)}
+                        onClick={openIfNotBlocked(() => setEditOpen(true))}
                       >
                         Editar perfil
                       </button>
                       <button
                         className="btn btn--primary"
-                        onClick={() => setPasswordOpen(true)}
+                        onClick={openIfNotBlocked(() => setPasswordOpen(true))}
                       >
                         Cambiar contraseña
                       </button>
@@ -110,12 +128,14 @@ const ClientGetMe = () => {
 
               <WalletCard
                 initialWallet={user?.client?.wallet}
+                blocked={isBlocked}
                 onSaved={(wallet) =>
                   setData({
                     ...user,
                     client: { ...(user?.client ?? {}), wallet },
                   })
                 }
+                onSuccess={setSuccessMsg}
               />
 
               <div className="cfg-danger">
@@ -152,6 +172,10 @@ const ClientGetMe = () => {
               onClose={() => setIsDeleteModalOpen(false)}
               onConfirm={handleDeleteAccount}
             />
+          )}
+
+          {blockedModalOpen && (
+            <BlockedActionModal onClose={() => setBlockedModalOpen(false)} />
           )}
         </div>
       </main>

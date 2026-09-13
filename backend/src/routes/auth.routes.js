@@ -7,38 +7,34 @@ import {
     passwordSchema
 } from '../validators/auth.validator.js';
 import authController from '../controllers/auth.controller.js';
-import { verifyToken, isActive } from '../middlewares/auth.middleware.js';
+import { verifyToken, isActive, isnBlocked } from '../middlewares/auth.middleware.js';
 import { uploadAvatar } from '../middlewares/upload.middleware.js';
+import { loginLimiter, registerLimiter } from '../middlewares/rateLimit.middleware.js';
 
 const router = Router();
 
-// PENDIENTE (seguridad / auditoría): /login y /register no tienen rate
-// limiting. Para una web pública con usuarios reales hace falta un
-// express-rate-limit (p. ej. 5-10 intentos por IP cada 15 min en /login,
-// y un límite más laxo en /register) antes de salir a producción.
-// Nota de orden: `validate(...)` corre antes que `verifyToken` en /edit y
-// /change/password; no es crítico aquí, pero lo habitual es autenticar
-// primero y validar después.
-
 router.post('/register',
+    registerLimiter,
     validate(registerSchema),
     authController.register
 );
 
-router.post('/login', validate(loginSchema), authController.login);
+router.post('/login', loginLimiter, validate(loginSchema), authController.login);
 
 router.post('/logout', authController.logout);
 
-router.put('/edit', 
-    validate(updateSchema), 
-    verifyToken, 
+router.put('/edit',
+    verifyToken,
     isActive,
+    isnBlocked,
+    validate(updateSchema),
     authController.update
 );
-router.put('/change/password', 
-    validate(passwordSchema), 
-    verifyToken, 
+router.put('/change/password',
+    verifyToken,
     isActive,
+    isnBlocked,
+    validate(passwordSchema),
     authController.changePassword
 );
 
@@ -50,6 +46,7 @@ router.put('/delete',
 router.put('/avatar',
     verifyToken,
     isActive,
+    isnBlocked,
     uploadAvatar,
     authController.updateAvatar
 );
