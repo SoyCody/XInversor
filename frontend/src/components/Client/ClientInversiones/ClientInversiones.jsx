@@ -5,9 +5,8 @@ import "../../DataTable/DataTable.css";
 import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import Pagination from "../../Pagination/Pagination.jsx";
-import NuevaInversionForm from "./NuevaInversionForm.jsx";
+import NuevaInversionModal from "./NuevaInversionModal.jsx";
 import InvestmentOverview from "../ClientDashboard/InvestmentOverview.jsx";
-import InvestmentBreakdownChart from "./InvestmentBreakdownChart.jsx";
 import { misInversiones, resumenInversiones } from "../../../services/investmentApi.js";
 import { useFetch } from "../../../hooks/useFetch";
 import { formatBtc } from "../../../utils/format.js";
@@ -85,9 +84,9 @@ const ClientInversiones = () => {
             </p>
           )}
 
-          {isCreating ? (
-            <NuevaInversionForm
-              onCancel={() => setIsCreating(false)}
+          {isCreating && (
+            <NuevaInversionModal
+              onClose={() => setIsCreating(false)}
               onSuccess={() => {
                 setIsCreating(false);
                 setSuccessMsg("Inversión creada correctamente");
@@ -95,107 +94,98 @@ const ClientInversiones = () => {
                 setReloadKey((k) => k + 1);
               }}
             />
+          )}
+
+          <InvestmentOverview
+            totalInvertido={resumen?.totalInvertido ?? 0}
+            totalAcumulado={resumen?.totalAcumulado ?? 0}
+            enProgreso={resumen?.enProgreso ?? 0}
+            pendientes={resumen?.pendientes ?? 0}
+            retiradas={resumen?.retiradas ?? 0}
+            limiteActivas={limiteActivas}
+            isLoading={isResumenLoading}
+            showBreakdown
+          />
+
+          <div className="section-band list-toolbar">
+            <div className="list-toolbar-left">
+              <label className="data-filtro">
+                <span>Ver:</span>
+                <select value={tipo} onChange={(e) => cambiarTipo(e.target.value)}>
+                  {FILTROS.map((f) => (
+                    <option key={f.value} value={f.value}>
+                      {f.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <span className="clientes-total">
+                Total: <strong>{data?.total ?? inversiones.length}</strong> inversiones
+              </span>
+            </div>
+
+            <button
+              className="btn btn--primary"
+              disabled={limiteAlcanzado}
+              title={
+                limiteAlcanzado
+                  ? `Ya tienes ${limiteActivas} inversiones activas, el máximo permitido`
+                  : undefined
+              }
+              onClick={() => {
+                setSuccessMsg(null);
+                setIsCreating(true);
+              }}
+            >
+              Nueva inversión
+            </button>
+          </div>
+
+          {isLoading ? (
+            <p>Cargando inversiones...</p>
+          ) : inversiones.length === 0 ? (
+            <p>No tienes inversiones para este filtro.</p>
           ) : (
-            <>
-              <InvestmentOverview
-                totalInvertido={resumen?.totalInvertido ?? 0}
-                totalAcumulado={resumen?.totalAcumulado ?? 0}
-                enProgreso={resumen?.enProgreso ?? 0}
-                pendientes={resumen?.pendientes ?? 0}
-                retiradas={resumen?.retiradas ?? 0}
-                limiteActivas={limiteActivas}
-                isLoading={isResumenLoading}
-                showBreakdown
-              />
+            <div className="data-table-wrap">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Días</th>
+                    <th>Total (BTC)</th>
+                    <th>Intereses (BTC)</th>
+                    <th>Estado</th>
+                    <th className="data-table-actions" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {inversiones.map((inversion) => (
+                    <tr key={inversion.id}>
+                      <td>{inversion.dias}</td>
+                      <td>{formatBtc(inversion.total)}</td>
+                      <td>{formatBtc(inversion.intereses)}</td>
+                      <td>{ESTADO_LABEL[inversion.estado] ?? inversion.estado}</td>
+                      <td className="data-table-actions">
+                        <button
+                          className="btn btn--primary btn--sm"
+                          onClick={() => navigate(`/client/inversiones/${inversion.id}`)}
+                        >
+                          Detalles
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
-              <InvestmentBreakdownChart
-                enProgreso={resumen?.enProgreso ?? 0}
-                pendientes={resumen?.pendientes ?? 0}
-                retiradas={resumen?.retiradas ?? 0}
-                isLoading={isResumenLoading}
-              />
-
-              <div className="list-toolbar">
-                <div className="list-toolbar-left">
-                  <label className="data-filtro">
-                    <span>Ver:</span>
-                    <select value={tipo} onChange={(e) => cambiarTipo(e.target.value)}>
-                      {FILTROS.map((f) => (
-                        <option key={f.value} value={f.value}>
-                          {f.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <span className="clientes-total">
-                    Total: <strong>{data?.total ?? inversiones.length}</strong> inversiones
-                  </span>
-                </div>
-
-                <button
-                  className="btn btn--primary"
-                  disabled={limiteAlcanzado}
-                  title={
-                    limiteAlcanzado
-                      ? `Ya tienes ${limiteActivas} inversiones activas, el máximo permitido`
-                      : undefined
-                  }
-                  onClick={() => {
-                    setSuccessMsg(null);
-                    setIsCreating(true);
-                  }}
-                >
-                  Nueva inversión
-                </button>
-              </div>
-
-              {isLoading ? (
-                <p>Cargando inversiones...</p>
-              ) : inversiones.length === 0 ? (
-                <p>No tienes inversiones para este filtro.</p>
-              ) : (
-                <div className="data-table-wrap">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>Días</th>
-                        <th>Total (BTC)</th>
-                        <th>Intereses (BTC)</th>
-                        <th>Estado</th>
-                        <th className="data-table-actions" />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {inversiones.map((inversion) => (
-                        <tr key={inversion.id}>
-                          <td>{inversion.dias}</td>
-                          <td>{formatBtc(inversion.total)}</td>
-                          <td>{formatBtc(inversion.intereses)}</td>
-                          <td>{ESTADO_LABEL[inversion.estado] ?? inversion.estado}</td>
-                          <td className="data-table-actions">
-                            <button
-                              className="btn btn--primary btn--sm"
-                              onClick={() => navigate(`/client/inversiones/${inversion.id}`)}
-                            >
-                              Detalles
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {!isLoading && (
-                <Pagination
-                  page={data?.page ?? 1}
-                  totalPages={data?.totalPages ?? 1}
-                  onChange={setPage}
-                />
-              )}
-            </>
+          {!isLoading && (
+            <Pagination
+              page={data?.page ?? 1}
+              totalPages={data?.totalPages ?? 1}
+              onChange={setPage}
+            />
           )}
         </div>
       </main>

@@ -1,0 +1,39 @@
+/* Zona A (ancho completo de .content, como el título/tabla de "Mis
+   inversiones"): ya no vive dentro de la banda angosta del resumen, así
+   que necesita su propio margen de separación arriba. */
+.retiros-charts {
+  width: 100%;
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+}
+
+.retiros-chart-block {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* El título usa .page-heading (App.css), igual que el resto de
+   secciones de la página, en vez de un estilo propio -- acá solo se
+   recorta el margin-bottom porque ya está separado por el `gap` del
+   flex de arriba. */
+.retiros-chart-block .page-heading {
+  margin-bottom: 0;
+}
+
+.retiros-chart-empty {
+  margin: 12px 0 24px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+/* Angosto: los dos gráficos se apilan en vez de competir por espacio. */
+@media (max-width: 640px) {
+  .retiros-charts {
+    grid-template-columns: 1fr;
+  }
+}

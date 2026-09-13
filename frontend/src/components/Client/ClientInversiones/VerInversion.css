@@ -1,39 +1,22 @@
-/* Detalle de una inversión. Botones, .section-band y .detail-list vienen
-   de App.css; aquí solo lo propio de esta pantalla. */
+/* Estructura y anchos calcados de "Mis inversiones" (ClientInversiones):
+   Zona A (títulos .page-heading, tablas y gráficos) a lo ancho completo
+   de .content; Zona B (.section-band) para el resto, más "adentro". */
 
-.inversion-bloque {
-  margin-top: 28px;
-}
-
-.inversion-bloque h2 {
-  margin-bottom: 12px;
-}
-
-.inversion-solicitud-form {
-  margin-top: 20px;
-}
-
-/* Historial de estados: lista label -> fecha con el mismo tratamiento
-   que .detail-list. */
-.inversion-historial {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.inversion-historial li {
+.inversion-resumen {
+  margin-top: 10px;
   display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 14px 2px;
-  border-bottom: 1px solid var(--detail-border);
-  font-size: var(--fs-body);
+  flex-direction: column;
+  gap: 32px;
 }
 
-.inversion-historial li:last-child {
-  border-bottom: none;
+.inversion-resumen-estado {
+  margin: 0;
+  text-align: center;
+  color: var(--text);
 }
 
-.inversion-historial-fecha {
-  color: var(--detail-label);
+/* Separador entre los encabezados de sección repetidos en esta página
+   (el de arriba no lo necesita: ya es el primer elemento). */
+.page-heading--section {
+  margin-top: 56px;
 }

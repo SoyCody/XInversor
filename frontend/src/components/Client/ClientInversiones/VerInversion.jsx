@@ -5,10 +5,21 @@ import { useFetch } from "../../../hooks/useFetch";
 import { formatUsd, formatBtc } from "../../../utils/format.js";
 import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
 import Header from "../../Header/Header.jsx";
-import NuevaSolicitudForm from "../ClientSolicitudes/NuevaSolicitud.jsx";
+import NuevaSolicitudModal from "../ClientSolicitudes/NuevaSolicitudModal.jsx";
+import InvestmentStatusProgress from "./InvestmentStatusProgress.jsx";
+import InvestmentRetirosCharts from "./InvestmentRetirosCharts.jsx";
 import "../../../App.css";
 import "../../DataTable/DataTable.css";
 import "./VerInversion.css";
+
+const formatDate = (isoString) => {
+  if (!isoString) return "—";
+  return new Date(isoString).toLocaleDateString("es-EC", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
 
 const formatDateTime = (isoString) => {
   if (!isoString) return "—";
@@ -25,6 +36,15 @@ const ESTADO_INVERSION = {
   PENDIENTE: "Pendiente",
   EN_PROGRESO: "En progreso",
   RETIRADO: "Retirada",
+};
+
+// Solo para el título de arriba ("Inversión ..."): a diferencia de
+// ESTADO_INVERSION (que se usa tal cual en el historial), acá RETIRADO
+// se lee "en retirada" para que las tres variantes queden parejas.
+const TITULO_ESTADO = {
+  PENDIENTE: "pendiente",
+  EN_PROGRESO: "en progreso",
+  RETIRADO: "en retirada",
 };
 
 const ESTADO_SOLICITUD = {
@@ -78,42 +98,49 @@ const VerInversion = () => {
             <p>No se encontró información de esta inversión.</p>
           ) : (
             <>
-              <section className="section-band detail-list">
-                <div className="detail-row">
-                  <span className="detail-label">Monto invertido (USD)</span>
-                  <span className="detail-value">{formatUsd(inversion.monto)}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Intereses generados (BTC)</span>
-                  <span className="detail-value">{formatBtc(inversion.intereses)}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Total a retirar (BTC)</span>
-                  <span className="detail-value">{formatBtc(inversion.total)}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Días transcurridos</span>
-                  <span className="detail-value">{inversion.dias}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Estado</span>
-                  <span className="detail-value">
-                    {ESTADO_INVERSION[inversion.estado] ?? inversion.estado}
-                  </span>
-                </div>
-                {inversion.estado === "PENDIENTE" && (
+              {/* Zona B (como InvestmentOverview en "Mis inversiones"):
+                  banda centrada y angosta para el título de estado + los
+                  detalles, que van "más adentro" que los encabezados,
+                  tablas y gráficos de abajo. */}
+              <section className="section-band inversion-resumen">
+                <h2 className="inversion-resumen-estado">
+                  Inversión {TITULO_ESTADO[inversion.estado] ?? inversion.estado.toLowerCase()}
+                </h2>
+
+                <div className="detail-list">
                   <div className="detail-row">
-                    <span className="detail-label">Días para habilitar retiros</span>
-                    <span className="detail-value">{inversion.diasParaHabilitar}</span>
+                    <span className="detail-label">Monto invertido (USD)</span>
+                    <span className="detail-value">{formatUsd(inversion.monto)}</span>
                   </div>
-                )}
-                <div className="detail-row">
-                  <span className="detail-label">Creada</span>
-                  <span className="detail-value">{formatDateTime(inversion.createdAt)}</span>
+                  <div className="detail-row">
+                    <span className="detail-label">Intereses generados (BTC)</span>
+                    <span className="detail-value">{formatBtc(inversion.intereses)}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Total acumulado (BTC)</span>
+                    <span className="detail-value">{formatBtc(inversion.total)}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Creada</span>
+                    <span className="detail-value">{formatDate(inversion.createdAt)}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Actualizado</span>
+                    <span className="detail-value">
+                      {formatDate(inversion.historialEstados[0]?.fecha ?? inversion.createdAt)}
+                    </span>
+                  </div>
                 </div>
+
+                {inversion.estado === "PENDIENTE" && (
+                  <InvestmentStatusProgress
+                    dias={inversion.dias}
+                    diasParaHabilitar={inversion.diasParaHabilitar}
+                  />
+                )}
               </section>
 
-              {inversion.puedeSolicitarRetiro && !isSolicitando && (
+              {inversion.puedeSolicitarRetiro && (
                 <div className="section-band form-actions section-actions">
                   <button
                     type="button"
@@ -128,62 +155,88 @@ const VerInversion = () => {
                 </div>
               )}
 
-              {isSolicitando && (
-                <div className="section-band inversion-solicitud-form">
-                  <NuevaSolicitudForm
-                    inversionId={inversion.id}
-                    disponible={formatBtc(inversion.total)}
-                    onCancel={() => setIsSolicitando(false)}
-                    onSuccess={() => {
-                      setIsSolicitando(false);
-                      setSuccessMsg("Solicitud de retiro enviada. Un administrador la revisará.");
-                      refetch();
-                    }}
-                  />
-                </div>
+              {/* Zona A (como el título y la tabla de "Mis inversiones"):
+                  ancho completo de .content -- los gráficos van grandes,
+                  no metidos en la banda angosta de arriba. */}
+              {inversion.estado !== "PENDIENTE" && (
+                <InvestmentRetirosCharts
+                  solicitudes={inversion.solicitudes}
+                  intereses={inversion.intereses}
+                  total={inversion.total}
+                  estado={inversion.estado}
+                />
               )}
 
-              <section className="section-band inversion-bloque">
-                <h2>Historial de estados</h2>
-                <ul className="inversion-historial">
-                  {inversion.historialEstados.map((h, i) => (
-                    <li key={i}>
-                      <span>{ESTADO_INVERSION[h.estado] ?? h.estado}</span>
-                      <span className="inversion-historial-fecha">{formatDateTime(h.fecha)}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
+              {isSolicitando && (
+                <NuevaSolicitudModal
+                  inversionId={inversion.id}
+                  disponible={formatBtc(inversion.total)}
+                  onClose={() => setIsSolicitando(false)}
+                  onSuccess={() => {
+                    setIsSolicitando(false);
+                    setSuccessMsg("Solicitud de retiro enviada. Un administrador la revisará.");
+                    refetch();
+                  }}
+                />
+              )}
 
-              <section className="inversion-bloque">
-                <h2>Solicitudes de retiro</h2>
-                {inversion.solicitudes.length === 0 ? (
-                  <p>Esta inversión no tiene solicitudes de retiro.</p>
-                ) : (
-                  <div className="data-table-wrap">
-                    <table className="data-table">
-                        <thead>
-                          <tr>
-                            <th>Monto (BTC)</th>
-                            <th>Estado</th>
-                            <th>Solicitada</th>
-                            <th>Resuelta</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {inversion.solicitudes.map((s) => (
-                            <tr key={s.id}>
-                              <td>{formatBtc(s.montoRetiro)}</td>
-                              <td>{ESTADO_SOLICITUD[s.estado] ?? s.estado}</td>
-                              <td>{formatDateTime(s.createdAt)}</td>
-                              <td>{formatDateTime(s.resueltaEn)}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+              {/* Una inversión PENDIENTE está en período de bloqueo: no
+                  puede tener solicitudes de retiro (el backend las
+                  rechaza), así que no tiene sentido mostrar esta sección
+                  para después decir "no tiene solicitudes". */}
+              {inversion.estado !== "PENDIENTE" && (
+                <>
+                  <div className="page-heading page-heading--section">
+                    <div>
+                      <h1>Solicitudes de retiro</h1>
+                      <p>Detalles de cada retiro</p>
                     </div>
-                  )}
-                </section>
+                  </div>
+                  {inversion.solicitudes.length === 0 ? (
+                    <p>Esta inversión no tiene solicitudes de retiro.</p>
+                  ) : (
+                    <div className="data-table-wrap">
+                      <table className="data-table">
+                          <thead>
+                            <tr>
+                              <th>Monto (BTC)</th>
+                              <th>Estado</th>
+                              <th>Solicitada</th>
+                              <th>Resuelta</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {inversion.solicitudes.map((s) => (
+                              <tr key={s.id}>
+                                <td>{formatBtc(s.montoRetiro)}</td>
+                                <td>{ESTADO_SOLICITUD[s.estado] ?? s.estado}</td>
+                                <td>{formatDateTime(s.createdAt)}</td>
+                                <td>{formatDateTime(s.resueltaEn)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                </>
+              )}
+
+              <div className="page-heading page-heading--section">
+                <div>
+                  <h1>Historial de estados</h1>
+                  <p>Registro del ciclo de vida de tu inversión</p>
+                </div>
+              </div>
+              <section className="section-band">
+                <div className="detail-list">
+                  {inversion.historialEstados.map((h, i) => (
+                    <div className="detail-row" key={i}>
+                      <span className="detail-label">{ESTADO_INVERSION[h.estado] ?? h.estado}</span>
+                      <span className="detail-value">{formatDateTime(h.fecha)}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
               </>
             )}
         </div>
