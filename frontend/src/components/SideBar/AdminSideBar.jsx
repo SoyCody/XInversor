@@ -8,7 +8,6 @@ import usuariosIcon from "../../assets/usuarios.png";
 import verificacionIcon from "../../assets/verificacion.png";
 import configuracionIcon from "../../assets/configuracion.png";
 import auditoriaIcon from "../../assets/auditoria.png";
-import reporteIcon from "../../assets/reporte.png";
 import notificacionIcon from "../../assets/notificacion.png";
 import cerrarSesionIcon from "../../assets/cerrarSesion.png";
 
@@ -60,10 +59,7 @@ const AdminSideBar = () => {
           <img className="nav-icon-img" src={auditoriaIcon} alt="" aria-hidden="true" />
           <span>Auditorías</span>
         </Link>
-        <a href="#" className="nav-link">
-          <img className="nav-icon-img" src={reporteIcon} alt="" aria-hidden="true" />
-          <span>Reportes</span>
-        </a>
+        
         <a href="#" className="nav-link">
           <img className="nav-icon-img" src={notificacionIcon} alt="" aria-hidden="true" />
           <span>Notificaciones</span>

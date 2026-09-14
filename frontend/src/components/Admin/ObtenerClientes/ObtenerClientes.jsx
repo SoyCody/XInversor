@@ -7,6 +7,8 @@ import Pagination from "../../Pagination/Pagination.jsx";
 import { useNavigate } from "react-router-dom";
 import "../../../App.css";
 import "../../DataTable/DataTable.css";
+import "../../Client/ClientDashboard/InvestmentOverview.css";
+import "../admin-shared.css";
 
 const FILTROS = [
   { value: "CLIENT", label: "Clientes", titulo: "Clientes", descripcion: "Listado de todos los clientes registrados" },
@@ -65,6 +67,37 @@ const ObtenerClientes = () => {
               <h1>{filtroActual.titulo}</h1>
               <p>{filtroActual.descripcion}</p>
             </div>
+          </div>
+
+          {error && <p className="dashboard-error">{error}</p>}
+
+          <section className="section-band stat-cards admin-section-gap">
+            <div className="stat-card">
+              <span className="stat-card-label">Total</span>
+              <span className="stat-card-value">
+                {isLoading ? "—" : data?.totalUsers ?? 0}
+              </span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-card-label">Administradores</span>
+              <span className="stat-card-value">
+                {isLoading ? "—" : data?.totalAdmins ?? 0}
+              </span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-card-label">Clientes</span>
+              <span className="stat-card-value">
+                {isLoading ? "—" : data?.totalClients ?? 0}
+              </span>
+            </div>
+          </section>
+
+          {/* Filtro y búsqueda van pegados al total y a la tabla que
+              afectan, no arriba junto al título. */}
+          <div className="clientes-summary admin-section-gap">
+            <span className="clientes-total">
+              Total: <strong>{data?.total ?? usuariosFiltrados.length}</strong>
+            </span>
 
             <div className="clientes-controls">
               <label className="data-filtro">
@@ -91,58 +124,46 @@ const ObtenerClientes = () => {
             </div>
           </div>
 
-          {error && <p className="dashboard-error">{error}</p>}
-
           {isLoading ? (
             <p>Cargando usuarios...</p>
+          ) : usuariosFiltrados.length === 0 ? (
+            <p>
+              {busqueda.trim()
+                ? "Ningún usuario coincide con la búsqueda."
+                : "No hay usuarios para este filtro."}
+            </p>
           ) : (
-            <>
-              <div className="clientes-summary">
-                <span className="clientes-total">
-                  Total: <strong>{data?.total ?? usuariosFiltrados.length}</strong>
-                </span>
-              </div>
-
-              {usuariosFiltrados.length === 0 ? (
-                <p>
-                  {busqueda.trim()
-                    ? "Ningún usuario coincide con la búsqueda."
-                    : "No hay usuarios para este filtro."}
-                </p>
-              ) : (
-                <div className="data-table-wrap">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th>Registrado</th>
-                        <th>Bloqueado</th>
-                        <th className="data-table-actions" />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {usuariosFiltrados.map((usuario) => (
-                        <tr key={usuario.id}>
-                          <td>{usuario.firstName}</td>
-                          <td>{usuario.lastName}</td>
-                          <td>{formatDate(usuario.createdAt)}</td>
-                          <td>{usuario.blocked ? "Sí" : "—"}</td>
-                          <td className="data-table-actions">
-                            <button
-                              className="btn btn--primary btn--sm"
-                              onClick={() => navigate(`/admin/clientes/${usuario.id}`)}
-                            >
-                              Ver detalles
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </>
+            <div className="data-table-wrap">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Registrado</th>
+                    <th>Bloqueado</th>
+                    <th className="data-table-actions" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {usuariosFiltrados.map((usuario) => (
+                    <tr key={usuario.id}>
+                      <td>{usuario.firstName}</td>
+                      <td>{usuario.lastName}</td>
+                      <td>{formatDate(usuario.createdAt)}</td>
+                      <td>{usuario.blocked ? "Sí" : "—"}</td>
+                      <td className="data-table-actions">
+                        <button
+                          className="btn btn--primary btn--sm"
+                          onClick={() => navigate(`/admin/clientes/${usuario.id}`)}
+                        >
+                          Ver detalles
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
 
           {!isLoading && (

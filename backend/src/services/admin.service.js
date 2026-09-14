@@ -1,7 +1,9 @@
 import adminRepository from '../repositories/admin.repository.js';
 import userRepository from '../repositories/user.repository.js';
+import investmentService from './investment.service.js';
 import { registrarAuditoria, AUDIT_ACTIONS, AUDIT_TABLES } from './auditorias.service.js';
 import { parsePage, buildMeta } from '../utils/pagination.js';
+import { MESES_ES, mesesDelAnhoHastaHoy } from '../utils/meses.js';
 
 // Error de dominio: se traduce a un código de estado en el controller.
 class UserNotFoundError extends Error {
@@ -20,19 +22,66 @@ class AlreadyAdminError extends Error {
   }
 }
 
+const contarPorMes = (fechas) => {
+  const mapa = new Map();
+  for (const { createdAt } of fechas) {
+    const mes = new Date(createdAt).getMonth();
+    mapa.set(mes, (mapa.get(mes) ?? 0) + 1);
+  }
+  return mapa;
+};
+
+// Serie mensual de clientes del año en curso: altas (nuevos registros)
+// menos bajas (cuentas borradas) por mes, para que la línea suba con la
+// captación y baje cuando predominan las bajas. Las bajas se identifican
+// por la auditoría DELETE/user (ver
+// admin.repository.js#clientesBorradosDesde).
+//
+// Arranca en enero y solo llega hasta el mes actual (no se rellenan los
+// meses que todavía no pasaron): cada 1 de enero la serie vuelve a tener
+// un solo punto y se va alargando mes a mes según avanza el año.
+const clientesPorMes = async () => {
+  const ahora = new Date();
+  const desde = new Date(ahora.getFullYear(), 0, 1);
+
+  const [creados, borrados] = await Promise.all([
+    adminRepository.clientesCreadosDesde(desde),
+    adminRepository.clientesBorradosDesde(desde)
+  ]);
+
+  const altas = contarPorMes(creados);
+  const bajas = contarPorMes(borrados);
+
+  return mesesDelAnhoHastaHoy(ahora).map((mes) => ({
+    mes: MESES_ES[mes],
+    clientes: (altas.get(mes) ?? 0) - (bajas.get(mes) ?? 0)
+  }));
+};
+
 const readDashboard = async () => {
-  const [totalUsers, totalAdmins, totalClients, recentUsers] = await Promise.all([
+  const [
+    totalUsers,
+    totalAdmins,
+    totalClients,
+    ultimosClientes,
+    resumenInversiones,
+    clientesPorMesSerie
+  ] = await Promise.all([
     adminRepository.countAll(),
     adminRepository.countByRole('ADMIN'),
     adminRepository.countByRole('CLIENT'),
-    adminRepository.findRecent(10)
+    adminRepository.findRecentClients(5),
+    investmentService.resumenAdmin(),
+    clientesPorMes()
   ]);
 
   return {
     totalUsers,
     totalAdmins,
     totalClients,
-    recentUsers
+    ultimosClientes,
+    clientesPorMes: clientesPorMesSerie,
+    ...resumenInversiones
   };
 };
 
@@ -45,7 +94,16 @@ const obtenerPersonas = async (tipo = 'ALL', rawPage) => {
     : 'ALL';
 
   const page = parsePage(rawPage);
-  const { rows, total } = await adminRepository.obtenerPersona(key, page);
+
+  // Los conteos totales (para las tarjetas de la pantalla de Usuarios)
+  // son siempre los mismos sin importar el filtro/página elegidos, así
+  // que se piden aparte y en paralelo.
+  const [{ rows, total }, totalUsers, totalAdmins, totalClients] = await Promise.all([
+    adminRepository.obtenerPersona(key, page),
+    adminRepository.countAll(),
+    adminRepository.countByRole('ADMIN'),
+    adminRepository.countByRole('CLIENT')
+  ]);
 
   // Se aplana client.blocked para que el frontend reciba una lista
   // homogénea; los usuarios sin perfil Client quedan como blocked: false.
@@ -57,6 +115,9 @@ const obtenerPersonas = async (tipo = 'ALL', rawPage) => {
   return {
     tipo: key,
     ...buildMeta(total, page),
+    totalUsers,
+    totalAdmins,
+    totalClients,
     users
   };
 };

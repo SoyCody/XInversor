@@ -1,6 +1,7 @@
 import investmentRepository from '../repositories/investment.repository.js';
 import { registrarAuditoria, AUDIT_ACTIONS, AUDIT_TABLES } from './auditorias.service.js';
 import { parsePage, buildMeta, paginateArray } from '../utils/pagination.js';
+import { MESES_ES, mesesDelAnhoHastaHoy } from '../utils/meses.js';
 
 const INTERES_RATE = 0.1;
 
@@ -120,21 +121,61 @@ const list = async (tipo = 'ALL', rawPage) => {
   // Solución recomendada: denormalizar `estadoActual` (EstadoInversion) en
   // la tabla Inversion, mantenerlo en la misma transacción que crea el
   // Estado, y aquí pasar a where + skip/take + count reales.
-  const rows = await investmentRepository.list();
+  const [rows, retirosPendientes] = await Promise.all([
+    investmentRepository.list(),
+    investmentRepository.countSolicitudesPendientes()
+  ]);
 
   // Se aplana el cliente a su nombre y el estado actual a un string;
   // el filtro por tipo se aplica sobre ese estado actual.
-  const inversiones = rows
-    .map(({ client, estados, ...rest }) => ({
-      ...rest,
-      cliente: `${client.user.firstName} ${client.user.lastName}`,
-      estado: estados[0]?.estado ?? DEFAULT_ESTADO
-    }))
-    .filter((inversion) => key === 'ALL' || inversion.estado === key);
+  const todas = rows.map(({ client, estados, ...rest }) => ({
+    ...rest,
+    cliente: `${client.user.firstName} ${client.user.lastName}`,
+    estado: estados[0]?.estado ?? DEFAULT_ESTADO
+  }));
+  const inversiones = todas.filter((inversion) => key === 'ALL' || inversion.estado === key);
+
   return {
     tipo: key,
     ...buildMeta(inversiones.length, page),
+    // Tarjetas y gráficos del panel de administración: siempre sobre
+    // TODAS las inversiones (sin importar el filtro `tipo` elegido para
+    // la tabla), por eso se calculan sobre `todas` y no sobre `inversiones`.
+    ...resumenAdminInversiones(todas, retirosPendientes),
     inversiones: paginateArray(inversiones, page)
+  };
+};
+
+// "Montos" = la suma sobre TODAS las inversiones (no un promedio ni el
+// valor de una sola). `capitalPorMes`/`inversionesPorMes` siguen el mismo
+// criterio que `admin.service.js#clientesPorMes`: arrancan en enero y se
+// alargan mes a mes según avanza el año, en vez de una ventana móvil.
+const resumenAdminInversiones = (todas, retirosPendientes) => {
+  const ahora = new Date();
+  const anho = ahora.getFullYear();
+
+  const capitalPorMesMap = new Map();
+  const cantidadPorMesMap = new Map();
+  for (const inversion of todas) {
+    const fecha = new Date(inversion.createdAt);
+    if (fecha.getFullYear() !== anho) continue;
+    const mes = fecha.getMonth();
+    capitalPorMesMap.set(mes, (capitalPorMesMap.get(mes) ?? 0) + Number(inversion.monto));
+    cantidadPorMesMap.set(mes, (cantidadPorMesMap.get(mes) ?? 0) + 1);
+  }
+
+  const meses = mesesDelAnhoHastaHoy(ahora);
+
+  return {
+    // Nombre distinto de `total` (que `buildMeta` ya usa para el conteo
+    // filtrado/paginado de la tabla): este es el conteo global, sin
+    // importar el filtro `tipo` elegido, para la tarjeta "Total".
+    totalInversiones: todas.length,
+    totalIntereses: todas.reduce((sum, inversion) => sum + Number(inversion.intereses), 0),
+    pendientes: todas.filter((inversion) => inversion.estado === 'PENDIENTE').length,
+    retirosPendientes,
+    capitalPorMes: meses.map((mes) => ({ mes: MESES_ES[mes], monto: capitalPorMesMap.get(mes) ?? 0 })),
+    inversionesPorMes: meses.map((mes) => ({ mes: MESES_ES[mes], cantidad: cantidadPorMesMap.get(mes) ?? 0 }))
   };
 };
 
@@ -416,6 +457,56 @@ const resumenInversiones = async (userId) => {
   };
 };
 
+// Mediana de una lista de números ya ordenada ascendentemente.
+const medianaOrdenada = (valores) => {
+  if (valores.length === 0) return 0;
+  const mitad = Math.floor(valores.length / 2);
+  return valores.length % 2 === 0
+    ? (valores[mitad - 1] + valores[mitad]) / 2
+    : valores[mitad];
+};
+
+// Resumen de TODAS las inversiones para el panel de administración:
+// capital invertido total, cuántas están en progreso, promedio/mediana
+// de inversiones por cliente (solo sobre clientes con al menos una,
+// para no diluir el número con cuentas que nunca invirtieron), y el
+// estado de los retiros. Reutiliza `list()` (ya trae todas las
+// inversiones con su estado actual) para no repetir el mismo N+1 que ya
+// tiene el resto del módulo (ver nota en investment.repository.js#list).
+const resumenAdmin = async () => {
+  const [rows, retirosPendientes, ultimosRetiros] = await Promise.all([
+    investmentRepository.list(),
+    investmentRepository.countSolicitudesPendientes(),
+    investmentRepository.ultimosRetirosAprobados(5)
+  ]);
+
+  const estadoDe = (inv) => inv.estados[0]?.estado ?? DEFAULT_ESTADO;
+  const enProgreso = rows.filter((r) => estadoDe(r) === 'EN_PROGRESO').length;
+  const capitalInvertido = rows.reduce((sum, r) => sum + Number(r.monto), 0);
+
+  const inversionesPorCliente = new Map();
+  for (const r of rows) {
+    inversionesPorCliente.set(r.clientId, (inversionesPorCliente.get(r.clientId) ?? 0) + 1);
+  }
+  const conteos = [...inversionesPorCliente.values()].sort((a, b) => a - b);
+  const promedioInversionesPorCliente = conteos.length
+    ? conteos.reduce((a, b) => a + b, 0) / conteos.length
+    : 0;
+
+  return {
+    capitalInvertido,
+    enProgreso,
+    promedioInversionesPorCliente,
+    medianaInversionesPorCliente: medianaOrdenada(conteos),
+    retirosPendientes,
+    ultimosRetiros: ultimosRetiros.map((s) => ({
+      id: s.id,
+      monto: s.montoRetiro,
+      resueltaEn: s.resueltaEn
+    }))
+  };
+};
+
 export default {
   newInvestment,
   list,
@@ -424,5 +515,6 @@ export default {
   incrementarDias,
   getInvestment,
   inversionesCliente,
-  resumenInversiones
+  resumenInversiones,
+  resumenAdmin
 };

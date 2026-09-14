@@ -33,9 +33,11 @@ const list = async () => {
     orderBy: { createdAt: 'desc' },
     select: {
       id: true,
+      clientId: true,
       monto: true,
       dias: true,
       intereses: true,
+      createdAt: true,
       client: {
         select: {
           user: { select: { firstName: true, lastName: true } }
@@ -134,6 +136,21 @@ const crearSolicitud = async (inversionId, montoRetiro) => {
   });
 };
 
+// Para las tarjetas "Retiros pendientes" / "Últimos retiros aprobados"
+// del panel de administración.
+const countSolicitudesPendientes = () => {
+  return prisma.solicitud.count({ where: { estado: 'PENDIENTE' } });
+};
+
+const ultimosRetirosAprobados = (take = 5) => {
+  return prisma.solicitud.findMany({
+    where: { estado: 'ACEPTADA' },
+    orderBy: { resueltaEn: 'desc' },
+    take,
+    select: { id: true, montoRetiro: true, resueltaEn: true }
+  });
+};
+
 // Inversiones que todavía "envejecen": las retiradas quedan congeladas.
 // Hoy trae TODAS (incluidas las RETIRADO, que se descartan en memoria).
 // Con el `estadoActual` denormalizado, filtrar acá:
@@ -198,6 +215,8 @@ export default {
   myList,
   getInversionParaSolicitud,
   crearSolicitud,
+  countSolicitudesPendientes,
+  ultimosRetirosAprobados,
   getInversionesActivas,
   avanzarInversion,
   getInvestment,

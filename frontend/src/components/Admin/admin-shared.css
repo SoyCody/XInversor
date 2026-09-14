@@ -1,0 +1,9 @@
+/* Separación genérica entre bloques sueltos de una pantalla de admin
+   (una fila de tarjetas `.stat-cards`, el resumen+filtro de un listado,
+   etc.) y lo que tengan arriba. Estos bloques no traen margen propio
+   porque en el dashboard del cliente viven dentro de contenedores que sí
+   lo tienen (p. ej. `.investment-overview`); sueltos, como se usan en
+   las pantallas de admin, lo necesitan. */
+.admin-section-gap {
+  margin-top: 28px;
+}

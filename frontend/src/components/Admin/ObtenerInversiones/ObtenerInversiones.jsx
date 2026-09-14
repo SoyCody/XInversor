@@ -1,12 +1,24 @@
 import { useMemo, useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { listInversiones } from "../../../services/investmentApi.js";
 import { useFetch } from "../../../hooks/useFetch";
-import { formatUsd, formatBtc } from "../../../utils/format.js";
+import { formatBtc } from "../../../utils/format.js";
 import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import Pagination from "../../Pagination/Pagination.jsx";
 import "../../../App.css";
 import "../../DataTable/DataTable.css";
+import "../../Client/ClientDashboard/InvestmentOverview.css";
+import "../../Client/ClientInversiones/InvestmentRetirosCharts.css";
+import "../admin-shared.css";
 
 const FILTROS = [
   { value: "ALL", label: "Todas", titulo: "Inversiones", descripcion: "Listado de todas las inversiones" },
@@ -20,6 +32,22 @@ const ESTADO_LABEL = {
   EN_PROGRESO: "En progreso",
   RETIRADO: "Retirada",
 };
+
+// Mismo teal que el resto de gráficos de la app (ver
+// InvestmentRetirosCharts.jsx) en vez de una paleta nueva para el panel
+// de administración.
+const COLOR_LINEA = "#14b8a6"; // --accent-teal
+
+const tooltipStyle = {
+  fontFamily: "var(--font)",
+  fontSize: 12,
+  borderRadius: 8,
+  border: "1px solid var(--input-border)",
+};
+
+// Los montos son USD; en el eje alcanza con enteros para que no se
+// recorten los números grandes.
+const formatEjeMonto = (value) => value.toLocaleString("en-US");
 
 const ObtenerInversiones = () => {
   const [tipo, setTipo] = useState("ALL");
@@ -58,6 +86,118 @@ const ObtenerInversiones = () => {
               <h1>{filtroActual.titulo}</h1>
               <p>{filtroActual.descripcion}</p>
             </div>
+          </div>
+
+          {error && <p className="dashboard-error">{error}</p>}
+
+          <section className="section-band stat-cards admin-section-gap">
+            <div className="stat-card">
+              <span className="stat-card-label">Total</span>
+              <span className="stat-card-value">
+                {isLoading ? "—" : data?.totalInversiones ?? 0}
+              </span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-card-label">Total intereses</span>
+              <span className="stat-card-value">
+                {isLoading ? "—" : formatBtc(data?.totalIntereses ?? 0)}
+              </span>
+            </div>
+          </section>
+
+          <div className="retiros-charts">
+            <div className="retiros-chart-block">
+              <div className="page-heading">
+                <div>
+                  <h1>Capital invertido a través del tiempo</h1>
+                  <p>Suma del monto invertido por mes</p>
+                </div>
+              </div>
+
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart
+                  data={data?.capitalPorMes ?? []}
+                  margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--input-border)" />
+                  <XAxis dataKey="mes" tick={{ fontSize: 12, fill: "var(--muted)" }} />
+                  <YAxis
+                    tick={{ fontSize: 12, fill: "var(--muted)" }}
+                    width={48}
+                    tickFormatter={formatEjeMonto}
+                  />
+                  <Tooltip
+                    contentStyle={tooltipStyle}
+                    formatter={(value) => [`$${formatEjeMonto(value)}`, "Capital invertido"]}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="monto"
+                    name="Capital invertido"
+                    stroke={COLOR_LINEA}
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="retiros-chart-block">
+              <div className="page-heading">
+                <div>
+                  <h1>Inversiones por mes</h1>
+                  <p>Cantidad de inversiones creadas por mes</p>
+                </div>
+              </div>
+
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart
+                  data={data?.inversionesPorMes ?? []}
+                  margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--input-border)" />
+                  <XAxis dataKey="mes" tick={{ fontSize: 12, fill: "var(--muted)" }} />
+                  <YAxis tick={{ fontSize: 12, fill: "var(--muted)" }} width={32} allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={tooltipStyle}
+                    formatter={(value) => [value, "Inversiones"]}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="cantidad"
+                    name="Inversiones"
+                    stroke={COLOR_LINEA}
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <section className="section-band stat-cards admin-section-gap">
+            <div className="stat-card">
+              <span className="stat-card-label">Inversiones pendientes</span>
+              <span className="stat-card-value">
+                {isLoading ? "—" : data?.pendientes ?? 0}
+              </span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-card-label">Retiros pendientes</span>
+              <span className="stat-card-value">
+                {isLoading ? "—" : data?.retirosPendientes ?? 0}
+              </span>
+            </div>
+          </section>
+
+          {/* Filtro y búsqueda van pegados al total y a la tabla que
+              afectan, no arriba junto al título. */}
+          <div className="clientes-summary admin-section-gap">
+            <span className="clientes-total">
+              Total: <strong>{data?.total ?? inversionesFiltradas.length}</strong>
+            </span>
 
             <div className="clientes-controls">
               <label className="data-filtro">
@@ -84,51 +224,45 @@ const ObtenerInversiones = () => {
             </div>
           </div>
 
-          {error && <p className="dashboard-error">{error}</p>}
-
           {isLoading ? (
             <p>Cargando inversiones...</p>
+          ) : inversionesFiltradas.length === 0 ? (
+            <p>
+              {busqueda.trim()
+                ? "Ninguna inversión coincide con la búsqueda."
+                : "No hay inversiones para este filtro."}
+            </p>
           ) : (
-            <>
-              <div className="clientes-summary">
-                <span className="clientes-total">
-                  Total: <strong>{data?.total ?? inversionesFiltradas.length}</strong>
-                </span>
-              </div>
-
-              {inversionesFiltradas.length === 0 ? (
-                <p>
-                  {busqueda.trim()
-                    ? "Ninguna inversión coincide con la búsqueda."
-                    : "No hay inversiones para este filtro."}
-                </p>
-              ) : (
-                <div className="data-table-wrap">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>Cliente</th>
-                        <th>Monto (USD)</th>
-                        <th>Días</th>
-                        <th>Intereses (BTC)</th>
-                        <th>Estado</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {inversionesFiltradas.map((inversion) => (
-                        <tr key={inversion.id}>
-                          <td>{inversion.cliente}</td>
-                          <td>{formatUsd(inversion.monto)}</td>
-                          <td>{inversion.dias}</td>
-                          <td>{formatBtc(inversion.intereses)}</td>
-                          <td>{ESTADO_LABEL[inversion.estado] ?? inversion.estado}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </>
+            <div className="data-table-wrap">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Intereses (BTC)</th>
+                    <th>Estado</th>
+                    <th className="data-table-actions" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {inversionesFiltradas.map((inversion) => (
+                    <tr key={inversion.id}>
+                      <td>{inversion.cliente}</td>
+                      <td>{formatBtc(inversion.intereses)}</td>
+                      <td>{ESTADO_LABEL[inversion.estado] ?? inversion.estado}</td>
+                      <td className="data-table-actions">
+                        <button
+                          className="btn btn--primary btn--sm"
+                          disabled
+                          title="Disponible próximamente"
+                        >
+                          Detalles
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
 
           {!isLoading && (

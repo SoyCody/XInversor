@@ -26,14 +26,53 @@ const findRecent = (take = 10, state = ACTIVE_STATE) => {
     take,
     orderBy: { createdAt: 'desc' },
     where: { state },
-    select: { 
-      id: true, 
-      firstName: true, 
-      lastName: true, 
-      email: true, 
-      role: true, 
-      createdAt: true 
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      role: true,
+      createdAt: true
     }
+  });
+};
+
+// "Últimos clientes registrados" del panel de administración: a
+// diferencia de findRecent, solo trae clientes (no admins).
+const findRecentClients = (take = 5, state = ACTIVE_STATE) => {
+  return prisma.user.findMany({
+    take,
+    orderBy: { createdAt: 'desc' },
+    where: { role: 'CLIENT', state },
+    select: { id: true, firstName: true, lastName: true, createdAt: true }
+  });
+};
+
+// Altas y bajas de clientes desde `desde`, para el gráfico de tendencia
+// mensual del panel de administración. Se traen las fechas crudas (sin
+// agrupar por mes acá) porque agrupar por mes en SQL con Prisma requiere
+// $queryRaw; con el volumen de un panel de admin alcanza con agrupar en
+// memoria en el service.
+const clientesCreadosDesde = (desde) => {
+  return prisma.user.findMany({
+    where: { role: 'CLIENT', createdAt: { gte: desde } },
+    select: { createdAt: true }
+  });
+};
+
+// Un cliente "borrado" es un soft-delete (User.state pasa a BORRADO); se
+// registra como auditoría DELETE/user con userId = targetId (el usuario
+// se borra a sí mismo, ver auth.service.js#deleteUser), así que basta con
+// filtrar por el rol del propio actor de la auditoría.
+const clientesBorradosDesde = (desde) => {
+  return prisma.audit.findMany({
+    where: {
+      action: 'DELETE',
+      tableName: 'user',
+      createdAt: { gte: desde },
+      user: { role: 'CLIENT' }
+    },
+    select: { createdAt: true }
   });
 };
 
@@ -120,6 +159,9 @@ export default {
   countAll,
   countByRole,
   findRecent,
+  findRecentClients,
+  clientesCreadosDesde,
+  clientesBorradosDesde,
   obtenerPersona,
   verCliente,
   promoteToAdmin,
