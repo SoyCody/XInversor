@@ -55,6 +55,7 @@ export const ModelName = {
   Audit: 'Audit',
   Inversion: 'Inversion',
   Solicitud: 'Solicitud',
+  Configuracion: 'Configuracion',
   Estado: 'Estado'
 } as const
 
@@ -147,6 +148,15 @@ export const SolicitudScalarFieldEnum = {
 } as const
 
 export type SolicitudScalarFieldEnum = (typeof SolicitudScalarFieldEnum)[keyof typeof SolicitudScalarFieldEnum]
+
+
+export const ConfiguracionScalarFieldEnum = {
+  id: 'id',
+  porcentajeInteres: 'porcentajeInteres',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ConfiguracionScalarFieldEnum = (typeof ConfiguracionScalarFieldEnum)[keyof typeof ConfiguracionScalarFieldEnum]
 
 
 export const EstadoScalarFieldEnum = {

@@ -49,7 +49,10 @@ const tooltipStyle = {
 // retiro; lo que se puede mostrar con honestidad es qué parte de cada
 // monto solicitado corresponde a interés, en proporción a cuánto
 // representa `intereses` sobre el `total` de la inversión.
-const InvestmentRetirosCharts = ({ solicitudes, intereses, total, estado }) => {
+// `mostrarResumen` en false oculta el segundo gráfico (barras de
+// intereses/retirado/disponible): lo usa el detalle de administrador,
+// que solo necesita "Retiros en tiempo".
+const InvestmentRetirosCharts = ({ solicitudes, intereses, total, estado, mostrarResumen = true }) => {
   const totalNum = Number(total);
   const interesesNum = Number(intereses);
   const proporcionInteres = totalNum > 0 ? interesesNum / totalNum : 0;
@@ -149,37 +152,39 @@ const InvestmentRetirosCharts = ({ solicitudes, intereses, total, estado }) => {
         )}
       </div>
 
-      <div className="retiros-chart-block">
-        <div className="page-heading">
-          <div>
-            <h1>Resumen de la inversión (BTC)</h1>
-            <p>Intereses, retirado y disponible sobre el total</p>
+      {mostrarResumen && (
+        <div className="retiros-chart-block">
+          <div className="page-heading">
+            <div>
+              <h1>Resumen de la inversión (BTC)</h1>
+              <p>Intereses, retirado y disponible sobre el total</p>
+            </div>
           </div>
-        </div>
 
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart
-            data={resumen}
-            layout="vertical"
-            margin={{ top: 4, right: 24, left: 8, bottom: 0 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--input-border)" />
-            <XAxis type="number" tick={{ fontSize: 12, fill: "var(--muted)" }} tickFormatter={formatEje} />
-            <YAxis
-              type="category"
-              dataKey="name"
-              width={90}
-              tick={{ fontSize: 11, fill: "var(--text)" }}
-            />
-            <Tooltip contentStyle={tooltipStyle} formatter={(value) => formatBtc(value)} />
-            <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-              {resumen.map((entry) => (
-                <Cell key={entry.name} fill={entry.color} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart
+              data={resumen}
+              layout="vertical"
+              margin={{ top: 4, right: 24, left: 8, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--input-border)" />
+              <XAxis type="number" tick={{ fontSize: 12, fill: "var(--muted)" }} tickFormatter={formatEje} />
+              <YAxis
+                type="category"
+                dataKey="name"
+                width={90}
+                tick={{ fontSize: 11, fill: "var(--text)" }}
+              />
+              <Tooltip contentStyle={tooltipStyle} formatter={(value) => formatBtc(value)} />
+              <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                {resumen.map((entry) => (
+                  <Cell key={entry.name} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 };

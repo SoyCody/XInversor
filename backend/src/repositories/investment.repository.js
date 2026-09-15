@@ -208,6 +208,21 @@ const avanzarInversion = async (inversionId, { dias, habilitar }) => {
   return prisma.$transaction(ops);
 };
 
+// Fila única (id = 1) con el porcentaje de intereses vigente. `upsert`
+// porque la fila puede no existir todavía (antes de la primera edición
+// desde el panel de administración).
+const getConfiguracion = async () => {
+  return prisma.configuracion.findUnique({ where: { id: 1 } });
+};
+
+const setPorcentajeInteres = async (porcentaje) => {
+  return prisma.configuracion.upsert({
+    where: { id: 1 },
+    create: { id: 1, porcentajeInteres: porcentaje },
+    update: { porcentajeInteres: porcentaje }
+  });
+};
+
 export default {
   registerInvestment,
   getIdByUser,
@@ -220,5 +235,7 @@ export default {
   getInversionesActivas,
   avanzarInversion,
   getInvestment,
-  getTotales
+  getTotales,
+  getConfiguracion,
+  setPorcentajeInteres
 };

@@ -14,7 +14,8 @@ export const AUDIT_TABLES = {
   ROL: 'rol',
   INVERSION: 'inversion',
   CLIENT: 'cliente',
-  SOLICITUD: 'solicitud'
+  SOLICITUD: 'solicitud',
+  CONFIGURACION: 'configuracion'
 };
 
 // CONSISTENCIA: hoy los servicios hacen `await mutación` y luego

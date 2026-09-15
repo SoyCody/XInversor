@@ -48,6 +48,11 @@ export type Inversion = Prisma.InversionModel
  */
 export type Solicitud = Prisma.SolicitudModel
 /**
+ * Model Configuracion
+ * 
+ */
+export type Configuracion = Prisma.ConfiguracionModel
+/**
  * Model Estado
  * 
  */

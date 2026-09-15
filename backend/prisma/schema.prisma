@@ -132,6 +132,15 @@ model Solicitud {
   @@index([adminId])
 }
 
+// Fila única (id fijo = 1) con parámetros globales editables desde el
+// panel de administración. Hoy solo el porcentaje de intereses que se
+// aplica a las inversiones nuevas (ver Investment.newInvestment).
+model Configuracion {
+  id                Int      @id @default(1)
+  porcentajeInteres Decimal  @default(0.10) @db.Decimal(5, 4)
+  updatedAt         DateTime @updatedAt
+}
+
 model Estado {
   id          Int             @id @default(autoincrement())
   inversionId Int

@@ -22,4 +22,16 @@ const createApplicationSchema = Joi.object({
   })
 });
 
-export { createInvestmentSchema, createApplicationSchema };
+// Cambio del porcentaje de intereses (panel de administración). Se
+// guarda como fracción (0.10 = 10%): tope en 1 para no permitir un
+// porcentaje absurdo por error de tipeo.
+const updatePercentSchema = Joi.object({
+  porcentaje: Joi.number().positive().max(1).precision(4).required().messages({
+    'number.base': 'El porcentaje debe ser un número',
+    'number.positive': 'El porcentaje debe ser mayor a 0',
+    'number.max': 'El porcentaje no puede ser mayor a 1',
+    'any.required': 'El porcentaje es obligatorio'
+  })
+});
+
+export { createInvestmentSchema, createApplicationSchema, updatePercentSchema };

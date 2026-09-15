@@ -88,11 +88,68 @@ const getInvestment = async (req, res) => {
   };
 };
 
+const getInvestmentAdmin = async (req, res) => {
+  try {
+    const inversionId = Number(req.params.inversionId);
+    const data = await InvestmentService.getInvestmentAdmin(inversionId);
+    return res.status(200).json(data);
+  } catch ( error ) {
+    if (!error.statusCode) console.error(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.statusCode ? error.message : 'Error al obtener la inversión.'
+    });
+  };
+};
+
+const percent = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { porcentaje } = req.body;
+    const data = await InvestmentService.updatePorcentaje(id, porcentaje);
+    return res.status(200).json(data);
+  } catch ( error ) {
+    if (!error.statusCode) console.error(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.statusCode ? error.message : 'Error en el cambio de porcentaje.'
+    });
+  };
+};
+
+const approve= async (req, res) => {
+  try {
+    const { id } = req.params;
+    const application = await InvestmentService.approve(id);
+    return res.status(200).json(application);
+  } catch ( error ) {
+    if (!error.statusCode) console.error(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.statusCode ? error.message : 'Error en el cambio de porcentaje.'
+    });
+  };
+};
+
+const reject= async (req, res) => {
+  try {
+    const { id } = req.params;
+    const application = await InvestmentService.reject(id);
+    return res.status(200).json(application);
+  } catch ( error ) {
+    if (!error.statusCode) console.error(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.statusCode ? error.message : 'Error en el cambio de porcentaje.'
+    });
+  };
+};
+
 export default {
     createInvestment,
     list,
     myList,
     summary,
     createApplication,
-    getInvestment
+    getInvestment,
+    getInvestmentAdmin,
+    percent,
+    approve,
+    reject
 }

@@ -2,7 +2,7 @@ import express from 'express';
 import investmentController from '../controllers/investment.controller.js';
 import { isAdmin, isActive, isnBlocked, verifyToken } from '../middlewares/auth.middleware.js';
 import validate from '../middlewares/validate.middleware.js';
-import { createInvestmentSchema, createApplicationSchema } from '../validators/investment.validator.js';
+import { createInvestmentSchema, createApplicationSchema, updatePercentSchema } from '../validators/investment.validator.js';
 
 const router = express.Router();
 
@@ -48,6 +48,28 @@ router.post('/:inversionId/application',
     isnBlocked,
     validate(createApplicationSchema),
     investmentController.createApplication
+);
+
+router.put('/percent/edit',
+    verifyToken,
+    isAdmin,
+    isActive,
+    validate(updatePercentSchema),
+    investmentController.percent
+);
+
+router.put('/:applicationId/approve',
+    verifyToken, 
+    isAdmin,
+    isActive,
+    investmentController.approve
+);
+
+router.put('/:applicationId/reject',
+    verifyToken, 
+    isAdmin,
+    isActive,
+    investmentController.reject
 );
 
 export default router;

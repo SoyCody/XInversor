@@ -3,7 +3,7 @@ import { registrarAuditoria, AUDIT_ACTIONS, AUDIT_TABLES } from './auditorias.se
 import { parsePage, buildMeta, paginateArray } from '../utils/pagination.js';
 import { MESES_ES, mesesDelAnhoHastaHoy } from '../utils/meses.js';
 
-const INTERES_RATE = 0.1;
+const INTERES_RATE_DEFAULT = 0.1;
 
 const DIAS_PARA_HABILITAR = 15;
 const MS_POR_DIA = 24 * 60 * 60 * 1000;
@@ -14,9 +14,6 @@ const fail = (statusCode, message) => {
   return error;
 };
 
-// Una cuenta nace como CLIENT sin wallet. La wallet es donde se le pagan
-// los retiros en BTC, así que hasta no registrar una no puede invertir.
-// (Puede quedar null para siempre si un admin asciende la cuenta.)
 const tieneWallet = (wallet) =>
   typeof wallet === 'string' && wallet.trim().length > 0;
 
@@ -33,7 +30,7 @@ const newInvestment = async (userId, { monto }) => {
     throw fail(409, 'Necesitas registrar tu wallet antes de poder invertir');
   }
 
-  // Defensa en profundidad: la ruta ya valida `monto` con Joi
+  // la ruta ya valida `monto` con Joi
   // (createInvestmentSchema), esto cubre llamadas internas al servicio.
   const montoNum = Number(monto);
 
@@ -65,11 +62,12 @@ const newInvestment = async (userId, { monto }) => {
     );
   }
 
-  // OJO: aritmética en punto flotante sobre dinero. montoNum * 0.1 puede
+  // OJO: aritmética en punto flotante sobre dinero. montoNum * tasa puede
   // dar 0.30000000000000004 y se guarda en Decimal(18,8). Para importes
   // grandes o si la tasa deja de ser "redonda", conviene calcular
   // intereses/total con Prisma.Decimal (o strings) y no con Number.
-  const intereses = montoNum * INTERES_RATE;
+  const tasa = await getPorcentajeInteres();
+  const intereses = montoNum * tasa;
   const total = montoNum + intereses;
 
   // dias arranca en 0: es el contador que habilita los retiros
@@ -222,33 +220,19 @@ const myList = async (userId, tipo = 'ALL', rawPage) => {
   return listInversionesCliente(client.id, tipo, rawPage);
 };
 
-const getInvestment = async (userId, inversionId) => {
-  if (!Number.isInteger(inversionId) || inversionId <= 0) {
-    throw fail(400, 'Inversión inválida');
-  }
-
-  const client = await investmentRepository.getIdByUser(userId);
-  if (!client) {
-    throw fail(404, 'El usuario no tiene un perfil de cliente');
-  }
-
-  const inversion = await investmentRepository.getInvestment(inversionId);
-  if (!inversion) {
-    throw fail(404, 'La inversión no existe');
-  }
-
-  // Un cliente solo puede ver el detalle de sus propias inversiones.
-  if (inversion.clientId !== client.id) {
-    throw fail(403, 'Esta inversión no te pertenece');
-  }
-
+// NOTA: `dias` y `diasParaHabilitar` salen del contador persistido, que
+// solo se refresca a medianoche (job incrementarDias). Entre corridas el
+// valor puede estar hasta ~24h desactualizado. Si el frontend necesita
+// exactitud, usar diasTranscurridos(inversion.createdAt) en lugar de
+// inversion.dias.
+//
+// Compartido entre getInvestment (cliente, sobre las suyas) y
+// getInvestmentAdmin (administrador, sobre cualquiera): la única
+// diferencia entre ambos es quién puede pedir el detalle, no la forma
+// de la respuesta.
+const buildInvestmentDetail = (inversion) => {
   const estadoActual = inversion.estados[0]?.estado ?? DEFAULT_ESTADO;
 
-  // NOTA: `dias` y `diasParaHabilitar` salen del contador persistido, que
-  // solo se refresca a medianoche (job incrementarDias). Entre corridas el
-  // valor puede estar hasta ~24h desactualizado. Si el frontend necesita
-  // exactitud, usar diasTranscurridos(inversion.createdAt) en lugar de
-  // inversion.dias.
   return {
     inversion: {
       id: inversion.id,
@@ -274,6 +258,45 @@ const getInvestment = async (userId, inversionId) => {
       solicitudes: inversion.solicitudes
     }
   };
+};
+
+const getInvestment = async (userId, inversionId) => {
+  if (!Number.isInteger(inversionId) || inversionId <= 0) {
+    throw fail(400, 'Inversión inválida');
+  }
+
+  const client = await investmentRepository.getIdByUser(userId);
+  if (!client) {
+    throw fail(404, 'El usuario no tiene un perfil de cliente');
+  }
+
+  const inversion = await investmentRepository.getInvestment(inversionId);
+  if (!inversion) {
+    throw fail(404, 'La inversión no existe');
+  }
+
+  // Un cliente solo puede ver el detalle de sus propias inversiones.
+  if (inversion.clientId !== client.id) {
+    throw fail(403, 'Esta inversión no te pertenece');
+  }
+
+  return buildInvestmentDetail(inversion);
+};
+
+// Detalle de cualquier inversión para el panel de administración: a
+// diferencia de getInvestment, no exige ser el dueño (el acceso ya lo
+// resuelve la ruta con isAdmin).
+const getInvestmentAdmin = async (inversionId) => {
+  if (!Number.isInteger(inversionId) || inversionId <= 0) {
+    throw fail(400, 'Inversión inválida');
+  }
+
+  const inversion = await investmentRepository.getInvestment(inversionId);
+  if (!inversion) {
+    throw fail(404, 'La inversión no existe');
+  }
+
+  return buildInvestmentDetail(inversion);
 };
 
 const createApplication = async (userId, inversionId, montoRetiro) => {
@@ -507,6 +530,36 @@ const resumenAdmin = async () => {
   };
 };
 
+// Porcentaje vigente para calcular intereses de inversiones nuevas.
+// Mientras nadie lo haya editado desde el panel de administración no
+// existe fila en Configuracion, así que se usa INTERES_RATE_DEFAULT.
+const getPorcentajeInteres = async () => {
+  const config = await investmentRepository.getConfiguracion();
+  return config ? Number(config.porcentajeInteres) : INTERES_RATE_DEFAULT;
+};
+
+// Edición del porcentaje de intereses desde el panel de administración.
+// Se guarda como fracción (0.10 = 10%) y se registra en auditoría por
+// tratarse de un parámetro que afecta a todas las inversiones futuras.
+const updatePorcentaje = async (userId, porcentaje) => {
+  const valor = Number(porcentaje);
+
+  if (!Number.isFinite(valor) || valor <= 0 || valor > 1) {
+    throw fail(400, 'El porcentaje debe ser un número mayor a 0 y menor o igual a 1');
+  }
+
+  const config = await investmentRepository.setPorcentajeInteres(valor);
+
+  await registrarAuditoria({
+    userId,
+    action: AUDIT_ACTIONS.UPDATE,
+    tableName: AUDIT_TABLES.CONFIGURACION,
+    targetId: config.id
+  });
+
+  return { porcentajeInteres: Number(config.porcentajeInteres) };
+};
+
 export default {
   newInvestment,
   list,
@@ -514,7 +567,10 @@ export default {
   createApplication,
   incrementarDias,
   getInvestment,
+  getInvestmentAdmin,
   inversionesCliente,
   resumenInversiones,
-  resumenAdmin
+  resumenAdmin,
+  getPorcentajeInteres,
+  updatePorcentaje
 };

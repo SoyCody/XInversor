@@ -230,6 +230,15 @@
   opacity: 0.85;
 }
 
+/* ----- Porcentaje de intereses (panel de administración) -----
+   Misma fila que .cfg-wallet-row, pero el campo es corto (una fracción
+   como 0.10) y no lleva el ícono de mostrar/ocultar, así que no hereda
+   el padding derecho de .cfg-wallet-input. */
+.cfg-percent-input input {
+  width: 160px;
+  padding: 9px 12px;
+}
+
 /* ----- Eliminar cuenta ----- */
 .cfg-danger {
   display: flex;

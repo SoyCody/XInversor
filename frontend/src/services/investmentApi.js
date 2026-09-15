@@ -37,3 +37,17 @@ export function crearSolicitud(inversionId, montoRetiro) {
     body: { montoRetiro },
   });
 }
+
+// Detalle de una inversión para el administrador: cualquier inversión,
+// no solo las del cliente autenticado (a diferencia de verInversion).
+export function verInversionAdmin(inversionId) {
+  return apiFetch(`/investment/admin/${encodeURIComponent(inversionId)}/watch`);
+}
+
+// Porcentaje de intereses aplicado a las inversiones nuevas (0.10 = 10%).
+export function actualizarPorcentajeInteres(porcentaje) {
+  return apiFetch("/investment/percent/edit", {
+    method: "PUT",
+    body: { porcentaje },
+  });
+}

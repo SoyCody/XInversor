@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   LineChart,
   Line,
@@ -14,6 +15,8 @@ import { formatBtc } from "../../../utils/format.js";
 import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import Pagination from "../../Pagination/Pagination.jsx";
+import SuccessBanner from "../../SuccessBanner/SuccessBanner.jsx";
+import PorcentajeInteresCard from "./PorcentajeInteresCard.jsx";
 import "../../../App.css";
 import "../../DataTable/DataTable.css";
 import "../../Client/ClientDashboard/InvestmentOverview.css";
@@ -50,9 +53,11 @@ const tooltipStyle = {
 const formatEjeMonto = (value) => value.toLocaleString("en-US");
 
 const ObtenerInversiones = () => {
+  const navigate = useNavigate();
   const [tipo, setTipo] = useState("ALL");
   const [busqueda, setBusqueda] = useState("");
   const [page, setPage] = useState(1);
+  const [successMsg, setSuccessMsg] = useState(null);
 
   // Al cambiar el filtro o la página el hook vuelve a pedir la lista (de 20 en 20).
   const { data, isLoading, error } = useFetch(
@@ -79,6 +84,8 @@ const ObtenerInversiones = () => {
 
       <main className="main">
         <Header />
+
+        <SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 
         <div className="content">
           <div className="page-heading">
@@ -251,9 +258,9 @@ const ObtenerInversiones = () => {
                       <td>{ESTADO_LABEL[inversion.estado] ?? inversion.estado}</td>
                       <td className="data-table-actions">
                         <button
+                          type="button"
                           className="btn btn--primary btn--sm"
-                          disabled
-                          title="Disponible próximamente"
+                          onClick={() => navigate(`/admin/inversiones/${inversion.id}`)}
                         >
                           Detalles
                         </button>
@@ -272,6 +279,8 @@ const ObtenerInversiones = () => {
               onChange={setPage}
             />
           )}
+
+          <PorcentajeInteresCard onSuccess={setSuccessMsg} />
         </div>
       </main>
     </div>
