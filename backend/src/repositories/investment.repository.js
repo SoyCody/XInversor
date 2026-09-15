@@ -116,7 +116,7 @@ const getInversionParaSolicitud = async (inversionId) => {
     select: {
       id: true,
       clientId: true,
-      total: true,
+      intereses: true,
       estados: {
         orderBy: { createdAt: 'desc' },
         take: 1,
@@ -136,10 +136,35 @@ const crearSolicitud = async (inversionId, montoRetiro) => {
   });
 };
 
-// Para las tarjetas "Retiros pendientes" / "Últimos retiros aprobados"
-// del panel de administración.
+// Para la tarjeta "Retiros pendientes" del dashboard de administración
+// (resumenAdmin) y "Últimos retiros aprobados".
 const countSolicitudesPendientes = () => {
   return prisma.solicitud.count({ where: { estado: 'PENDIENTE' } });
+};
+
+// Detalle de cada solicitud sin resolver, para la sección "Retiros
+// pendientes" del listado de Inversiones del panel de administración
+// (misma forma que investmentRepository.list(), pero por solicitud).
+const getSolicitudesPendientes = async () => {
+  return prisma.solicitud.findMany({
+    where: { estado: 'PENDIENTE' },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      montoRetiro: true,
+      inversionId: true,
+      inversion: {
+        select: {
+          intereses: true,
+          client: {
+            select: {
+              user: { select: { firstName: true, lastName: true } }
+            }
+          }
+        }
+      }
+    }
+  });
 };
 
 const ultimosRetirosAprobados = (take = 5) => {
@@ -223,6 +248,73 @@ const setPorcentajeInteres = async (porcentaje) => {
   });
 };
 
+// Datos mínimos para resolver (aprobar/rechazar) una solicitud: el
+// estado actual (para no resolver dos veces la misma), a qué inversión
+// pertenece, y el monto e intereses/capital de esa inversión (para,
+// si se aprueba, restar el retiro de los intereses -- ver approve() en
+// el servicio).
+const getSolicitudParaResolver = async (applicationId) => {
+  return prisma.solicitud.findUnique({
+    where: { id: applicationId },
+    select: {
+      id: true,
+      inversionId: true,
+      estado: true,
+      montoRetiro: true,
+      inversion: { select: { monto: true, intereses: true } }
+    }
+  });
+};
+
+// El admin que resuelve una solicitud puede no tener fila en Admin
+// (no debería pasar detrás de isAdmin, pero adminId es opcional en el
+// modelo, así que si no existe simplemente se guarda sin admin asociado).
+const getAdminIdByUser = async (userId) => {
+  return prisma.admin.findUnique({
+    where: { userId },
+    select: { id: true }
+  });
+};
+
+// `updateMany` con `estado: 'PENDIENTE'` en el where (en vez de un
+// simple `update` por id) para que, si dos requests llegan a la vez
+// sobre la misma solicitud, solo la primera la resuelva: la segunda ve
+// count 0 y el servicio la trata como "ya resuelta" en vez de pisarla.
+// Aprobar además resta el retiro de los intereses de la inversión en la
+// misma transacción (el capital invertido, `monto`, nunca se toca); si
+// eso deja los intereses en 0, la inversión pasa a RETIRADO -- ya se
+// pagó todo el interés generado y no queda de dónde retirar más.
+const aprobarSolicitud = async (applicationId, inversionId, { intereses, total, marcarRetirado }, adminId) => {
+  return prisma.$transaction(async (tx) => {
+    const { count } = await tx.solicitud.updateMany({
+      where: { id: applicationId, estado: 'PENDIENTE' },
+      data: { estado: 'ACEPTADA', pendiente: null, resueltaEn: new Date(), adminId }
+    });
+
+    if (count === 0) return null;
+
+    await tx.inversion.update({
+      where: { id: inversionId },
+      data: { intereses, total }
+    });
+
+    if (marcarRetirado) {
+      await tx.estado.create({ data: { inversionId, estado: 'RETIRADO' } });
+    }
+
+    return { id: applicationId, estado: 'ACEPTADA' };
+  });
+};
+
+const rechazarSolicitud = async (applicationId, adminId) => {
+  const { count } = await prisma.solicitud.updateMany({
+    where: { id: applicationId, estado: 'PENDIENTE' },
+    data: { estado: 'RECHAZADA', pendiente: null, resueltaEn: new Date(), adminId }
+  });
+
+  return count > 0 ? { id: applicationId, estado: 'RECHAZADA' } : null;
+};
+
 export default {
   registerInvestment,
   getIdByUser,
@@ -231,11 +323,16 @@ export default {
   getInversionParaSolicitud,
   crearSolicitud,
   countSolicitudesPendientes,
+  getSolicitudesPendientes,
   ultimosRetirosAprobados,
   getInversionesActivas,
   avanzarInversion,
   getInvestment,
   getTotales,
   getConfiguracion,
-  setPorcentajeInteres
+  setPorcentajeInteres,
+  getSolicitudParaResolver,
+  getAdminIdByUser,
+  aprobarSolicitud,
+  rechazarSolicitud
 };

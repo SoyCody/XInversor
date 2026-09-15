@@ -7,10 +7,11 @@ const usdFormatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-// BTC: hasta 8 decimales (1 satoshi); mínimo 2 para que no quede "1 BTC".
+// BTC: siempre 2 decimales (los montos ya vienen redondeados a esa
+// precisión en toda la UI, aunque el backend guarde hasta 8).
 const btcFormatter = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 2,
-  maximumFractionDigits: 8,
+  maximumFractionDigits: 2,
 });
 
 // Los montos llegan del backend como string: Prisma serializa Decimal así.

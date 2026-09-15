@@ -42,6 +42,15 @@ router.get('/:inversionId/watch',
     investmentController.getInvestment
 )
 
+// Detalle de una inversión desde el panel de administración: cualquier
+// inversión, no solo las propias (a diferencia de la ruta de arriba).
+router.get('/admin/:inversionId/watch',
+    verifyToken,
+    isAdmin,
+    isActive,
+    investmentController.getInvestmentAdmin
+)
+
 router.post('/:inversionId/application',
     verifyToken,
     isActive,

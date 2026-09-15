@@ -187,7 +187,7 @@ const VerInversion = () => {
               {isSolicitando && (
                 <NuevaSolicitudModal
                   inversionId={inversion.id}
-                  disponible={formatBtc(inversion.total)}
+                  disponible={formatBtc(inversion.intereses)}
                   onClose={() => setIsSolicitando(false)}
                   onSuccess={() => {
                     setIsSolicitando(false);

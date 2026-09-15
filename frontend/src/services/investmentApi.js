@@ -51,3 +51,16 @@ export function actualizarPorcentajeInteres(porcentaje) {
     body: { porcentaje },
   });
 }
+
+// Aprobar/rechazar una solicitud de retiro pendiente (panel de administración).
+export function aprobarSolicitud(applicationId) {
+  return apiFetch(`/investment/${encodeURIComponent(applicationId)}/approve`, {
+    method: "PUT",
+  });
+}
+
+export function rechazarSolicitud(applicationId) {
+  return apiFetch(`/investment/${encodeURIComponent(applicationId)}/reject`, {
+    method: "PUT",
+  });
+}

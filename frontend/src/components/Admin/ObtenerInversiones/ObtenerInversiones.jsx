@@ -192,9 +192,9 @@ const ObtenerInversiones = () => {
               </span>
             </div>
             <div className="stat-card">
-              <span className="stat-card-label">Retiros pendientes</span>
+              <span className="stat-card-label">Inversiones en progreso</span>
               <span className="stat-card-value">
-                {isLoading ? "—" : data?.retirosPendientes ?? 0}
+                {isLoading ? "—" : data?.enProgreso ?? 0}
               </span>
             </div>
           </section>
@@ -278,6 +278,50 @@ const ObtenerInversiones = () => {
               totalPages={data?.totalPages ?? 1}
               onChange={setPage}
             />
+          )}
+
+          <div className="page-heading admin-section-gap">
+            <div>
+              <h1>Retiros pendientes</h1>
+              <p>Solicitudes de retiro sin resolver</p>
+            </div>
+          </div>
+
+          {isLoading ? (
+            <p>Cargando retiros pendientes...</p>
+          ) : (data?.solicitudesPendientes?.length ?? 0) === 0 ? (
+            <p>No hay retiros pendientes.</p>
+          ) : (
+            <div className="data-table-wrap">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Intereses (BTC)</th>
+                    <th>Solicitado (BTC)</th>
+                    <th className="data-table-actions" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.solicitudesPendientes.map((solicitud) => (
+                    <tr key={solicitud.id}>
+                      <td>{solicitud.cliente}</td>
+                      <td>{formatBtc(solicitud.intereses)}</td>
+                      <td>{formatBtc(solicitud.montoRetiro)}</td>
+                      <td className="data-table-actions">
+                        <button
+                          type="button"
+                          className="btn btn--primary btn--sm"
+                          onClick={() => navigate(`/admin/inversiones/${solicitud.inversionId}`)}
+                        >
+                          Detalles
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
 
           <PorcentajeInteresCard onSuccess={setSuccessMsg} />

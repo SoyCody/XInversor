@@ -119,9 +119,9 @@ const list = async (tipo = 'ALL', rawPage) => {
   // Solución recomendada: denormalizar `estadoActual` (EstadoInversion) en
   // la tabla Inversion, mantenerlo en la misma transacción que crea el
   // Estado, y aquí pasar a where + skip/take + count reales.
-  const [rows, retirosPendientes] = await Promise.all([
+  const [rows, solicitudesPendientesRaw] = await Promise.all([
     investmentRepository.list(),
-    investmentRepository.countSolicitudesPendientes()
+    investmentRepository.getSolicitudesPendientes()
   ]);
 
   // Se aplana el cliente a su nombre y el estado actual a un string;
@@ -133,14 +133,27 @@ const list = async (tipo = 'ALL', rawPage) => {
   }));
   const inversiones = todas.filter((inversion) => key === 'ALL' || inversion.estado === key);
 
+  // Misma forma que `inversiones` (cliente aplanado a nombre), pero una
+  // fila por solicitud sin resolver en vez de por inversión: alimenta la
+  // sección "Retiros pendientes" de abajo, cuyo botón "Detalles" navega
+  // a la inversión dueña de la solicitud (inversionId).
+  const solicitudesPendientes = solicitudesPendientesRaw.map((s) => ({
+    id: s.id,
+    inversionId: s.inversionId,
+    cliente: `${s.inversion.client.user.firstName} ${s.inversion.client.user.lastName}`,
+    intereses: s.inversion.intereses,
+    montoRetiro: s.montoRetiro
+  }));
+
   return {
     tipo: key,
     ...buildMeta(inversiones.length, page),
     // Tarjetas y gráficos del panel de administración: siempre sobre
     // TODAS las inversiones (sin importar el filtro `tipo` elegido para
     // la tabla), por eso se calculan sobre `todas` y no sobre `inversiones`.
-    ...resumenAdminInversiones(todas, retirosPendientes),
-    inversiones: paginateArray(inversiones, page)
+    ...resumenAdminInversiones(todas),
+    inversiones: paginateArray(inversiones, page),
+    solicitudesPendientes
   };
 };
 
@@ -148,7 +161,7 @@ const list = async (tipo = 'ALL', rawPage) => {
 // valor de una sola). `capitalPorMes`/`inversionesPorMes` siguen el mismo
 // criterio que `admin.service.js#clientesPorMes`: arrancan en enero y se
 // alargan mes a mes según avanza el año, en vez de una ventana móvil.
-const resumenAdminInversiones = (todas, retirosPendientes) => {
+const resumenAdminInversiones = (todas) => {
   const ahora = new Date();
   const anho = ahora.getFullYear();
 
@@ -171,7 +184,7 @@ const resumenAdminInversiones = (todas, retirosPendientes) => {
     totalInversiones: todas.length,
     totalIntereses: todas.reduce((sum, inversion) => sum + Number(inversion.intereses), 0),
     pendientes: todas.filter((inversion) => inversion.estado === 'PENDIENTE').length,
-    retirosPendientes,
+    enProgreso: todas.filter((inversion) => inversion.estado === 'EN_PROGRESO').length,
     capitalPorMes: meses.map((mes) => ({ mes: MESES_ES[mes], monto: capitalPorMesMap.get(mes) ?? 0 })),
     inversionesPorMes: meses.map((mes) => ({ mes: MESES_ES[mes], cantidad: cantidadPorMesMap.get(mes) ?? 0 }))
   };
@@ -337,9 +350,11 @@ const createApplication = async (userId, inversionId, montoRetiro) => {
     throw fail(409, 'Ya existe una solicitud de retiro pendiente para esta inversión');
   }
 
-  // No se puede pedir más de lo que la inversión tiene disponible (BTC).
-  if (montoNum > Number(inversion.total)) {
-    throw fail(422, 'El monto solicitado supera el total disponible de la inversión');
+  // Un retiro sale solo de los intereses generados: el capital invertido
+  // (monto) no se toca. Ver approve(), que resta montoRetiro de
+  // `intereses` al aprobar.
+  if (montoNum > Number(inversion.intereses)) {
+    throw fail(422, 'El monto solicitado supera los intereses disponibles de la inversión');
   }
 
   let solicitud;
@@ -560,6 +575,89 @@ const updatePorcentaje = async (userId, porcentaje) => {
   return { porcentajeInteres: Number(config.porcentajeInteres) };
 };
 
+// Valida el id y trae la solicitud si existe; approve/reject comparten
+// esta lectura para poder distinguir "no existe" (404) de "ya fue
+// resuelta" (409) antes de intentar escribir.
+const buscarSolicitudOFallar = async (applicationId) => {
+  const id = Number(applicationId);
+  if (!Number.isInteger(id) || id <= 0) {
+    throw fail(400, 'Solicitud inválida');
+  }
+
+  const solicitud = await investmentRepository.getSolicitudParaResolver(id);
+  if (!solicitud) {
+    throw fail(404, 'La solicitud no existe');
+  }
+
+  return solicitud;
+};
+
+// Aprobar un retiro resta el monto pedido de los intereses de la
+// inversión (el capital invertido, `monto`, nunca se toca -- ya se
+// valida en createApplication que montoRetiro no supera los intereses
+// disponibles, y al haber una sola solicitud pendiente por inversión a
+// la vez, esos intereses no pudieron cambiar desde entonces). Si eso
+// agota los intereses, la inversión pasa a RETIRADO en la misma
+// transacción (ver investmentRepository.aprobarSolicitud); si no, sigue
+// EN_PROGRESO y se puede volver a pedir un retiro más adelante.
+const approve = async (applicationId, userId) => {
+  const solicitud = await buscarSolicitudOFallar(applicationId);
+
+  const montoRetiro = Number(solicitud.montoRetiro);
+  const montoInvertido = Number(solicitud.inversion.monto);
+  const interesesActuales = Number(solicitud.inversion.intereses);
+  const nuevosIntereses = Math.max(0, interesesActuales - montoRetiro);
+
+  const admin = await investmentRepository.getAdminIdByUser(userId);
+  const resultado = await investmentRepository.aprobarSolicitud(
+    solicitud.id,
+    solicitud.inversionId,
+    {
+      intereses: nuevosIntereses,
+      total: montoInvertido + nuevosIntereses,
+      marcarRetirado: nuevosIntereses <= 0
+    },
+    admin?.id ?? null
+  );
+
+  // updateMany solo afecta filas todavía PENDIENTE: si otra request ya
+  // la resolvió entre la lectura de arriba y este punto, count viene 0.
+  if (!resultado) {
+    throw fail(409, 'Esta solicitud ya fue resuelta');
+  }
+
+  await registrarAuditoria({
+    userId,
+    action: AUDIT_ACTIONS.APPROVE,
+    tableName: AUDIT_TABLES.SOLICITUD,
+    targetId: solicitud.id
+  });
+
+  return resultado;
+};
+
+// Rechazar no toca la inversión: sigue EN_PROGRESO y el cliente puede
+// solicitar otro retiro.
+const reject = async (applicationId, userId) => {
+  const solicitud = await buscarSolicitudOFallar(applicationId);
+
+  const admin = await investmentRepository.getAdminIdByUser(userId);
+  const resultado = await investmentRepository.rechazarSolicitud(solicitud.id, admin?.id ?? null);
+
+  if (!resultado) {
+    throw fail(409, 'Esta solicitud ya fue resuelta');
+  }
+
+  await registrarAuditoria({
+    userId,
+    action: AUDIT_ACTIONS.REJECT,
+    tableName: AUDIT_TABLES.SOLICITUD,
+    targetId: solicitud.id
+  });
+
+  return resultado;
+};
+
 export default {
   newInvestment,
   list,
@@ -572,5 +670,7 @@ export default {
   resumenInversiones,
   resumenAdmin,
   getPorcentajeInteres,
-  updatePorcentaje
+  updatePorcentaje,
+  approve,
+  reject
 };

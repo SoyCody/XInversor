@@ -115,28 +115,30 @@ const percent = async (req, res) => {
   };
 };
 
-const approve= async (req, res) => {
+const approve = async (req, res) => {
   try {
-    const { id } = req.params;
-    const application = await InvestmentService.approve(id);
+    const applicationId = Number(req.params.applicationId);
+    const { id } = req.user;
+    const application = await InvestmentService.approve(applicationId, id);
     return res.status(200).json(application);
   } catch ( error ) {
     if (!error.statusCode) console.error(error);
     return res.status(error.statusCode || 500).json({
-      message: error.statusCode ? error.message : 'Error en el cambio de porcentaje.'
+      message: error.statusCode ? error.message : 'Error al aprobar la solicitud.'
     });
   };
 };
 
-const reject= async (req, res) => {
+const reject = async (req, res) => {
   try {
-    const { id } = req.params;
-    const application = await InvestmentService.reject(id);
+    const applicationId = Number(req.params.applicationId);
+    const { id } = req.user;
+    const application = await InvestmentService.reject(applicationId, id);
     return res.status(200).json(application);
   } catch ( error ) {
     if (!error.statusCode) console.error(error);
     return res.status(error.statusCode || 500).json({
-      message: error.statusCode ? error.message : 'Error en el cambio de porcentaje.'
+      message: error.statusCode ? error.message : 'Error al rechazar la solicitud.'
     });
   };
 };

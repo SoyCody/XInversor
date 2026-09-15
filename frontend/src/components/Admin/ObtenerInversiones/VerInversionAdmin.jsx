@@ -1,9 +1,17 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { verInversionAdmin } from "../../../services/investmentApi.js";
+import {
+  verInversionAdmin,
+  aprobarSolicitud,
+  rechazarSolicitud,
+} from "../../../services/investmentApi.js";
 import { useFetch } from "../../../hooks/useFetch";
 import { formatUsd, formatBtc } from "../../../utils/format.js";
 import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
+import SuccessBanner from "../../SuccessBanner/SuccessBanner.jsx";
+import ConfirmActionModal from "../../Config/ConfirmActionModal.jsx";
+import GestionarSolicitudModal from "./GestionarSolicitudModal.jsx";
 import InvestmentStatusProgress from "../../Client/ClientInversiones/InvestmentStatusProgress.jsx";
 import InvestmentRetirosCharts from "../../Client/ClientInversiones/InvestmentRetirosCharts.jsx";
 import "../../../App.css";
@@ -60,12 +68,68 @@ const ESTADO_SOLICITUD = {
 const VerInversionAdmin = () => {
   const { inversionId } = useParams();
   const navigate = useNavigate();
-  const { data, isLoading, error } = useFetch(
+  const { data, isLoading, error, refetch } = useFetch(
     () => verInversionAdmin(inversionId),
     [inversionId]
   );
 
   const inversion = data?.inversion;
+
+  // Gestionar una solicitud pendiente es un flujo de dos pasos: primero
+  // elegir aprobar/rechazar (GestionarSolicitudModal) y, solo si se elige
+  // aprobar, un segundo modal de confirmación (marca la inversión como
+  // retirada y no se puede deshacer). Rechazar se aplica directo desde
+  // el primer modal.
+  const [gestionando, setGestionando] = useState(null); // { id, monto } | null
+  const [confirmandoAprobar, setConfirmandoAprobar] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [manageError, setManageError] = useState(null);
+  const [successMsg, setSuccessMsg] = useState(null);
+
+  const abrirGestionar = (solicitud) => {
+    setManageError(null);
+    setConfirmandoAprobar(false);
+    setGestionando({ id: solicitud.id, monto: formatBtc(solicitud.montoRetiro) });
+  };
+
+  const cerrarGestionar = () => {
+    if (isProcessing) return;
+    setGestionando(null);
+    setConfirmandoAprobar(false);
+    setManageError(null);
+  };
+
+  const handleRechazar = async () => {
+    setIsProcessing(true);
+    setManageError(null);
+    try {
+      await rechazarSolicitud(gestionando.id);
+      setGestionando(null);
+      setConfirmandoAprobar(false);
+      setSuccessMsg("Solicitud de retiro rechazada");
+      refetch();
+    } catch (err) {
+      setManageError(err.message);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleConfirmarAprobar = async () => {
+    setIsProcessing(true);
+    setManageError(null);
+    try {
+      await aprobarSolicitud(gestionando.id);
+      setGestionando(null);
+      setConfirmandoAprobar(false);
+      setSuccessMsg("Solicitud de retiro aprobada");
+      refetch();
+    } catch (err) {
+      setManageError(err.message);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="app">
@@ -73,6 +137,8 @@ const VerInversionAdmin = () => {
 
       <main className="main">
         <Header />
+
+        <SuccessBanner message={successMsg} onClose={() => setSuccessMsg(null)} />
 
         <div className="content">
           <button
@@ -180,7 +246,7 @@ const VerInversionAdmin = () => {
                                   <button
                                     type="button"
                                     className="btn btn--primary btn--sm"
-                                    title="Disponible próximamente"
+                                    onClick={() => abrirGestionar(s)}
                                   >
                                     Gestionar
                                   </button>
@@ -212,6 +278,33 @@ const VerInversionAdmin = () => {
                 </div>
               </section>
             </>
+          )}
+
+          {gestionando && !confirmandoAprobar && (
+            <GestionarSolicitudModal
+              monto={gestionando.monto}
+              isBusy={isProcessing}
+              error={manageError}
+              onClose={cerrarGestionar}
+              onReject={handleRechazar}
+              onApprove={() => {
+                setManageError(null);
+                setConfirmandoAprobar(true);
+              }}
+            />
+          )}
+
+          {gestionando && confirmandoAprobar && (
+            <ConfirmActionModal
+              title="Aprobar solicitud de retiro"
+              subtitle="Confirmación de aprobación"
+              message={`¿Estás seguro de aprobar el retiro de ${gestionando.monto}? La solicitud quedará marcada como retirada y esta acción no se puede deshacer.`}
+              confirmingLabel="Aprobando..."
+              isBusy={isProcessing}
+              error={manageError}
+              onClose={cerrarGestionar}
+              onConfirm={handleConfirmarAprobar}
+            />
           )}
         </div>
       </main>

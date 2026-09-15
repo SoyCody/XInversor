@@ -34,9 +34,8 @@ const ESTADO_SOLICITUD = {
 const formatFechaCorta = (isoString) =>
   new Date(isoString).toLocaleDateString("es-EC", { day: "numeric", month: "short" });
 
-// Los montos son BTC con hasta 8 decimales; en el eje alcanza con 4 para
-// que el número quepa sin recortarse.
-const formatEje = (value) => value.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+// Mismo redondeo a 2 decimales que formatBtc en el resto de la app.
+const formatEje = (value) => value.toFixed(2);
 
 const tooltipStyle = {
   fontFamily: "var(--font)",
@@ -45,29 +44,30 @@ const tooltipStyle = {
   border: "1px solid var(--input-border)",
 };
 
-// El interés (10%) se fija al crear la inversión, no se genera retiro a
-// retiro; lo que se puede mostrar con honestidad es qué parte de cada
-// monto solicitado corresponde a interés, en proporción a cuánto
-// representa `intereses` sobre el `total` de la inversión.
+// Un retiro sale siempre 100% de los intereses generados (el capital
+// invertido nunca se retira -- ver investment.service.js#approve): no
+// hay una "parte de interés" distinta del monto pedido que calcular, el
+// monto de la solicitud YA ES el interés retirado.
 // `mostrarResumen` en false oculta el segundo gráfico (barras de
 // intereses/retirado/disponible): lo usa el detalle de administrador,
 // que solo necesita "Retiros en tiempo".
 const InvestmentRetirosCharts = ({ solicitudes, intereses, total, estado, mostrarResumen = true }) => {
   const totalNum = Number(total);
   const interesesNum = Number(intereses);
-  const proporcionInteres = totalNum > 0 ? interesesNum / totalNum : 0;
 
-  const porRetiro = [...solicitudes]
-    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-    .map((s) => {
-      const monto = Number(s.montoRetiro);
-      return {
-        fecha: formatFechaCorta(s.createdAt),
-        estado: s.estado,
-        monto,
-        interes: monto * proporcionInteres,
-      };
-    });
+  // Solo las solicitudes ACEPTADAS representan un retiro real: mientras
+  // esté PENDIENTE (o si termina RECHAZADA) el dinero nunca se movió, así
+  // que mostrarla acá daría a entender que el retiro ya se hizo cuando en
+  // realidad un administrador todavía no lo aprueba. La fecha del punto
+  // es cuándo se resolvió (resueltaEn), no cuándo se pidió.
+  const porRetiro = solicitudes
+    .filter((s) => s.estado === "ACEPTADA")
+    .sort((a, b) => new Date(a.resueltaEn) - new Date(b.resueltaEn))
+    .map((s) => ({
+      fecha: formatFechaCorta(s.resueltaEn),
+      estado: s.estado,
+      monto: Number(s.montoRetiro),
+    }));
 
   const retirado = solicitudes
     .filter((s) => s.estado === "ACEPTADA")
@@ -86,7 +86,7 @@ const InvestmentRetirosCharts = ({ solicitudes, intereses, total, estado, mostra
         <div className="page-heading">
           <div>
             <h1>Retiros en tiempo</h1>
-            <p>Monto total de cada retiro y su parte de interés</p>
+            <p>Monto retirado en cada solicitud</p>
           </div>
         </div>
 
@@ -94,61 +94,35 @@ const InvestmentRetirosCharts = ({ solicitudes, intereses, total, estado, mostra
           <p className="retiros-chart-empty">
             {estado === "RETIRADO"
               ? "Esta inversión fue retirada sin registrar solicitudes individuales."
-              : "Todavía no se han solicitado retiros para esta inversión."}
+              : "Todavía no se ha aprobado ningún retiro para esta inversión."}
           </p>
         ) : (
-          <>
-            <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={porRetiro} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--input-border)" />
-                <XAxis dataKey="fecha" tick={{ fontSize: 12, fill: "var(--muted)" }} />
-                <YAxis tick={{ fontSize: 12, fill: "var(--muted)" }} width={64} tickFormatter={formatEje} />
-                <Tooltip
-                  contentStyle={tooltipStyle}
-                  formatter={(value, name) => [formatBtc(value), name]}
-                  labelFormatter={(_, payload) =>
-                    payload?.[0]?.payload
-                      ? `${payload[0].payload.fecha} · ${ESTADO_SOLICITUD[payload[0].payload.estado] ?? ""}`
-                      : ""
-                  }
-                />
-                <Line
-                  type="monotone"
-                  dataKey="monto"
-                  name="Total"
-                  stroke={COLOR_TOTAL}
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
-                  activeDot={{ r: 6 }}
-                  connectNulls
-                />
-                <Line
-                  type="monotone"
-                  dataKey="interes"
-                  name="Intereses"
-                  stroke={COLOR_INTERES}
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
-                  activeDot={{ r: 6 }}
-                  connectNulls
-                />
-              </LineChart>
-            </ResponsiveContainer>
-
-            {/* Mismo widget de leyenda que InvestmentOverview (Mis
-                inversiones), en vez del <Legend> de Recharts, para no
-                mantener dos estilos de leyenda distintos en la app. */}
-            <div className="investment-overview-legend">
-              <span className="legend-item">
-                <i className="legend-dot is-progreso" aria-hidden="true" />
-                Total
-              </span>
-              <span className="legend-item">
-                <i className="legend-dot is-pendientes" aria-hidden="true" />
-                Intereses
-              </span>
-            </div>
-          </>
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={porRetiro} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--input-border)" />
+              <XAxis dataKey="fecha" tick={{ fontSize: 12, fill: "var(--muted)" }} />
+              <YAxis tick={{ fontSize: 12, fill: "var(--muted)" }} width={64} tickFormatter={formatEje} />
+              <Tooltip
+                contentStyle={tooltipStyle}
+                formatter={(value, name) => [formatBtc(value), name]}
+                labelFormatter={(_, payload) =>
+                  payload?.[0]?.payload
+                    ? `${payload[0].payload.fecha} · ${ESTADO_SOLICITUD[payload[0].payload.estado] ?? ""}`
+                    : ""
+                }
+              />
+              <Line
+                type="monotone"
+                dataKey="monto"
+                name="Monto retirado"
+                stroke={COLOR_TOTAL}
+                strokeWidth={2}
+                dot={{ r: 4 }}
+                activeDot={{ r: 6 }}
+                connectNulls
+              />
+            </LineChart>
+          </ResponsiveContainer>
         )}
       </div>
 
