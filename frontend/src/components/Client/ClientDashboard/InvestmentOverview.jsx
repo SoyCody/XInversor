@@ -1,4 +1,4 @@
-import { formatUsd, formatBtc } from "../../../utils/format.js";
+import { formatBtc } from "../../../utils/format.js";
 import "./InvestmentOverview.css";
 
 // Resumen de inversiones del cliente: capital invertido, total acumulado,
@@ -32,7 +32,7 @@ const InvestmentOverview = ({
         <div className="stat-card">
           <span className="stat-card-label">Capital invertido</span>
           <span className="stat-card-value">
-            {isLoading ? "—" : formatUsd(totalInvertido)}
+            {isLoading ? "—" : formatBtc(totalInvertido)}
           </span>
         </div>
 

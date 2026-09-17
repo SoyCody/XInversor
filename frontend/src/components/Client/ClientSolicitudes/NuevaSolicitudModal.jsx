@@ -2,12 +2,18 @@ import { useState } from "react";
 import { crearSolicitud } from "../../../services/investmentApi";
 import ConfigModal from "../../Config/ConfigModal.jsx";
 
+// Domingo (0) o sábado (6): el backend rechaza la solicitud igual, esto
+// solo evita que el cliente la intente y se encuentre con el error recién
+// al enviar.
+const esFinDeSemana = () => [0, 6].includes(new Date().getDay());
+
 // Mismo modal que "Editar información básica" / "Cambiar contraseña"
 // (ConfigModal), en vez de un formulario inline propio.
 const NuevaSolicitudModal = ({ inversionId, disponible, onClose, onSuccess }) => {
   const [montoRetiro, setMonto] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const finDeSemana = esFinDeSemana();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,6 +43,12 @@ const NuevaSolicitudModal = ({ inversionId, disponible, onClose, onSuccess }) =>
       onClose={onClose}
     >
       <form className="config-modal__form" onSubmit={handleSubmit}>
+        {finDeSemana && (
+          <p className="config-modal__warning">
+            No se pueden solicitar retiros los fines de semana. Podrás enviarla el próximo día hábil.
+          </p>
+        )}
+
         {error && <p className="config-modal__error">{error}</p>}
 
         <div className="config-modal__field">

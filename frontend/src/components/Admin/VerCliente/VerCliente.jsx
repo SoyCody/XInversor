@@ -15,13 +15,17 @@ import "./VerCliente.css";
 const FILTROS_INVERSION = [
   { value: "ALL", label: "Todas" },
   { value: "PENDIENTE", label: "Pendientes" },
+  { value: "EN_ESPERA", label: "En espera" },
   { value: "EN_PROGRESO", label: "En progreso" },
+  { value: "RECHAZADO", label: "Rechazadas" },
   { value: "RETIRADO", label: "Retiradas" },
 ];
 
 const ESTADO_LABEL = {
   PENDIENTE: "Pendiente",
+  EN_ESPERA: "En espera",
   EN_PROGRESO: "En progreso",
+  RECHAZADO: "Rechazada",
   RETIRADO: "Retirada",
 };
 
@@ -203,7 +207,7 @@ const VerCliente = () => {
                             <button
                               type="button"
                               className="btn btn--primary btn--sm"
-                              title="Próximamente"
+                              onClick={() => navigate(`/admin/inversiones/${inversion.id}`)}
                             >
                               Detalles
                             </button>

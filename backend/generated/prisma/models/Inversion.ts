@@ -315,7 +315,7 @@ export type InversionScalarWhereWithAggregatesInput = {
 }
 
 export type InversionCreateInput = {
-  monto: runtime.Decimal | runtime.DecimalJsLike | number | string
+  monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -328,7 +328,7 @@ export type InversionCreateInput = {
 export type InversionUncheckedCreateInput = {
   id?: number
   clientId: number
-  monto: runtime.Decimal | runtime.DecimalJsLike | number | string
+  monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -363,7 +363,7 @@ export type InversionUncheckedUpdateInput = {
 export type InversionCreateManyInput = {
   id?: number
   clientId: number
-  monto: runtime.Decimal | runtime.DecimalJsLike | number | string
+  monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -530,7 +530,7 @@ export type InversionUpdateOneRequiredWithoutEstadosNestedInput = {
 }
 
 export type InversionCreateWithoutClientInput = {
-  monto: runtime.Decimal | runtime.DecimalJsLike | number | string
+  monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -541,7 +541,7 @@ export type InversionCreateWithoutClientInput = {
 
 export type InversionUncheckedCreateWithoutClientInput = {
   id?: number
-  monto: runtime.Decimal | runtime.DecimalJsLike | number | string
+  monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -590,7 +590,7 @@ export type InversionScalarWhereInput = {
 }
 
 export type InversionCreateWithoutSolicitudesInput = {
-  monto: runtime.Decimal | runtime.DecimalJsLike | number | string
+  monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -602,7 +602,7 @@ export type InversionCreateWithoutSolicitudesInput = {
 export type InversionUncheckedCreateWithoutSolicitudesInput = {
   id?: number
   clientId: number
-  monto: runtime.Decimal | runtime.DecimalJsLike | number | string
+  monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -648,7 +648,7 @@ export type InversionUncheckedUpdateWithoutSolicitudesInput = {
 }
 
 export type InversionCreateWithoutEstadosInput = {
-  monto: runtime.Decimal | runtime.DecimalJsLike | number | string
+  monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -660,7 +660,7 @@ export type InversionCreateWithoutEstadosInput = {
 export type InversionUncheckedCreateWithoutEstadosInput = {
   id?: number
   clientId: number
-  monto: runtime.Decimal | runtime.DecimalJsLike | number | string
+  monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -707,7 +707,7 @@ export type InversionUncheckedUpdateWithoutEstadosInput = {
 
 export type InversionCreateManyClientInput = {
   id?: number
-  monto: runtime.Decimal | runtime.DecimalJsLike | number | string
+  monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string

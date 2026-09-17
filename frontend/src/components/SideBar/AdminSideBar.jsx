@@ -5,7 +5,6 @@ import logo from "../../assets/logo.png";
 import inicioIcon from "../../assets/inicio.png";
 import inversionesIcon from "../../assets/inversiones.png";
 import usuariosIcon from "../../assets/usuarios.png";
-import verificacionIcon from "../../assets/verificacion.png";
 import configuracionIcon from "../../assets/configuracion.png";
 import auditoriaIcon from "../../assets/auditoria.png";
 import notificacionIcon from "../../assets/notificacion.png";
@@ -35,17 +34,12 @@ const AdminSideBar = () => {
 
         <Link to="/admin/inversiones" className={`nav-link ${isActive("/admin/inversiones") ? "active" : ""}`}>
           <img className="nav-icon-img" src={inversionesIcon} alt="" aria-hidden="true" />
-          <span>Inversiones</span>
+          <span>Paquetes</span>
         </Link>
 
         <Link to="/admin/clientes" className={`nav-link ${isActive("/admin/clientes") ? "active" : ""}`}>
           <img className="nav-icon-img" src={usuariosIcon} alt="" aria-hidden="true" />
           <span>Usuarios</span>
-        </Link>
-
-        <Link to="/admin/solicitudes" className={`nav-link ${isActive("/admin/solicitudes") ? "active" : ""}`}>
-          <img className="nav-icon-img" src={verificacionIcon} alt="" aria-hidden="true" />
-          <span>KYC / Verificación</span>
         </Link>
 
         <div className="nav-section">CONFIGURACIÓN</div>

@@ -25,6 +25,8 @@ enum State {
 
 enum EstadoInversion {
   PENDIENTE
+  RECHAZADO
+  EN_ESPERA
   EN_PROGRESO
   RETIRADO
 }
@@ -98,7 +100,7 @@ model Audit {
 model Inversion {
   id          Int         @id @default(autoincrement())
   clientId    Int
-  monto       Decimal     @db.Decimal(14, 2)
+  monto       Decimal     @default(0) @db.Decimal(18, 8)
   dias        Int         @default(0)
   total       Decimal     @default(0) @db.Decimal(18, 8)
   intereses   Decimal     @default(0) @db.Decimal(18, 8)

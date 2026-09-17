@@ -25,14 +25,18 @@ import "../admin-shared.css";
 
 const FILTROS = [
   { value: "ALL", label: "Todas", titulo: "Inversiones", descripcion: "Listado de todas las inversiones" },
-  { value: "PENDIENTE", label: "Pendientes", titulo: "Inversiones pendientes", descripcion: "En el período de bloqueo de 15 días" },
+  { value: "PENDIENTE", label: "Pendientes", titulo: "Inversiones pendientes", descripcion: "Paquetes a la espera de que un admin los revise" },
+  { value: "EN_ESPERA", label: "En espera", titulo: "Inversiones en espera", descripcion: "Aprobadas, en el período de bloqueo de 15 días" },
   { value: "EN_PROGRESO", label: "En progreso", titulo: "Inversiones en progreso", descripcion: "Habilitadas para solicitar retiros" },
+  { value: "RECHAZADO", label: "Rechazadas", titulo: "Inversiones rechazadas", descripcion: "Paquetes que un admin rechazó" },
   { value: "RETIRADO", label: "Retiradas", titulo: "Inversiones retiradas", descripcion: "Inversiones que el cliente ya retiró" },
 ];
 
 const ESTADO_LABEL = {
   PENDIENTE: "Pendiente",
+  EN_ESPERA: "En espera",
   EN_PROGRESO: "En progreso",
+  RECHAZADO: "Rechazada",
   RETIRADO: "Retirada",
 };
 
@@ -48,7 +52,7 @@ const tooltipStyle = {
   border: "1px solid var(--input-border)",
 };
 
-// Los montos son USD; en el eje alcanza con enteros para que no se
+// Los montos son BTC; en el eje alcanza con enteros para que no se
 // recorten los números grandes.
 const formatEjeMonto = (value) => value.toLocaleString("en-US");
 
@@ -135,7 +139,7 @@ const ObtenerInversiones = () => {
                   />
                   <Tooltip
                     contentStyle={tooltipStyle}
-                    formatter={(value) => [`$${formatEjeMonto(value)}`, "Capital invertido"]}
+                    formatter={(value) => [`${formatEjeMonto(value)} BTC`, "Capital invertido"]}
                   />
                   <Line
                     type="monotone"
@@ -145,6 +149,9 @@ const ObtenerInversiones = () => {
                     strokeWidth={2}
                     dot={{ r: 4 }}
                     activeDot={{ r: 6 }}
+                    isAnimationActive={true}
+                    animationDuration={600}
+                    animationEasing="ease-out"
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -178,6 +185,9 @@ const ObtenerInversiones = () => {
                     strokeWidth={2}
                     dot={{ r: 4 }}
                     activeDot={{ r: 6 }}
+                    isAnimationActive={true}
+                    animationDuration={600}
+                    animationEasing="ease-out"
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -192,9 +202,21 @@ const ObtenerInversiones = () => {
               </span>
             </div>
             <div className="stat-card">
+              <span className="stat-card-label">Inversiones en espera</span>
+              <span className="stat-card-value">
+                {isLoading ? "—" : data?.enEspera ?? 0}
+              </span>
+            </div>
+            <div className="stat-card">
               <span className="stat-card-label">Inversiones en progreso</span>
               <span className="stat-card-value">
                 {isLoading ? "—" : data?.enProgreso ?? 0}
+              </span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-card-label">Inversiones rechazadas</span>
+              <span className="stat-card-value">
+                {isLoading ? "—" : data?.rechazadas ?? 0}
               </span>
             </div>
           </section>

@@ -5,7 +5,7 @@ import "../../DataTable/DataTable.css";
 import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import Pagination from "../../Pagination/Pagination.jsx";
-import NuevaInversionModal from "./NuevaInversionModal.jsx";
+import NuevoPaqueteModal from "./NuevoPaqueteModal.jsx";
 import BlockedActionModal from "../../Config/BlockedActionModal.jsx";
 import SuccessBanner from "../../SuccessBanner/SuccessBanner.jsx";
 import InvestmentOverview from "../ClientDashboard/InvestmentOverview.jsx";
@@ -17,13 +17,17 @@ import { isBlockedError } from "../../../utils/blockedError.js";
 const FILTROS = [
   { value: "ALL", label: "Todas" },
   { value: "PENDIENTE", label: "Pendientes" },
+  { value: "EN_ESPERA", label: "En espera" },
   { value: "EN_PROGRESO", label: "En progreso" },
+  { value: "RECHAZADO", label: "Rechazadas" },
   { value: "RETIRADO", label: "Retiradas" },
 ];
 
 const ESTADO_LABEL = {
   PENDIENTE: "Pendiente",
+  EN_ESPERA: "En espera",
   EN_PROGRESO: "En progreso",
+  RECHAZADO: "Rechazada",
   RETIRADO: "Retirada",
 };
 
@@ -58,9 +62,10 @@ const ClientInversiones = () => {
   const inversiones = useMemo(() => data?.inversiones ?? [], [data]);
 
   // El backend rechaza crear una inversión si ya hay `limiteActivas`
-  // activas (PENDIENTE o EN_PROGRESO); aquí se refleja deshabilitando
-  // el botón para no dejar intentarlo.
-  const activas = (resumen?.enProgreso ?? 0) + (resumen?.pendientes ?? 0);
+  // activas (PENDIENTE, EN_ESPERA o EN_PROGRESO); aquí se refleja
+  // deshabilitando el botón para no dejar intentarlo.
+  const activas =
+    (resumen?.pendientes ?? 0) + (resumen?.enEspera ?? 0) + (resumen?.enProgreso ?? 0);
   const limiteActivas = resumen?.limiteActivas ?? 5;
   const limiteAlcanzado = !isResumenLoading && activas >= limiteActivas;
 
@@ -96,11 +101,11 @@ const ClientInversiones = () => {
           )}
 
           {isCreating && (
-            <NuevaInversionModal
+            <NuevoPaqueteModal
               onClose={() => setIsCreating(false)}
               onSuccess={() => {
                 setIsCreating(false);
-                setSuccessMsg("Inversión creada correctamente");
+                setSuccessMsg("Paquete creado correctamente");
                 setPage(1);
                 setReloadKey((k) => k + 1);
               }}
@@ -160,7 +165,7 @@ const ClientInversiones = () => {
                 setIsCreating(true);
               }}
             >
-              Nueva inversión
+              Nuevo paquete
             </button>
           </div>
 

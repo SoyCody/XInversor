@@ -143,6 +143,48 @@ const reject = async (req, res) => {
   };
 };
 
+const retire = async (req, res) => {
+  try {
+    const investmentId = Number(req.params.investmentId);
+    const { id } = req.user;
+    const investment = await InvestmentService.retire(investmentId, id);
+    return res.status(200).json(investment);
+  } catch ( error ) {
+    if (!error.statusCode) console.error(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.statusCode ? error.message : 'Error al retirar la inversión.'
+    });
+  };
+};
+
+const approveInvestment = async (req, res) => {
+  try {
+    const investmentId = Number(req.params.investmentId);
+    const { id } = req.user;
+    const investment = await InvestmentService.approveInvestment(investmentId, id);
+    return res.status(200).json(investment);
+  } catch ( error ) {
+    if (!error.statusCode) console.error(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.statusCode ? error.message : 'Error al aprobar el paquete.'
+    });
+  };
+};
+
+const rejectInvestment = async (req, res) => {
+  try {
+    const investmentId = Number(req.params.investmentId);
+    const { id } = req.user;
+    const investment = await InvestmentService.rejectInvestment(investmentId, id);
+    return res.status(200).json(investment);
+  } catch ( error ) {
+    if (!error.statusCode) console.error(error);
+    return res.status(error.statusCode || 500).json({
+      message: error.statusCode ? error.message : 'Error al rechazar el paquete.'
+    });
+  };
+};
+
 export default {
     createInvestment,
     list,
@@ -153,5 +195,8 @@ export default {
     getInvestmentAdmin,
     percent,
     approve,
-    reject
-}
+    reject,
+    retire,
+    approveInvestment,
+    rejectInvestment
+};

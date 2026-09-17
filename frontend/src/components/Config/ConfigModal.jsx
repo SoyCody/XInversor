@@ -5,7 +5,7 @@ import "./ConfigModal.css";
 // amarilla (título + subtítulo) y un cuerpo blanco. El contenido (el
 // formulario y sus botones) lo pone quien lo usa. El fondo que se ve por
 // detrás es el que estuviera en pantalla al abrirlo.
-const ConfigModal = ({ title, subtitle, onClose, children }) => {
+const ConfigModal = ({ title, subtitle, onClose, children, className = "" }) => {
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === "Escape") onClose?.();
@@ -17,7 +17,7 @@ const ConfigModal = ({ title, subtitle, onClose, children }) => {
   return (
     <div className="config-modal-overlay" onMouseDown={onClose}>
       <div
-        className="config-modal"
+        className={`config-modal ${className}`.trim()}
         role="dialog"
         aria-modal="true"
         aria-label={title}

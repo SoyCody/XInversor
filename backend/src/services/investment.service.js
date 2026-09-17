@@ -17,6 +17,33 @@ const fail = (statusCode, message) => {
 const tieneWallet = (wallet) =>
   typeof wallet === 'string' && wallet.trim().length > 0;
 
+// Date#getDay(): 0 = domingo ... 6 = sábado. Los retiros solo se pueden
+// solicitar en día hábil (lunes a viernes); usa la hora del servidor,
+// igual que el resto del módulo (ver incrementarDias/resumenAdminInversiones).
+const esDiaHabil = (fecha = new Date()) => {
+  const dia = fecha.getDay();
+  return dia >= 1 && dia <= 5;
+};
+
+// Mensaje compartido por las dos acciones que exigen que la inversión
+// esté EN_PROGRESO (pedir un retiro, terminarla a mano): explica por qué
+// no se puede según el estado en el que esté en vez de un genérico
+// "no se puede". Reutilizado por createApplication() y retire().
+const mensajeNoEnProgreso = (estado) => {
+  switch (estado) {
+    case 'RETIRADO':
+      return 'La inversión ya fue retirada';
+    case 'RECHAZADO':
+      return 'La inversión fue rechazada por un administrador';
+    case 'PENDIENTE':
+      return 'La inversión todavía está pendiente de revisión del administrador';
+    case 'EN_ESPERA':
+      return 'La inversión todavía está en el período de bloqueo de 15 días';
+    default:
+      return 'La inversión no está en progreso';
+  }
+};
+
 const newInvestment = async (userId, { monto }) => {
   const client = await investmentRepository.getIdByUser(userId);
 
@@ -39,7 +66,8 @@ const newInvestment = async (userId, { monto }) => {
   }
 
   // Un cliente no puede acumular más de MAX_INVERSIONES_ACTIVAS
-  // inversiones activas (PENDIENTE o EN_PROGRESO) al mismo tiempo.
+  // inversiones activas (PENDIENTE, EN_ESPERA o EN_PROGRESO) al mismo
+  // tiempo.
   //
   // Race condition conocida: dos POST /investment/new en paralelo pueden
   // pasar los dos este chequeo y dejar al cliente con activas+1. Si el
@@ -94,16 +122,20 @@ const newInvestment = async (userId, { monto }) => {
 const INVERSION_TIPOS = [
   'ALL',
   'PENDIENTE',
+  'EN_ESPERA',
   'EN_PROGRESO',
+  'RECHAZADO',
   'RETIRADO'
 ];
 
 const DEFAULT_ESTADO = 'PENDIENTE';
 
 // Límite de inversiones activas simultáneas por cliente. Cuenta las que
-// están PENDIENTE o EN_PROGRESO; las RETIRADO ya no ocupan cupo.
+// todavía pueden llegar a EN_PROGRESO (PENDIENTE, esperando que el admin
+// la revise; EN_ESPERA, ya aprobada y contando los 15 días) o ya están
+// EN_PROGRESO; RECHAZADO y RETIRADO son estados terminales y no ocupan cupo.
 const MAX_INVERSIONES_ACTIVAS = 5;
-const ESTADOS_ACTIVOS = ['PENDIENTE', 'EN_PROGRESO'];
+const ESTADOS_ACTIVOS = ['PENDIENTE', 'EN_ESPERA', 'EN_PROGRESO'];
 
 const list = async (tipo = 'ALL', rawPage) => {
   const key = INVERSION_TIPOS.includes(String(tipo).toUpperCase())
@@ -157,6 +189,13 @@ const list = async (tipo = 'ALL', rawPage) => {
   };
 };
 
+// Cuántas inversiones de una lista ya aplanada (con `estado` como string)
+// están en un estado dado. Reutilizado por resumenAdminInversiones() y
+// resumenInversiones() en vez de repetir el mismo `.filter(...).length`
+// por cada estado.
+const contarPorEstado = (inversiones, estado) =>
+  inversiones.filter((inversion) => inversion.estado === estado).length;
+
 // "Montos" = la suma sobre TODAS las inversiones (no un promedio ni el
 // valor de una sola). `capitalPorMes`/`inversionesPorMes` siguen el mismo
 // criterio que `admin.service.js#clientesPorMes`: arrancan en enero y se
@@ -183,8 +222,11 @@ const resumenAdminInversiones = (todas) => {
     // importar el filtro `tipo` elegido, para la tarjeta "Total".
     totalInversiones: todas.length,
     totalIntereses: todas.reduce((sum, inversion) => sum + Number(inversion.intereses), 0),
-    pendientes: todas.filter((inversion) => inversion.estado === 'PENDIENTE').length,
-    enProgreso: todas.filter((inversion) => inversion.estado === 'EN_PROGRESO').length,
+    pendientes: contarPorEstado(todas, 'PENDIENTE'),
+    enEspera: contarPorEstado(todas, 'EN_ESPERA'),
+    enProgreso: contarPorEstado(todas, 'EN_PROGRESO'),
+    rechazadas: contarPorEstado(todas, 'RECHAZADO'),
+    retiradas: contarPorEstado(todas, 'RETIRADO'),
     capitalPorMes: meses.map((mes) => ({ mes: MESES_ES[mes], monto: capitalPorMesMap.get(mes) ?? 0 })),
     inversionesPorMes: meses.map((mes) => ({ mes: MESES_ES[mes], cantidad: cantidadPorMesMap.get(mes) ?? 0 }))
   };
@@ -255,9 +297,12 @@ const buildInvestmentDetail = (inversion) => {
       dias: inversion.dias,
       createdAt: inversion.createdAt,
       estado: estadoActual,
-      // Días que faltan para que se habiliten los retiros (0 si ya se pueden).
+      // Días que faltan para que se habiliten los retiros (0 si ya se
+      // pueden o si ni siquiera arrancó el período de espera). Solo
+      // EN_ESPERA cuenta días: PENDIENTE todavía espera la revisión del
+      // admin, no hay contador corriendo.
       diasParaHabilitar:
-        estadoActual === 'PENDIENTE'
+        estadoActual === 'EN_ESPERA'
           ? Math.max(0, DIAS_PARA_HABILITAR - inversion.dias)
           : 0,
       // Puede pedir retiro si está EN_PROGRESO y no tiene solicitud sin resolver.
@@ -322,6 +367,10 @@ const createApplication = async (userId, inversionId, montoRetiro) => {
     throw fail(400, 'El monto a retirar debe ser un número mayor a 0');
   }
 
+  if (!esDiaHabil()) {
+    throw fail(409, 'Los retiros solo se pueden solicitar en días laborables (lunes a viernes)');
+  }
+
   const client = await investmentRepository.getIdByUser(userId);
   if (!client) {
     throw fail(404, 'El usuario no tiene un perfil de cliente');
@@ -337,12 +386,9 @@ const createApplication = async (userId, inversionId, montoRetiro) => {
     throw fail(403, 'Esta inversión no te pertenece');
   }
 
-  const estadoActual = inversion.estados[0]?.estado ?? 'PENDIENTE';
-  if (estadoActual === 'PENDIENTE') {
-    throw fail(409, 'La inversión todavía está en el período de bloqueo de 15 días');
-  }
-  if (estadoActual === 'RETIRADO') {
-    throw fail(409, 'La inversión ya fue retirada');
+  const estadoActual = inversion.estados[0]?.estado ?? DEFAULT_ESTADO;
+  if (estadoActual !== 'EN_PROGRESO') {
+    throw fail(409, mensajeNoEnProgreso(estadoActual));
   }
 
   // Regla del modelo: una sola solicitud sin resolver por inversión.
@@ -388,13 +434,21 @@ const diasTranscurridos = (createdAt) => {
 // secundarios (fija `dias` al valor calculado y solo agrega EN_PROGRESO
 // si aún no está).
 //
+// Solo envejecen las EN_ESPERA (ya aprobadas por un admin, esperando el
+// período de bloqueo): PENDIENTE todavía no tiene contador -- espera que
+// el admin la revise -- y RECHAZADO/RETIRADO son terminales. `dias` se
+// cuenta desde que entró a EN_ESPERA (la fecha de ese Estado, no
+// `inversion.createdAt`), porque el período de bloqueo arranca en la
+// aprobación, no en la creación del paquete.
+//
 // Perf: recorre TODAS las inversiones y hace un $transaction por cada una
 // que cambia (N+1 escrituras secuenciales). Con pocos miles va bien; si
-// crece, conviene: (1) filtrar en SQL las que ya están RETIRADO,
+// crece, conviene: (1) filtrar en SQL las que ya están EN_ESPERA,
 // (2) agrupar los UPDATE de `dias` por valor con updateMany, y
 // (3) createMany para los Estado nuevos. Como el estado transiciona solo
 // hacia adelante, el paso a EN_PROGRESO también se podría derivar en
-// lectura desde createdAt y dejar el job solo para el panel de admin.
+// lectura desde la fecha de EN_ESPERA y dejar el job solo para el panel
+// de admin.
 const incrementarDias = async () => {
   const inversiones = await investmentRepository.getInversionesActivas();
 
@@ -402,14 +456,12 @@ const incrementarDias = async () => {
   let habilitadas = 0;
 
   for (const inversion of inversiones) {
-    const estadoActual = inversion.estados[0]?.estado ?? 'PENDIENTE';
+    const estadoActual = inversion.estados[0]?.estado ?? DEFAULT_ESTADO;
 
-    // Una inversión retirada ya no envejece.
-    if (estadoActual === 'RETIRADO') continue;
+    if (estadoActual !== 'EN_ESPERA') continue;
 
-    const dias = diasTranscurridos(inversion.createdAt);
-    const habilitar =
-      estadoActual === 'PENDIENTE' && dias >= DIAS_PARA_HABILITAR;
+    const dias = diasTranscurridos(inversion.estados[0].createdAt);
+    const habilitar = dias >= DIAS_PARA_HABILITAR;
 
     // Nada que hacer: mismo contador y sin cambio de estado.
     if (dias === inversion.dias && !habilitar) continue;
@@ -461,8 +513,10 @@ const resumenInversiones = async (userId) => {
     return {
       totalInvertido: 0,
       totalAcumulado: 0,
-      enProgreso: 0,
       pendientes: 0,
+      enEspera: 0,
+      enProgreso: 0,
+      rechazadas: 0,
       retiradas: 0,
       disponibles: MAX_INVERSIONES_ACTIVAS,
       limiteActivas: MAX_INVERSIONES_ACTIVAS,
@@ -475,16 +529,20 @@ const resumenInversiones = async (userId) => {
     investmentRepository.myList(client.id)
   ]);
 
-  const estadoDe = (inv) => inv.estados[0]?.estado ?? DEFAULT_ESTADO;
-  const enProgreso = inversiones.filter((inv) => estadoDe(inv) === 'EN_PROGRESO').length;
-  const pendientes = inversiones.filter((inv) => estadoDe(inv) === 'PENDIENTE').length;
-  const retiradas = inversiones.filter((inv) => estadoDe(inv) === 'RETIRADO').length;
-  const disponibles = Math.max(0, MAX_INVERSIONES_ACTIVAS - (enProgreso + pendientes));
+  const todas = inversiones.map((inv) => ({ estado: inv.estados[0]?.estado ?? DEFAULT_ESTADO }));
+  const pendientes = contarPorEstado(todas, 'PENDIENTE');
+  const enEspera = contarPorEstado(todas, 'EN_ESPERA');
+  const enProgreso = contarPorEstado(todas, 'EN_PROGRESO');
+  const rechazadas = contarPorEstado(todas, 'RECHAZADO');
+  const retiradas = contarPorEstado(todas, 'RETIRADO');
+  const disponibles = Math.max(0, MAX_INVERSIONES_ACTIVAS - (pendientes + enEspera + enProgreso));
 
   return {
     ...totales,
-    enProgreso,
     pendientes,
+    enEspera,
+    enProgreso,
+    rechazadas,
     retiradas,
     disponibles,
     limiteActivas: MAX_INVERSIONES_ACTIVAS,
@@ -658,6 +716,88 @@ const reject = async (applicationId, userId) => {
   return resultado;
 };
 
+// Valida el id y trae la inversión (o falla): comparte lectura entre
+// retire(), approveInvestment() y rejectInvestment(), las tres acciones
+// que dependen de leer el estado actual de una inversión antes de
+// decidir si se puede cambiar.
+const buscarInversionOFallar = async (investmentId) => {
+  const id = Number(investmentId);
+  if (!Number.isInteger(id) || id <= 0) {
+    throw fail(400, 'Inversión inválida');
+  }
+
+  const investment = await investmentRepository.getInversionParaCambiarEstado(id);
+  if (!investment) {
+    throw fail(404, 'La inversión no existe');
+  }
+
+  return investment;
+};
+
+// Un admin puede terminar manualmente una inversión EN_PROGRESO (sin
+// esperar a que se agoten los intereses vía approve()). Al pasar a
+// RETIRADO dos cosas se dan solas con el resto del código, sin lógica
+// extra acá: el job incrementarDias ya solo envejece las EN_ESPERA, y
+// createApplication ya exige EN_PROGRESO para pedir un retiro -- sigue
+// viéndose en los listados y su detalle, pero no admite más acciones.
+const retire = async (investmentId, userId) => {
+  const investment = await buscarInversionOFallar(investmentId);
+
+  const estadoActual = investment.estados[0]?.estado ?? DEFAULT_ESTADO;
+  if (estadoActual !== 'EN_PROGRESO') {
+    throw fail(409, mensajeNoEnProgreso(estadoActual));
+  }
+
+  // No dejar una solicitud sin resolver colgando de una inversión que
+  // ya se cierra: el admin debe aprobarla/rechazarla primero.
+  if (investment.solicitudes.length > 0) {
+    throw fail(409, 'Esta inversión tiene una solicitud de retiro pendiente; resuélvela antes de retirarla');
+  }
+
+  await investmentRepository.cambiarEstadoInversion(investment.id, 'RETIRADO');
+
+  await registrarAuditoria({
+    userId,
+    action: AUDIT_ACTIONS.RETIRAR,
+    tableName: AUDIT_TABLES.INVERSION,
+    targetId: investment.id
+  });
+
+  return { id: investment.id, estado: 'RETIRADO' };
+};
+
+// Todo paquete nuevo nace PENDIENTE: la única decisión que le queda al
+// admin es aceptarlo (pasa a EN_ESPERA y ahí arranca el período de
+// bloqueo de 15 días, ver incrementarDias) o rechazarlo (RECHAZADO,
+// estado terminal donde ya no se puede hacer nada más que ver el
+// detalle). Comparten toda la lógica -- solo cambia a qué estado se
+// mueve y qué acción queda en la auditoría.
+const resolverPendiente = async (investmentId, userId, estadoSiguiente, auditAction) => {
+  const investment = await buscarInversionOFallar(investmentId);
+
+  const estadoActual = investment.estados[0]?.estado ?? DEFAULT_ESTADO;
+  if (estadoActual !== 'PENDIENTE') {
+    throw fail(409, 'Esta inversión ya fue revisada por un administrador');
+  }
+
+  await investmentRepository.cambiarEstadoInversion(investment.id, estadoSiguiente);
+
+  await registrarAuditoria({
+    userId,
+    action: auditAction,
+    tableName: AUDIT_TABLES.INVERSION,
+    targetId: investment.id
+  });
+
+  return { id: investment.id, estado: estadoSiguiente };
+};
+
+const approveInvestment = (investmentId, userId) =>
+  resolverPendiente(investmentId, userId, 'EN_ESPERA', AUDIT_ACTIONS.APPROVE);
+
+const rejectInvestment = (investmentId, userId) =>
+  resolverPendiente(investmentId, userId, 'RECHAZADO', AUDIT_ACTIONS.REJECT);
+
 export default {
   newInvestment,
   list,
@@ -672,5 +812,8 @@ export default {
   getPorcentajeInteres,
   updatePorcentaje,
   approve,
-  reject
+  reject,
+  retire,
+  approveInvestment,
+  rejectInvestment
 };

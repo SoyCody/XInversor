@@ -64,3 +64,25 @@ export function rechazarSolicitud(applicationId) {
     method: "PUT",
   });
 }
+
+// Terminar manualmente una inversión EN_PROGRESO (panel de administración).
+export function retirarInversion(investmentId) {
+  return apiFetch(`/investment/${encodeURIComponent(investmentId)}/retire`, {
+    method: "PUT",
+  });
+}
+
+// Aprobar/rechazar un paquete PENDIENTE recién creado por un cliente
+// (panel de administración): aprobar lo pasa a EN_ESPERA (arranca el
+// período de bloqueo de 15 días), rechazar lo deja en RECHAZADO.
+export function aprobarPaquete(investmentId) {
+  return apiFetch(`/investment/${encodeURIComponent(investmentId)}/approve-package`, {
+    method: "PUT",
+  });
+}
+
+export function rechazarPaquete(investmentId) {
+  return apiFetch(`/investment/${encodeURIComponent(investmentId)}/reject-package`, {
+    method: "PUT",
+  });
+}

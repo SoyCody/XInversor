@@ -11,7 +11,7 @@ import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header";
 import { useFetch } from "../../../hooks/useFetch";
 import { getAdminDashboard } from "../../../services/adminApi";
-import { formatUsd, formatBtc } from "../../../utils/format.js";
+import { formatBtc } from "../../../utils/format.js";
 import "../../../App.css";
 import "../../Client/ClientDashboard/InvestmentOverview.css";
 import "../../Client/ClientInversiones/InvestmentRetirosCharts.css";
@@ -72,7 +72,7 @@ const AdminDashboard = () => {
             <div className="stat-card">
               <span className="stat-card-label">Capital invertido</span>
               <span className="stat-card-value">
-                {isLoading ? "—" : formatUsd(data?.capitalInvertido ?? 0)}
+                {isLoading ? "—" : formatBtc(data?.capitalInvertido ?? 0)}
               </span>
             </div>
           </section>
@@ -106,6 +106,9 @@ const AdminDashboard = () => {
                     strokeWidth={2}
                     dot={{ r: 4 }}
                     activeDot={{ r: 6 }}
+                    isAnimationActive={true}
+                    animationDuration={600}
+                    animationEasing="ease-out"
                   />
                 </LineChart>
               </ResponsiveContainer>

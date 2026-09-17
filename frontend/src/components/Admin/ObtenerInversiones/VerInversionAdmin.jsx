@@ -4,9 +4,12 @@ import {
   verInversionAdmin,
   aprobarSolicitud,
   rechazarSolicitud,
+  retirarInversion,
+  aprobarPaquete,
+  rechazarPaquete,
 } from "../../../services/investmentApi.js";
 import { useFetch } from "../../../hooks/useFetch";
-import { formatUsd, formatBtc } from "../../../utils/format.js";
+import { formatBtc } from "../../../utils/format.js";
 import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import SuccessBanner from "../../SuccessBanner/SuccessBanner.jsx";
@@ -40,16 +43,20 @@ const formatDateTime = (isoString) => {
 
 const ESTADO_INVERSION = {
   PENDIENTE: "Pendiente",
+  EN_ESPERA: "En espera",
   EN_PROGRESO: "En progreso",
+  RECHAZADO: "Rechazada",
   RETIRADO: "Retirada",
 };
 
 // Solo para el título de arriba ("Inversión ..."): a diferencia de
 // ESTADO_INVERSION (que se usa tal cual en el historial), acá RETIRADO
-// se lee "en retirada" para que las tres variantes queden parejas.
+// se lee "en retirada" para que las variantes queden parejas.
 const TITULO_ESTADO = {
   PENDIENTE: "pendiente",
+  EN_ESPERA: "en espera",
   EN_PROGRESO: "en progreso",
+  RECHAZADO: "rechazada",
   RETIRADO: "en retirada",
 };
 
@@ -59,12 +66,19 @@ const ESTADO_SOLICITUD = {
   RECHAZADA: "Rechazada",
 };
 
+// Solo EN_PROGRESO y RETIRADO tienen actividad de retiros que mostrar:
+// PENDIENTE (esperando revisión del admin), EN_ESPERA (en el período de
+// bloqueo) y RECHAZADO (terminal) nunca tuvieron ni pueden tener
+// solicitudes de retiro.
+const tieneActividadDeRetiros = (estado) => estado === "EN_PROGRESO" || estado === "RETIRADO";
+
 // Detalle de una inversión para el administrador: mismos componentes que
 // "Ver mi inversión" del cliente (ver VerInversion.jsx), pero sobre
-// cualquier inversión (no solo las propias), sin las acciones de
-// cliente (solicitar retiro) y con "Gestionar" en la tabla de
-// solicitudes en vez de eso -- todavía no funcional, solo aparece en
-// las solicitudes pendientes.
+// cualquier inversión (no solo las propias), sin las acciones de cliente
+// (solicitar retiro), con "Gestionar" en la tabla de solicitudes de
+// retiro, y con "Gestionar paquete" cuando la inversión todavía está
+// PENDIENTE (aprobarla o rechazarla -- la única decisión que le queda al
+// admin sobre un paquete recién creado).
 const VerInversionAdmin = () => {
   const { inversionId } = useParams();
   const navigate = useNavigate();
@@ -85,6 +99,22 @@ const VerInversionAdmin = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [manageError, setManageError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
+
+  // Terminar (retirar) manualmente una inversión EN_PROGRESO: un solo
+  // paso de confirmación, mismo modal que bloquear cliente / eliminar
+  // cuenta (ConfirmActionModal).
+  const [isRetireModalOpen, setIsRetireModalOpen] = useState(false);
+  const [isRetiring, setIsRetiring] = useState(false);
+  const [retireError, setRetireError] = useState(null);
+
+  // Aprobar/rechazar el paquete PENDIENTE de esta inversión: mismo flujo
+  // de dos pasos que gestionar una solicitud de retiro (reutiliza
+  // GestionarSolicitudModal + ConfirmActionModal), pero sobre la
+  // inversión misma en vez de una fila de la tabla de solicitudes.
+  const [gestionandoPaquete, setGestionandoPaquete] = useState(false);
+  const [confirmandoAprobarPaquete, setConfirmandoAprobarPaquete] = useState(false);
+  const [isProcessingPaquete, setIsProcessingPaquete] = useState(false);
+  const [paqueteError, setPaqueteError] = useState(null);
 
   const abrirGestionar = (solicitud) => {
     setManageError(null);
@@ -131,6 +161,72 @@ const VerInversionAdmin = () => {
     }
   };
 
+  const cerrarRetireModal = () => {
+    if (isRetiring) return;
+    setIsRetireModalOpen(false);
+    setRetireError(null);
+  };
+
+  const handleRetire = async () => {
+    setIsRetiring(true);
+    setRetireError(null);
+    try {
+      await retirarInversion(inversion.id);
+      setIsRetireModalOpen(false);
+      setSuccessMsg("Inversión retirada");
+      refetch();
+    } catch (err) {
+      setRetireError(err.message);
+    } finally {
+      setIsRetiring(false);
+    }
+  };
+
+  const abrirGestionarPaquete = () => {
+    setPaqueteError(null);
+    setConfirmandoAprobarPaquete(false);
+    setGestionandoPaquete(true);
+  };
+
+  const cerrarGestionarPaquete = () => {
+    if (isProcessingPaquete) return;
+    setGestionandoPaquete(false);
+    setConfirmandoAprobarPaquete(false);
+    setPaqueteError(null);
+  };
+
+  const handleRechazarPaquete = async () => {
+    setIsProcessingPaquete(true);
+    setPaqueteError(null);
+    try {
+      await rechazarPaquete(inversion.id);
+      setGestionandoPaquete(false);
+      setConfirmandoAprobarPaquete(false);
+      setSuccessMsg("Paquete rechazado");
+      refetch();
+    } catch (err) {
+      setPaqueteError(err.message);
+    } finally {
+      setIsProcessingPaquete(false);
+    }
+  };
+
+  const handleConfirmarAprobarPaquete = async () => {
+    setIsProcessingPaquete(true);
+    setPaqueteError(null);
+    try {
+      await aprobarPaquete(inversion.id);
+      setGestionandoPaquete(false);
+      setConfirmandoAprobarPaquete(false);
+      setSuccessMsg("Paquete aprobado");
+      refetch();
+    } catch (err) {
+      setPaqueteError(err.message);
+    } finally {
+      setIsProcessingPaquete(false);
+    }
+  };
+
   return (
     <div className="app">
       <AdminSideBar />
@@ -171,8 +267,8 @@ const VerInversionAdmin = () => {
 
                 <div className="detail-list">
                   <div className="detail-row">
-                    <span className="detail-label">Monto invertido (USD)</span>
-                    <span className="detail-value">{formatUsd(inversion.monto)}</span>
+                    <span className="detail-label">Monto invertido (BTC)</span>
+                    <span className="detail-value">{formatBtc(inversion.monto)}</span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">Intereses generados (BTC)</span>
@@ -194,7 +290,7 @@ const VerInversionAdmin = () => {
                   </div>
                 </div>
 
-                {inversion.estado === "PENDIENTE" && (
+                {inversion.estado === "EN_ESPERA" && (
                   <InvestmentStatusProgress
                     dias={inversion.dias}
                     diasParaHabilitar={inversion.diasParaHabilitar}
@@ -202,7 +298,7 @@ const VerInversionAdmin = () => {
                 )}
               </section>
 
-              {inversion.estado !== "PENDIENTE" && (
+              {tieneActividadDeRetiros(inversion.estado) && (
                 <InvestmentRetirosCharts
                   solicitudes={inversion.solicitudes}
                   intereses={inversion.intereses}
@@ -212,7 +308,7 @@ const VerInversionAdmin = () => {
                 />
               )}
 
-              {inversion.estado !== "PENDIENTE" && (
+              {tieneActividadDeRetiros(inversion.estado) && (
                 <>
                   <div className="page-heading page-heading--section">
                     <div>
@@ -277,12 +373,36 @@ const VerInversionAdmin = () => {
                   ))}
                 </div>
               </section>
+
+              {inversion.estado === "PENDIENTE" && (
+                <div className="section-band form-actions section-actions">
+                  <button
+                    type="button"
+                    className="btn btn--primary"
+                    onClick={abrirGestionarPaquete}
+                  >
+                    Gestionar paquete
+                  </button>
+                </div>
+              )}
+
+              {inversion.estado === "EN_PROGRESO" && (
+                <div className="section-band form-actions section-actions">
+                  <button
+                    type="button"
+                    className="btn btn--primary"
+                    onClick={() => setIsRetireModalOpen(true)}
+                  >
+                    Terminar inversión
+                  </button>
+                </div>
+              )}
             </>
           )}
 
           {gestionando && !confirmandoAprobar && (
             <GestionarSolicitudModal
-              monto={gestionando.monto}
+              message={`Solicitud de retiro por ${gestionando.monto}. Elige si la apruebas o la rechazas.`}
               isBusy={isProcessing}
               error={manageError}
               onClose={cerrarGestionar}
@@ -304,6 +424,48 @@ const VerInversionAdmin = () => {
               error={manageError}
               onClose={cerrarGestionar}
               onConfirm={handleConfirmarAprobar}
+            />
+          )}
+
+          {gestionandoPaquete && !confirmandoAprobarPaquete && (
+            <GestionarSolicitudModal
+              title="Gestionar paquete"
+              subtitle="Aprobar o rechazar"
+              message={`Paquete por ${formatBtc(inversion.monto)}. Elige si lo apruebas o lo rechazas.`}
+              isBusy={isProcessingPaquete}
+              error={paqueteError}
+              onClose={cerrarGestionarPaquete}
+              onReject={handleRechazarPaquete}
+              onApprove={() => {
+                setPaqueteError(null);
+                setConfirmandoAprobarPaquete(true);
+              }}
+            />
+          )}
+
+          {gestionandoPaquete && confirmandoAprobarPaquete && (
+            <ConfirmActionModal
+              title="Aprobar paquete"
+              subtitle="Confirmación de aprobación"
+              message={`¿Estás seguro de aprobar este paquete de ${formatBtc(inversion.monto)}? Pasará a "En espera" y arrancará el período de bloqueo de 15 días.`}
+              confirmingLabel="Aprobando..."
+              isBusy={isProcessingPaquete}
+              error={paqueteError}
+              onClose={cerrarGestionarPaquete}
+              onConfirm={handleConfirmarAprobarPaquete}
+            />
+          )}
+
+          {isRetireModalOpen && (
+            <ConfirmActionModal
+              title="Terminar inversión"
+              subtitle="Confirmación de retiro"
+              message="¿Estás seguro de retirar esta inversión? Una vez retirada no se admitirán más solicitudes de retiro y esta acción no se puede deshacer."
+              confirmingLabel="Retirando..."
+              isBusy={isRetiring}
+              error={retireError}
+              onClose={cerrarRetireModal}
+              onConfirm={handleRetire}
             />
           )}
         </div>

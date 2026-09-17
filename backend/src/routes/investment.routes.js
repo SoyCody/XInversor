@@ -81,4 +81,26 @@ router.put('/:applicationId/reject',
     investmentController.reject
 );
 
+router.put('/:investmentId/retire',
+    verifyToken,
+    isAdmin,
+    isActive,
+    investmentController.retire
+);
+
+// Aprobar/rechazar un paquete PENDIENTE recién creado por un cliente.
+router.put('/:investmentId/approve-package',
+    verifyToken,
+    isAdmin,
+    isActive,
+    investmentController.approveInvestment
+);
+
+router.put('/:investmentId/reject-package',
+    verifyToken,
+    isAdmin,
+    isActive,
+    investmentController.rejectInvestment
+);
+
 export default router;

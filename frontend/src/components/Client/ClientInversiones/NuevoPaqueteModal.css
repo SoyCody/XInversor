@@ -1,0 +1,37 @@
+.package-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  justify-items: center;
+}
+
+.package-option {
+  padding: 0;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  line-height: 0;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.package-option img {
+  display: block;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+
+.package-option:hover {
+  transform: translateY(-2px);
+}
+
+.package-option.is-selected {
+  border-color: var(--input-focus);
+}
+
+@media (max-width: 480px) {
+  .package-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

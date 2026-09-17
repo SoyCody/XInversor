@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { verInversion } from "../../../services/investmentApi.js";
 import { useFetch } from "../../../hooks/useFetch";
-import { formatUsd, formatBtc } from "../../../utils/format.js";
+import { formatBtc } from "../../../utils/format.js";
 import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import NuevaSolicitudModal from "../ClientSolicitudes/NuevaSolicitudModal.jsx";
@@ -37,18 +37,28 @@ const formatDateTime = (isoString) => {
 
 const ESTADO_INVERSION = {
   PENDIENTE: "Pendiente",
+  EN_ESPERA: "En espera",
   EN_PROGRESO: "En progreso",
+  RECHAZADO: "Rechazada",
   RETIRADO: "Retirada",
 };
 
 // Solo para el título de arriba ("Inversión ..."): a diferencia de
 // ESTADO_INVERSION (que se usa tal cual en el historial), acá RETIRADO
-// se lee "en retirada" para que las tres variantes queden parejas.
+// se lee "en retirada" para que las variantes queden parejas.
 const TITULO_ESTADO = {
   PENDIENTE: "pendiente",
+  EN_ESPERA: "en espera",
   EN_PROGRESO: "en progreso",
+  RECHAZADO: "rechazada",
   RETIRADO: "en retirada",
 };
+
+// Solo EN_PROGRESO y RETIRADO tienen actividad de retiros que mostrar:
+// PENDIENTE (esperando revisión del admin), EN_ESPERA (en el período de
+// bloqueo) y RECHAZADO (terminal) nunca tuvieron ni pueden tener
+// solicitudes de retiro.
+const tieneActividadDeRetiros = (estado) => estado === "EN_PROGRESO" || estado === "RETIRADO";
 
 const ESTADO_SOLICITUD = {
   PENDIENTE: "Pendiente",
@@ -126,8 +136,8 @@ const VerInversion = () => {
 
                 <div className="detail-list">
                   <div className="detail-row">
-                    <span className="detail-label">Monto invertido (USD)</span>
-                    <span className="detail-value">{formatUsd(inversion.monto)}</span>
+                    <span className="detail-label">Monto invertido (BTC)</span>
+                    <span className="detail-value">{formatBtc(inversion.monto)}</span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">Intereses generados (BTC)</span>
@@ -149,7 +159,7 @@ const VerInversion = () => {
                   </div>
                 </div>
 
-                {inversion.estado === "PENDIENTE" && (
+                {inversion.estado === "EN_ESPERA" && (
                   <InvestmentStatusProgress
                     dias={inversion.dias}
                     diasParaHabilitar={inversion.diasParaHabilitar}
@@ -175,7 +185,7 @@ const VerInversion = () => {
               {/* Zona A (como el título y la tabla de "Mis inversiones"):
                   ancho completo de .content -- los gráficos van grandes,
                   no metidos en la banda angosta de arriba. */}
-              {inversion.estado !== "PENDIENTE" && (
+              {tieneActividadDeRetiros(inversion.estado) && (
                 <InvestmentRetirosCharts
                   solicitudes={inversion.solicitudes}
                   intereses={inversion.intereses}
@@ -197,11 +207,11 @@ const VerInversion = () => {
                 />
               )}
 
-              {/* Una inversión PENDIENTE está en período de bloqueo: no
-                  puede tener solicitudes de retiro (el backend las
-                  rechaza), así que no tiene sentido mostrar esta sección
+              {/* Solo EN_PROGRESO/RETIRADO pueden tener solicitudes de
+                  retiro (el backend las rechaza en cualquier otro
+                  estado), así que no tiene sentido mostrar esta sección
                   para después decir "no tiene solicitudes". */}
-              {inversion.estado !== "PENDIENTE" && (
+              {tieneActividadDeRetiros(inversion.estado) && (
                 <>
                   <div className="page-heading page-heading--section">
                     <div>

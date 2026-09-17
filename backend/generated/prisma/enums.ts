@@ -27,6 +27,8 @@ export type State = (typeof State)[keyof typeof State]
 
 export const EstadoInversion = {
   PENDIENTE: 'PENDIENTE',
+  RECHAZADO: 'RECHAZADO',
+  EN_ESPERA: 'EN_ESPERA',
   EN_PROGRESO: 'EN_PROGRESO',
   RETIRADO: 'RETIRADO'
 } as const

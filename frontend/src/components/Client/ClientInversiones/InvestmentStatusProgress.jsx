@@ -5,10 +5,11 @@ import "./InvestmentStatusProgress.css";
 // siempre viene calculado del backend.
 const DIAS_PARA_HABILITAR = 15;
 
-// Solo se renderiza mientras la inversión está PENDIENTE (primeros 15
-// días de bloqueo): un mensaje + una barra de avance. Pasado ese período
-// (EN_PROGRESO / RETIRADO) VerInversion muestra en su lugar
-// InvestmentRetirosCharts, con los gráficos de retiros e intereses.
+// Solo se renderiza mientras la inversión está EN_ESPERA (el período de
+// bloqueo de 15 días que arranca cuando el admin aprueba el paquete): un
+// mensaje + una barra de avance. Pasado ese período (EN_PROGRESO /
+// RETIRADO) VerInversion muestra en su lugar InvestmentRetirosCharts, con
+// los gráficos de retiros e intereses.
 const InvestmentStatusProgress = ({ dias, diasParaHabilitar }) => {
   const pct = Math.min(100, (dias / DIAS_PARA_HABILITAR) * 100);
 

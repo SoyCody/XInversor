@@ -2,9 +2,11 @@ import prisma from '../db.js';
 
 const registerInvestment = async (data) => {
   return prisma.inversion.create({
-    // Toda inversión nace PENDIENTE: durante los primeros días está
-    // bloqueada y recién al cumplir el mínimo (15 días) el job la pasa
-    // a EN_PROGRESO, que es cuando se habilitan los retiros.
+    // Todo paquete nace PENDIENTE: es una solicitud a la espera de que
+    // un admin la revise (ver approveInvestment/rejectInvestment en el
+    // servicio). Si se aprueba pasa a EN_ESPERA y ahí arranca el período
+    // de bloqueo de 15 días; recién entonces el job la pasa a
+    // EN_PROGRESO, que es cuando se habilitan los retiros.
     data: {
       ...data,
       estados: { create: { estado: 'PENDIENTE' } }
@@ -176,20 +178,23 @@ const ultimosRetirosAprobados = (take = 5) => {
   });
 };
 
-// Inversiones que todavía "envejecen": las retiradas quedan congeladas.
-// Hoy trae TODAS (incluidas las RETIRADO, que se descartan en memoria).
+// Inversiones que todavía "envejecen": solo las EN_ESPERA (las demás
+// quedan congeladas o ni siquiera arrancaron a contar). Hoy trae TODAS
+// (las que no son EN_ESPERA se descartan en memoria, en incrementarDias).
 // Con el `estadoActual` denormalizado, filtrar acá:
-//   where: { estadoActual: { in: ['PENDIENTE', 'EN_PROGRESO'] } }
+//   where: { estadoActual: 'EN_ESPERA' }
+// `estados[0].createdAt` es la fecha en la que entró a EN_ESPERA: el
+// servicio la usa para calcular `dias` (el período de bloqueo arranca en
+// la aprobación, no en `inversion.createdAt`).
 const getInversionesActivas = async () => {
   return prisma.inversion.findMany({
     select: {
       id: true,
       dias: true,
-      createdAt: true,
       estados: {
         orderBy: { createdAt: 'desc' },
         take: 1,
-        select: { estado: true }
+        select: { estado: true, createdAt: true }
       }
     }
   });
@@ -315,6 +320,43 @@ const rechazarSolicitud = async (applicationId, adminId) => {
   return count > 0 ? { id: applicationId, estado: 'RECHAZADA' } : null;
 };
 
+// Datos mínimos para decidir sobre el estado de una inversión: el estado
+// actual (para saber desde dónde se puede pasar -- EN_PROGRESO para
+// retirar, PENDIENTE para aprobar/rechazar el paquete) y si tiene una
+// solicitud sin resolver (solo aplica a retirar: no se puede cerrar una
+// inversión con un retiro pendiente colgando). Comparte lectura entre
+// retire(), approveInvestment() y rejectInvestment() en el servicio.
+const getInversionParaCambiarEstado = async (investmentId) => {
+  return prisma.inversion.findUnique({
+    where: { id: investmentId },
+    select: {
+      id: true,
+      estados: {
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+        select: { estado: true }
+      },
+      solicitudes: {
+        where: { pendiente: true },
+        select: { id: true }
+      }
+    }
+  });
+};
+
+// Toda transición de estado de una inversión (aprobar/rechazar el
+// paquete, pasar a EN_PROGRESO -- ver avanzarInversion --, retirarla) es,
+// sin excepción, agregar una fila nueva a Estado: no hay una columna
+// mutable "estadoActual" que bloquear. Dos requests simultáneas sobre la
+// misma inversión podrían agregar dos filas iguales seguidas; no rompe
+// nada (el último estado sigue siendo el mismo) pero ensucia el
+// historial. Aceptable por ahora.
+const cambiarEstadoInversion = async (investmentId, estado) => {
+  return prisma.estado.create({
+    data: { inversionId: investmentId, estado }
+  });
+};
+
 export default {
   registerInvestment,
   getIdByUser,
@@ -334,5 +376,7 @@ export default {
   getSolicitudParaResolver,
   getAdminIdByUser,
   aprobarSolicitud,
-  rechazarSolicitud
+  rechazarSolicitud,
+  getInversionParaCambiarEstado,
+  cambiarEstadoInversion
 };

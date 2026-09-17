@@ -31,7 +31,7 @@ const ClientSideBar = () => {
 
         <Link to="/client/inversiones" className={`nav-link ${isActive("/client/inversiones") ? "active" : ""}`}>
           <img className="nav-icon-img" src={inversionesIcon} alt="" aria-hidden="true" />
-          <span>Inversiones</span>
+          <span>Paquetes</span>
         </Link>
 
         <div className="nav-section">CONFIGURACIÓN</div>

@@ -120,6 +120,9 @@ const InvestmentRetirosCharts = ({ solicitudes, intereses, total, estado, mostra
                 dot={{ r: 4 }}
                 activeDot={{ r: 6 }}
                 connectNulls
+                isAnimationActive={true}
+                animationDuration={600}
+                animationEasing="ease-out"
               />
             </LineChart>
           </ResponsiveContainer>
@@ -150,7 +153,13 @@ const InvestmentRetirosCharts = ({ solicitudes, intereses, total, estado, mostra
                 tick={{ fontSize: 11, fill: "var(--text)" }}
               />
               <Tooltip contentStyle={tooltipStyle} formatter={(value) => formatBtc(value)} />
-              <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+              <Bar
+                dataKey="value"
+                radius={[0, 4, 4, 0]}
+                isAnimationActive={true}
+                animationDuration={600}
+                animationEasing="ease-out"
+              >
                 {resumen.map((entry) => (
                   <Cell key={entry.name} fill={entry.color} />
                 ))}

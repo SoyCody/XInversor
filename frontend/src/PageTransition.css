@@ -1,0 +1,53 @@
+/* Transición de página (fade) al cambiar de ruta. Cada página ya
+   renderiza su propio sidebar + main (no hay un layout persistente
+   compartido), así que la que se anima es solo `.main` (selector
+   descendiente sobre las clases de la transición) -- el sidebar se
+   deja fuera a propósito y nunca cambia de opacity, así que se ve fijo
+   en pantalla en vez de parpadear en cada navegación.
+
+   Solo se anima `opacity` (nunca transform/filter) porque esas otras
+   propiedades crean un "containing block" nuevo y romperían el sidebar
+   position: fixed de cada página. */
+.page-transition-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+.page-fade-wrapper {
+  width: 100%;
+}
+
+.page-fade-enter .main {
+  opacity: 0;
+}
+
+.page-fade-enter-active .main {
+  opacity: 1;
+  transition: opacity 250ms ease-out;
+}
+
+/* La página saliente se saca del flujo del documento (si no, mientras
+   ambas coexisten la página quedaría con el doble de alto un instante)
+   y se superpone exactamente sobre la que entra. Esto es aparte de la
+   opacity de `.main` de arriba: acá solo se reubica el contenedor, el
+   sidebar (position: fixed, no afectado por esto) sigue a opacity 1. */
+.page-fade-exit {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+}
+
+.page-fade-exit-active {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+}
+
+.page-fade-exit .main {
+  opacity: 1;
+}
+
+.page-fade-exit-active .main {
+  opacity: 0;
+  transition: opacity 250ms ease-in;
+}
