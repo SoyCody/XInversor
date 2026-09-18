@@ -50,8 +50,16 @@ const tooltipStyle = {
 // monto de la solicitud YA ES el interés retirado.
 // `mostrarResumen` en false oculta el segundo gráfico (barras de
 // intereses/retirado/disponible): lo usa el detalle de administrador,
-// que solo necesita "Retiros en tiempo".
-const InvestmentRetirosCharts = ({ solicitudes, intereses, total, estado, mostrarResumen = true }) => {
+// que en su lugar puede pasar `segundoBloque` (p. ej. la wallet del
+// cliente) para ocupar esa misma columna del grid en vez de dejarla vacía.
+const InvestmentRetirosCharts = ({
+  solicitudes,
+  intereses,
+  total,
+  estado,
+  mostrarResumen = true,
+  segundoBloque = null,
+}) => {
   const totalNum = Number(total);
   const interesesNum = Number(intereses);
 
@@ -75,7 +83,7 @@ const InvestmentRetirosCharts = ({ solicitudes, intereses, total, estado, mostra
   const disponible = Math.max(0, totalNum - retirado);
 
   const resumen = [
-    { name: "Intereses generados", value: interesesNum, color: COLOR_INTERES },
+    { name: "Ganancias generadas", value: interesesNum, color: COLOR_INTERES },
     { name: "Total retirado", value: retirado, color: COLOR_TOTAL },
     { name: "Disponible", value: disponible, color: COLOR_DISPONIBLE },
   ];
@@ -134,7 +142,7 @@ const InvestmentRetirosCharts = ({ solicitudes, intereses, total, estado, mostra
           <div className="page-heading">
             <div>
               <h1>Resumen de la inversión (BTC)</h1>
-              <p>Intereses, retirado y disponible sobre el total</p>
+              <p>Ganancias, retirado y disponible sobre el total</p>
             </div>
           </div>
 
@@ -168,6 +176,8 @@ const InvestmentRetirosCharts = ({ solicitudes, intereses, total, estado, mostra
           </ResponsiveContainer>
         </div>
       )}
+
+      {segundoBloque && <div className="retiros-chart-block">{segundoBloque}</div>}
     </div>
   );
 };

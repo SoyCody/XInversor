@@ -30,6 +30,7 @@ export type InversionAvgAggregateOutputType = {
   id: number | null
   clientId: number | null
   monto: runtime.Decimal | null
+  porcentajeInteres: runtime.Decimal | null
   dias: number | null
   total: runtime.Decimal | null
   intereses: runtime.Decimal | null
@@ -39,6 +40,7 @@ export type InversionSumAggregateOutputType = {
   id: number | null
   clientId: number | null
   monto: runtime.Decimal | null
+  porcentajeInteres: runtime.Decimal | null
   dias: number | null
   total: runtime.Decimal | null
   intereses: runtime.Decimal | null
@@ -48,6 +50,7 @@ export type InversionMinAggregateOutputType = {
   id: number | null
   clientId: number | null
   monto: runtime.Decimal | null
+  porcentajeInteres: runtime.Decimal | null
   dias: number | null
   total: runtime.Decimal | null
   intereses: runtime.Decimal | null
@@ -58,6 +61,7 @@ export type InversionMaxAggregateOutputType = {
   id: number | null
   clientId: number | null
   monto: runtime.Decimal | null
+  porcentajeInteres: runtime.Decimal | null
   dias: number | null
   total: runtime.Decimal | null
   intereses: runtime.Decimal | null
@@ -68,6 +72,7 @@ export type InversionCountAggregateOutputType = {
   id: number
   clientId: number
   monto: number
+  porcentajeInteres: number
   dias: number
   total: number
   intereses: number
@@ -80,6 +85,7 @@ export type InversionAvgAggregateInputType = {
   id?: true
   clientId?: true
   monto?: true
+  porcentajeInteres?: true
   dias?: true
   total?: true
   intereses?: true
@@ -89,6 +95,7 @@ export type InversionSumAggregateInputType = {
   id?: true
   clientId?: true
   monto?: true
+  porcentajeInteres?: true
   dias?: true
   total?: true
   intereses?: true
@@ -98,6 +105,7 @@ export type InversionMinAggregateInputType = {
   id?: true
   clientId?: true
   monto?: true
+  porcentajeInteres?: true
   dias?: true
   total?: true
   intereses?: true
@@ -108,6 +116,7 @@ export type InversionMaxAggregateInputType = {
   id?: true
   clientId?: true
   monto?: true
+  porcentajeInteres?: true
   dias?: true
   total?: true
   intereses?: true
@@ -118,6 +127,7 @@ export type InversionCountAggregateInputType = {
   id?: true
   clientId?: true
   monto?: true
+  porcentajeInteres?: true
   dias?: true
   total?: true
   intereses?: true
@@ -215,6 +225,7 @@ export type InversionGroupByOutputType = {
   id: number
   clientId: number
   monto: runtime.Decimal
+  porcentajeInteres: runtime.Decimal
   dias: number
   total: runtime.Decimal
   intereses: runtime.Decimal
@@ -248,6 +259,7 @@ export type InversionWhereInput = {
   id?: Prisma.IntFilter<"Inversion"> | number
   clientId?: Prisma.IntFilter<"Inversion"> | number
   monto?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFilter<"Inversion"> | number
   total?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -261,6 +273,7 @@ export type InversionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
+  porcentajeInteres?: Prisma.SortOrder
   dias?: Prisma.SortOrder
   total?: Prisma.SortOrder
   intereses?: Prisma.SortOrder
@@ -277,6 +290,7 @@ export type InversionWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.InversionWhereInput | Prisma.InversionWhereInput[]
   clientId?: Prisma.IntFilter<"Inversion"> | number
   monto?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFilter<"Inversion"> | number
   total?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -290,6 +304,7 @@ export type InversionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
+  porcentajeInteres?: Prisma.SortOrder
   dias?: Prisma.SortOrder
   total?: Prisma.SortOrder
   intereses?: Prisma.SortOrder
@@ -308,6 +323,7 @@ export type InversionScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Inversion"> | number
   clientId?: Prisma.IntWithAggregatesFilter<"Inversion"> | number
   monto?: Prisma.DecimalWithAggregatesFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalWithAggregatesFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntWithAggregatesFilter<"Inversion"> | number
   total?: Prisma.DecimalWithAggregatesFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalWithAggregatesFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -316,6 +332,7 @@ export type InversionScalarWhereWithAggregatesInput = {
 
 export type InversionCreateInput = {
   monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -329,6 +346,7 @@ export type InversionUncheckedCreateInput = {
   id?: number
   clientId: number
   monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -339,6 +357,7 @@ export type InversionUncheckedCreateInput = {
 
 export type InversionUpdateInput = {
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -352,6 +371,7 @@ export type InversionUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   clientId?: Prisma.IntFieldUpdateOperationsInput | number
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -364,6 +384,7 @@ export type InversionCreateManyInput = {
   id?: number
   clientId: number
   monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -372,6 +393,7 @@ export type InversionCreateManyInput = {
 
 export type InversionUpdateManyMutationInput = {
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -382,6 +404,7 @@ export type InversionUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   clientId?: Prisma.IntFieldUpdateOperationsInput | number
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -402,6 +425,7 @@ export type InversionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
+  porcentajeInteres?: Prisma.SortOrder
   dias?: Prisma.SortOrder
   total?: Prisma.SortOrder
   intereses?: Prisma.SortOrder
@@ -412,6 +436,7 @@ export type InversionAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
+  porcentajeInteres?: Prisma.SortOrder
   dias?: Prisma.SortOrder
   total?: Prisma.SortOrder
   intereses?: Prisma.SortOrder
@@ -421,6 +446,7 @@ export type InversionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
+  porcentajeInteres?: Prisma.SortOrder
   dias?: Prisma.SortOrder
   total?: Prisma.SortOrder
   intereses?: Prisma.SortOrder
@@ -431,6 +457,7 @@ export type InversionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
+  porcentajeInteres?: Prisma.SortOrder
   dias?: Prisma.SortOrder
   total?: Prisma.SortOrder
   intereses?: Prisma.SortOrder
@@ -441,6 +468,7 @@ export type InversionSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
+  porcentajeInteres?: Prisma.SortOrder
   dias?: Prisma.SortOrder
   total?: Prisma.SortOrder
   intereses?: Prisma.SortOrder
@@ -531,6 +559,7 @@ export type InversionUpdateOneRequiredWithoutEstadosNestedInput = {
 
 export type InversionCreateWithoutClientInput = {
   monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -542,6 +571,7 @@ export type InversionCreateWithoutClientInput = {
 export type InversionUncheckedCreateWithoutClientInput = {
   id?: number
   monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -583,6 +613,7 @@ export type InversionScalarWhereInput = {
   id?: Prisma.IntFilter<"Inversion"> | number
   clientId?: Prisma.IntFilter<"Inversion"> | number
   monto?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFilter<"Inversion"> | number
   total?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFilter<"Inversion"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -591,6 +622,7 @@ export type InversionScalarWhereInput = {
 
 export type InversionCreateWithoutSolicitudesInput = {
   monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -603,6 +635,7 @@ export type InversionUncheckedCreateWithoutSolicitudesInput = {
   id?: number
   clientId: number
   monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -628,6 +661,7 @@ export type InversionUpdateToOneWithWhereWithoutSolicitudesInput = {
 
 export type InversionUpdateWithoutSolicitudesInput = {
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -640,6 +674,7 @@ export type InversionUncheckedUpdateWithoutSolicitudesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   clientId?: Prisma.IntFieldUpdateOperationsInput | number
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -649,6 +684,7 @@ export type InversionUncheckedUpdateWithoutSolicitudesInput = {
 
 export type InversionCreateWithoutEstadosInput = {
   monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -661,6 +697,7 @@ export type InversionUncheckedCreateWithoutEstadosInput = {
   id?: number
   clientId: number
   monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -686,6 +723,7 @@ export type InversionUpdateToOneWithWhereWithoutEstadosInput = {
 
 export type InversionUpdateWithoutEstadosInput = {
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -698,6 +736,7 @@ export type InversionUncheckedUpdateWithoutEstadosInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   clientId?: Prisma.IntFieldUpdateOperationsInput | number
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -708,6 +747,7 @@ export type InversionUncheckedUpdateWithoutEstadosInput = {
 export type InversionCreateManyClientInput = {
   id?: number
   monto?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: number
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -716,6 +756,7 @@ export type InversionCreateManyClientInput = {
 
 export type InversionUpdateWithoutClientInput = {
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -727,6 +768,7 @@ export type InversionUpdateWithoutClientInput = {
 export type InversionUncheckedUpdateWithoutClientInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -738,6 +780,7 @@ export type InversionUncheckedUpdateWithoutClientInput = {
 export type InversionUncheckedUpdateManyWithoutClientInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   monto?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  porcentajeInteres?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   dias?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   intereses?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -788,6 +831,7 @@ export type InversionSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   id?: boolean
   clientId?: boolean
   monto?: boolean
+  porcentajeInteres?: boolean
   dias?: boolean
   total?: boolean
   intereses?: boolean
@@ -802,6 +846,7 @@ export type InversionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   id?: boolean
   clientId?: boolean
   monto?: boolean
+  porcentajeInteres?: boolean
   dias?: boolean
   total?: boolean
   intereses?: boolean
@@ -813,6 +858,7 @@ export type InversionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   id?: boolean
   clientId?: boolean
   monto?: boolean
+  porcentajeInteres?: boolean
   dias?: boolean
   total?: boolean
   intereses?: boolean
@@ -824,13 +870,14 @@ export type InversionSelectScalar = {
   id?: boolean
   clientId?: boolean
   monto?: boolean
+  porcentajeInteres?: boolean
   dias?: boolean
   total?: boolean
   intereses?: boolean
   createdAt?: boolean
 }
 
-export type InversionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "clientId" | "monto" | "dias" | "total" | "intereses" | "createdAt", ExtArgs["result"]["inversion"]>
+export type InversionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "clientId" | "monto" | "porcentajeInteres" | "dias" | "total" | "intereses" | "createdAt", ExtArgs["result"]["inversion"]>
 export type InversionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   estados?: boolean | Prisma.Inversion$estadosArgs<ExtArgs>
@@ -855,6 +902,7 @@ export type $InversionPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     id: number
     clientId: number
     monto: runtime.Decimal
+    porcentajeInteres: runtime.Decimal
     dias: number
     total: runtime.Decimal
     intereses: runtime.Decimal
@@ -1288,6 +1336,7 @@ export interface InversionFieldRefs {
   readonly id: Prisma.FieldRef<"Inversion", 'Int'>
   readonly clientId: Prisma.FieldRef<"Inversion", 'Int'>
   readonly monto: Prisma.FieldRef<"Inversion", 'Decimal'>
+  readonly porcentajeInteres: Prisma.FieldRef<"Inversion", 'Decimal'>
   readonly dias: Prisma.FieldRef<"Inversion", 'Int'>
   readonly total: Prisma.FieldRef<"Inversion", 'Decimal'>
   readonly intereses: Prisma.FieldRef<"Inversion", 'Decimal'>

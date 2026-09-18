@@ -129,7 +129,7 @@ const verCliente = async (id) => {
   }
 
   const { client, ...rest } = cliente;
-  return { cliente: { ...rest, blocked: client?.blocked ?? false } };
+  return { cliente: { ...rest, blocked: client?.blocked ?? false, wallet: client?.wallet ?? null } };
 };
 
 const promoteToAdmin = async (id, actingAdminUserId) => {

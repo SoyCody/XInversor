@@ -140,7 +140,7 @@ const VerInversion = () => {
                     <span className="detail-value">{formatBtc(inversion.monto)}</span>
                   </div>
                   <div className="detail-row">
-                    <span className="detail-label">Intereses generados (BTC)</span>
+                    <span className="detail-label">Ganancias generadas (BTC)</span>
                     <span className="detail-value">{formatBtc(inversion.intereses)}</span>
                   </div>
                   <div className="detail-row">

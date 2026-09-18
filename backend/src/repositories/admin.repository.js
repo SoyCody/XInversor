@@ -114,7 +114,9 @@ const verCliente = (id) => {
       createdAt : true,
       apdatedAt : true,
       avatarUpdatedAt : true,
-      client: { select: { blocked: true } }
+      // `wallet` vive en Client, no en User (ver schema.prisma); seleccionarlo
+      // acá arriba tira un PrismaClientValidationError.
+      client: { select: { blocked: true, wallet: true } }
     }
   });
 };

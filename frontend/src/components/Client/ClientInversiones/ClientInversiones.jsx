@@ -180,7 +180,7 @@ const ClientInversiones = () => {
                   <tr>
                     <th>Días</th>
                     <th>Total (BTC)</th>
-                    <th>Intereses (BTC)</th>
+                    <th>Ganancias (BTC)</th>
                     <th>Estado</th>
                     <th className="data-table-actions" />
                   </tr>

@@ -8,8 +8,10 @@ import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import Pagination from "../../Pagination/Pagination.jsx";
 import ConfirmActionModal from "../../Config/ConfirmActionModal.jsx";
+import WalletDisplay from "../../Config/WalletDisplay.jsx";
 import "../../../App.css";
 import "../../DataTable/DataTable.css";
+import "../../Config/config.css";
 import "./VerCliente.css";
 
 const FILTROS_INVERSION = [
@@ -160,6 +162,20 @@ const VerCliente = () => {
                 </div>
               </div>
 
+              {/* Solo los CLIENT tienen wallet (vive en el perfil Client);
+                  un admin puro nunca la tiene. */}
+              {cliente.role === "CLIENT" && (
+                <div className="section-band">
+                  <div className="page-heading">
+                    <div>
+                      <h2>Billetera</h2>
+                      <p>Identificador de la billetera de bitcoins</p>
+                    </div>
+                  </div>
+                  <WalletDisplay wallet={cliente.wallet} />
+                </div>
+              )}
+
               {/* Zona A: título de sección + tabla, a ancho completo */}
               <div className="page-heading vc-inv-heading">
                 <div>
@@ -189,7 +205,7 @@ const VerCliente = () => {
                       <tr>
                         <th>Dias</th>
                         <th>Total (BTC)</th>
-                        <th>Intereses (BTC)</th>
+                        <th>Ganancias (BTC)</th>
                         <th>Estado</th>
                         <th className="data-table-actions" aria-label="Acciones" />
                       </tr>

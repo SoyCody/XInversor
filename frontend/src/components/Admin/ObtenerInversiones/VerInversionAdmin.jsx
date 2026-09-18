@@ -17,9 +17,11 @@ import ConfirmActionModal from "../../Config/ConfirmActionModal.jsx";
 import GestionarSolicitudModal from "./GestionarSolicitudModal.jsx";
 import InvestmentStatusProgress from "../../Client/ClientInversiones/InvestmentStatusProgress.jsx";
 import InvestmentRetirosCharts from "../../Client/ClientInversiones/InvestmentRetirosCharts.jsx";
+import WalletDisplay from "../../Config/WalletDisplay.jsx";
 import "../../../App.css";
 import "../../DataTable/DataTable.css";
 import "../../Client/ClientInversiones/VerInversion.css";
+import "../../Config/config.css";
 
 const formatDate = (isoString) => {
   if (!isoString) return "—";
@@ -271,7 +273,7 @@ const VerInversionAdmin = () => {
                     <span className="detail-value">{formatBtc(inversion.monto)}</span>
                   </div>
                   <div className="detail-row">
-                    <span className="detail-label">Intereses generados (BTC)</span>
+                    <span className="detail-label">Ganancias generadas (BTC)</span>
                     <span className="detail-value">{formatBtc(inversion.intereses)}</span>
                   </div>
                   <div className="detail-row">
@@ -305,6 +307,19 @@ const VerInversionAdmin = () => {
                   total={inversion.total}
                   estado={inversion.estado}
                   mostrarResumen={false}
+                  segundoBloque={
+                    inversion.estado === "EN_PROGRESO" ? (
+                      <>
+                        <div className="page-heading">
+                          <div>
+                            <h1>Billetera del cliente</h1>
+                            <p>Identificador de la billetera de bitcoins</p>
+                          </div>
+                        </div>
+                        <WalletDisplay wallet={inversion.walletCliente} />
+                      </>
+                    ) : null
+                  }
                 />
               )}
 
@@ -374,8 +389,8 @@ const VerInversionAdmin = () => {
                 </div>
               </section>
 
-              {inversion.estado === "PENDIENTE" && (
-                <div className="section-band form-actions section-actions">
+              <div className="section-band form-actions section-actions">
+                {inversion.estado === "PENDIENTE" && (
                   <button
                     type="button"
                     className="btn btn--primary"
@@ -383,11 +398,9 @@ const VerInversionAdmin = () => {
                   >
                     Gestionar paquete
                   </button>
-                </div>
-              )}
+                )}
 
-              {inversion.estado === "EN_PROGRESO" && (
-                <div className="section-band form-actions section-actions">
+                {inversion.estado === "EN_PROGRESO" && (
                   <button
                     type="button"
                     className="btn btn--primary"
@@ -395,8 +408,20 @@ const VerInversionAdmin = () => {
                   >
                     Terminar inversión
                   </button>
-                </div>
-              )}
+                )}
+
+                {/* A diferencia de "Gestionar paquete"/"Terminar inversión"
+                    (solo tienen sentido en un estado puntual), "Ver
+                    cliente" no cambia nada: se puede ver con cualquier
+                    tipo de inversión. */}
+                <button
+                  type="button"
+                  className="btn btn--muted"
+                  onClick={() => navigate(`/admin/clientes/${inversion.clienteUserId}`)}
+                >
+                  Ver cliente
+                </button>
+              </div>
             </>
           )}
 

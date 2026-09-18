@@ -127,6 +127,7 @@ export const InversionScalarFieldEnum = {
   id: 'id',
   clientId: 'clientId',
   monto: 'monto',
+  porcentajeInteres: 'porcentajeInteres',
   dias: 'dias',
   total: 'total',
   intereses: 'intereses',

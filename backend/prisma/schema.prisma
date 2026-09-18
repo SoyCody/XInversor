@@ -101,6 +101,11 @@ model Inversion {
   id          Int         @id @default(autoincrement())
   clientId    Int
   monto       Decimal     @default(0) @db.Decimal(18, 8)
+  // Porcentaje de intereses vigente al momento de crear el paquete,
+  // congelado acá (en vez de leer siempre Configuracion.porcentajeInteres)
+  // para que un cambio futuro del porcentaje global no reescriba
+  // retroactivamente los intereses ya generados por esta inversión.
+  porcentajeInteres Decimal @default(0.10) @db.Decimal(5, 4)
   dias        Int         @default(0)
   total       Decimal     @default(0) @db.Decimal(18, 8)
   intereses   Decimal     @default(0) @db.Decimal(18, 8)

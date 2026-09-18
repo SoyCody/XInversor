@@ -109,7 +109,7 @@ const ObtenerInversiones = () => {
               </span>
             </div>
             <div className="stat-card">
-              <span className="stat-card-label">Total intereses</span>
+              <span className="stat-card-label">Total ganancias</span>
               <span className="stat-card-value">
                 {isLoading ? "—" : formatBtc(data?.totalIntereses ?? 0)}
               </span>
@@ -267,7 +267,7 @@ const ObtenerInversiones = () => {
                 <thead>
                   <tr>
                     <th>Cliente</th>
-                    <th>Intereses (BTC)</th>
+                    <th>Ganancias (BTC)</th>
                     <th>Estado</th>
                     <th className="data-table-actions" />
                   </tr>
@@ -319,7 +319,7 @@ const ObtenerInversiones = () => {
                 <thead>
                   <tr>
                     <th>Cliente</th>
-                    <th>Intereses (BTC)</th>
+                    <th>Ganancias (BTC)</th>
                     <th>Solicitado (BTC)</th>
                     <th className="data-table-actions" />
                   </tr>

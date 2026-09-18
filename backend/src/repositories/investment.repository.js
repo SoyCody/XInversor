@@ -76,7 +76,10 @@ const myList = async (clientId) => {
 };
 
 // Detalle completo de una inversión: montos, contador de días, historial
-// de estados (más reciente primero) y todas sus solicitudes de retiro.
+// de estados (más reciente primero), datos del cliente dueño (wallet y
+// userId -- ambos solo los usa getInvestmentAdmin, para mostrar la wallet
+// y enlazar a "Ver cliente" desde el panel de administración) y todas sus
+// solicitudes de retiro.
 const getInvestment = async (inversionId) => {
   return prisma.inversion.findUnique({
     where: { id: inversionId },
@@ -88,6 +91,7 @@ const getInvestment = async (inversionId) => {
       total: true,
       dias: true,
       createdAt: true,
+      client: { select: { wallet: true, userId: true } },
       estados: {
         orderBy: { createdAt: 'desc' },
         select: { estado: true, createdAt: true }
@@ -106,12 +110,11 @@ const getInvestment = async (inversionId) => {
   });
 };
 
-// OJO: aquí "pendiente" = campo booleano Solicitud.pendiente, mientras que
-// en getInvestment/puedeSolicitarRetiro "pendiente" = Solicitud.estado ===
-// 'PENDIENTE'. Son dos fuentes de verdad para el mismo concepto; si al
-// implementar la resolución de solicitudes una se actualiza y la otra no,
-// los dos endpoints van a discrepar. Conviene quedarse con una sola
-// (probablemente el enum `estado`, y derivar el índice único de ahí).
+// Trae TODAS las solicitudes (no solo las pendientes) porque el servicio
+// necesita dos cosas distintas de ellas: si ya hay una sin resolver
+// (`pendiente`) y cuánto ya se retiró en total (`estado === 'ACEPTADA'`,
+// sumado en el servicio) para saber cuánto de `intereses` sigue
+// disponible -- ver createApplication().
 const getInversionParaSolicitud = async (inversionId) => {
   return prisma.inversion.findUnique({
     where: { id: inversionId },
@@ -125,8 +128,7 @@ const getInversionParaSolicitud = async (inversionId) => {
         select: { estado: true }
       },
       solicitudes: {
-        where: { pendiente: true },
-        select: { id: true }
+        select: { estado: true, montoRetiro: true, pendiente: true }
       }
     }
   });
@@ -178,18 +180,25 @@ const ultimosRetirosAprobados = (take = 5) => {
   });
 };
 
-// Inversiones que todavía "envejecen": solo las EN_ESPERA (las demás
-// quedan congeladas o ni siquiera arrancaron a contar). Hoy trae TODAS
-// (las que no son EN_ESPERA se descartan en memoria, en incrementarDias).
-// Con el `estadoActual` denormalizado, filtrar acá:
-//   where: { estadoActual: 'EN_ESPERA' }
-// `estados[0].createdAt` es la fecha en la que entró a EN_ESPERA: el
-// servicio la usa para calcular `dias` (el período de bloqueo arranca en
-// la aprobación, no en `inversion.createdAt`).
+// Inversiones que todavía cambian solas con el paso del tiempo: EN_ESPERA
+// (cuentan días para pasar a EN_PROGRESO) y EN_PROGRESO (generan
+// intereses día hábil a día hábil y pueden vencer -- ver incrementarDias
+// en el servicio). Hoy trae TODAS (las demás -- PENDIENTE, RECHAZADO,
+// RETIRADO -- se descartan en memoria). Con el `estadoActual`
+// denormalizado, filtrar acá:
+//   where: { estadoActual: { in: ['EN_ESPERA', 'EN_PROGRESO'] } }
+// `estados[0].createdAt` es la fecha en la que entró a la fase actual: el
+// servicio la usa como ancla tanto para `dias` (EN_ESPERA) como para los
+// intereses y el vencimiento a los 10 meses (EN_PROGRESO), en vez de
+// `inversion.createdAt`.
 const getInversionesActivas = async () => {
   return prisma.inversion.findMany({
     select: {
       id: true,
+      monto: true,
+      porcentajeInteres: true,
+      intereses: true,
+      total: true,
       dias: true,
       estados: {
         orderBy: { createdAt: 'desc' },
@@ -217,20 +226,23 @@ const getTotales = async (clientId) => {
   };
 };
 
-// Fija `dias` y, si corresponde, registra el paso a EN_PROGRESO en la
-// misma transacción para que nunca queden desincronizados.
-const avanzarInversion = async (inversionId, { dias, habilitar }) => {
+// Actualiza campos de una inversión y, si corresponde, agrega un nuevo
+// Estado en la misma transacción para que el dato y el cambio de estado
+// nunca queden desincronizados. La usa incrementarDias (en el servicio)
+// tanto para EN_ESPERA -> EN_PROGRESO (`{ dias }` + habilita) como para
+// EN_PROGRESO -> RETIRADO por vencimiento (`{ intereses, total }` + vence).
+const actualizarInversion = async (inversionId, data, nuevoEstado) => {
   const ops = [
     prisma.inversion.update({
       where: { id: inversionId },
-      data: { dias }
+      data
     })
   ];
 
-  if (habilitar) {
+  if (nuevoEstado) {
     ops.push(
       prisma.estado.create({
-        data: { inversionId, estado: 'EN_PROGRESO' }
+        data: { inversionId, estado: nuevoEstado }
       })
     );
   }
@@ -253,21 +265,14 @@ const setPorcentajeInteres = async (porcentaje) => {
   });
 };
 
-// Datos mínimos para resolver (aprobar/rechazar) una solicitud: el
-// estado actual (para no resolver dos veces la misma), a qué inversión
-// pertenece, y el monto e intereses/capital de esa inversión (para,
-// si se aprueba, restar el retiro de los intereses -- ver approve() en
-// el servicio).
+// Solo hace falta saber si la solicitud existe: aprobar/rechazar no
+// tocan la inversión (ver approve()/reject() en el servicio -- los
+// intereses/total los recalcula únicamente incrementarDias), así que no
+// hay nada más de la solicitud ni de su inversión que leer de antemano.
 const getSolicitudParaResolver = async (applicationId) => {
   return prisma.solicitud.findUnique({
     where: { id: applicationId },
-    select: {
-      id: true,
-      inversionId: true,
-      estado: true,
-      montoRetiro: true,
-      inversion: { select: { monto: true, intereses: true } }
-    }
+    select: { id: true }
   });
 };
 
@@ -285,39 +290,18 @@ const getAdminIdByUser = async (userId) => {
 // simple `update` por id) para que, si dos requests llegan a la vez
 // sobre la misma solicitud, solo la primera la resuelva: la segunda ve
 // count 0 y el servicio la trata como "ya resuelta" en vez de pisarla.
-// Aprobar además resta el retiro de los intereses de la inversión en la
-// misma transacción (el capital invertido, `monto`, nunca se toca); si
-// eso deja los intereses en 0, la inversión pasa a RETIRADO -- ya se
-// pagó todo el interés generado y no queda de dónde retirar más.
-const aprobarSolicitud = async (applicationId, inversionId, { intereses, total, marcarRetirado }, adminId) => {
-  return prisma.$transaction(async (tx) => {
-    const { count } = await tx.solicitud.updateMany({
-      where: { id: applicationId, estado: 'PENDIENTE' },
-      data: { estado: 'ACEPTADA', pendiente: null, resueltaEn: new Date(), adminId }
-    });
-
-    if (count === 0) return null;
-
-    await tx.inversion.update({
-      where: { id: inversionId },
-      data: { intereses, total }
-    });
-
-    if (marcarRetirado) {
-      await tx.estado.create({ data: { inversionId, estado: 'RETIRADO' } });
-    }
-
-    return { id: applicationId, estado: 'ACEPTADA' };
-  });
-};
-
-const rechazarSolicitud = async (applicationId, adminId) => {
+// Aprobar y rechazar son, a nivel de datos, la misma operación (solo
+// cambia el `estado` de destino): ninguna de las dos toca la inversión
+// -- el capital (`monto`) nunca se mueve y los intereses/total los
+// recalcula únicamente incrementarDias, según el tiempo transcurrido, no
+// aprobar un retiro.
+const resolverSolicitud = async (applicationId, estado, adminId) => {
   const { count } = await prisma.solicitud.updateMany({
     where: { id: applicationId, estado: 'PENDIENTE' },
-    data: { estado: 'RECHAZADA', pendiente: null, resueltaEn: new Date(), adminId }
+    data: { estado, pendiente: null, resueltaEn: new Date(), adminId }
   });
 
-  return count > 0 ? { id: applicationId, estado: 'RECHAZADA' } : null;
+  return count > 0 ? { id: applicationId, estado } : null;
 };
 
 // Datos mínimos para decidir sobre el estado de una inversión: el estado
@@ -345,12 +329,12 @@ const getInversionParaCambiarEstado = async (investmentId) => {
 };
 
 // Toda transición de estado de una inversión (aprobar/rechazar el
-// paquete, pasar a EN_PROGRESO -- ver avanzarInversion --, retirarla) es,
-// sin excepción, agregar una fila nueva a Estado: no hay una columna
-// mutable "estadoActual" que bloquear. Dos requests simultáneas sobre la
-// misma inversión podrían agregar dos filas iguales seguidas; no rompe
-// nada (el último estado sigue siendo el mismo) pero ensucia el
-// historial. Aceptable por ahora.
+// paquete, pasar a EN_PROGRESO o vencer a los 10 meses -- ver
+// actualizarInversion --, retirarla a mano) es, sin excepción, agregar
+// una fila nueva a Estado: no hay una columna mutable "estadoActual" que
+// bloquear. Dos requests simultáneas sobre la misma inversión podrían
+// agregar dos filas iguales seguidas; no rompe nada (el último estado
+// sigue siendo el mismo) pero ensucia el historial. Aceptable por ahora.
 const cambiarEstadoInversion = async (investmentId, estado) => {
   return prisma.estado.create({
     data: { inversionId: investmentId, estado }
@@ -368,15 +352,14 @@ export default {
   getSolicitudesPendientes,
   ultimosRetirosAprobados,
   getInversionesActivas,
-  avanzarInversion,
+  actualizarInversion,
   getInvestment,
   getTotales,
   getConfiguracion,
   setPorcentajeInteres,
   getSolicitudParaResolver,
   getAdminIdByUser,
-  aprobarSolicitud,
-  rechazarSolicitud,
+  resolverSolicitud,
   getInversionParaCambiarEstado,
   cambiarEstadoInversion
 };

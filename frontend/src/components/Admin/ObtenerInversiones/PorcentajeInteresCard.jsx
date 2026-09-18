@@ -37,7 +37,7 @@ const PorcentajeInteresCard = ({ onSuccess }) => {
       await actualizarPorcentajeInteres(Number(trimmed));
       setIsConfirmOpen(false);
       setValue("");
-      onSuccess?.("Porcentaje de intereses actualizado");
+      onSuccess?.("Porcentaje de ganancias actualizado");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -47,8 +47,8 @@ const PorcentajeInteresCard = ({ onSuccess }) => {
 
   return (
     <section className="cfg-billetera admin-section-gap">
-      <h2>Porcentaje para intereses</h2>
-      <p className="cfg-subtitle">Valor de porcentaje de generación de intereses</p>
+      <h2>Porcentaje para ganancias</h2>
+      <p className="cfg-subtitle">Valor de porcentaje de generación de ganancias</p>
 
       <div className="cfg-wallet-row">
         <div className="cfg-wallet-input cfg-percent-input">
@@ -75,9 +75,9 @@ const PorcentajeInteresCard = ({ onSuccess }) => {
 
       {isConfirmOpen && (
         <ConfirmActionModal
-          title="Cambiar porcentaje de intereses"
+          title="Cambiar porcentaje de ganancias"
           subtitle="Confirmación de cambio"
-          message={`¿Estás seguro de cambiar el porcentaje de generación de intereses a ${trimmed}? Se aplicará a las inversiones nuevas.`}
+          message={`¿Estás seguro de cambiar el porcentaje de generación de ganancias a ${trimmed}? Se aplicará a las inversiones nuevas.`}
           confirmingLabel="Guardando..."
           isBusy={isSaving}
           error={error}

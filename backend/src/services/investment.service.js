@@ -6,6 +6,10 @@ import { MESES_ES, mesesDelAnhoHastaHoy } from '../utils/meses.js';
 const INTERES_RATE_DEFAULT = 0.1;
 
 const DIAS_PARA_HABILITAR = 15;
+// Tiempo de vida máximo de una inversión EN_PROGRESO: cumplidos estos
+// meses desde que empezó a generar intereses, se marca RETIRADO sola
+// (ver incrementarDias), sin que nadie tenga que pedir un retiro.
+const MESES_VIDA_MAXIMA = 10;
 const MS_POR_DIA = 24 * 60 * 60 * 1000;
 
 const fail = (statusCode, message) => {
@@ -90,22 +94,26 @@ const newInvestment = async (userId, { monto }) => {
     );
   }
 
-  // OJO: aritmética en punto flotante sobre dinero. montoNum * tasa puede
-  // dar 0.30000000000000004 y se guarda en Decimal(18,8). Para importes
-  // grandes o si la tasa deja de ser "redonda", conviene calcular
-  // intereses/total con Prisma.Decimal (o strings) y no con Number.
-  const tasa = await getPorcentajeInteres();
-  const intereses = montoNum * tasa;
-  const total = montoNum + intereses;
+  // El monto es la base sobre la que se generan intereses A TRAVÉS DEL
+  // TIEMPO (día hábil a día hábil, ver incrementarDias), no de una sola
+  // vez acá: al crearse todavía no generó nada, así que arranca en 0 y
+  // `total` es solo el capital. El porcentaje vigente en este momento
+  // queda congelado en `porcentajeInteres` -- si el admin lo cambia
+  // después, solo afecta a las inversiones que se creen desde ahí, no
+  // reescribe esta.
+  const porcentajeInteres = await getPorcentajeInteres();
 
-  // dias arranca en 0: es el contador que habilita los retiros
-  // (mínimo 15 días); la inversión no tiene fecha de fin.
+  // dias arranca en 0: mientras esté PENDIENTE/EN_ESPERA cuenta el
+  // período de bloqueo de 15 días; la inversión no tiene fecha de fin
+  // fija más allá del vencimiento a los MESES_VIDA_MAXIMA meses (ver
+  // incrementarDias).
   const inversion = await investmentRepository.registerInvestment({
     clientId: client.id,
     monto: montoNum,
-    intereses,
+    porcentajeInteres,
+    intereses: 0,
     dias: 0,
-    total
+    total: montoNum
   });
 
   await registrarAuditoria({
@@ -275,11 +283,14 @@ const myList = async (userId, tipo = 'ALL', rawPage) => {
   return listInversionesCliente(client.id, tipo, rawPage);
 };
 
-// NOTA: `dias` y `diasParaHabilitar` salen del contador persistido, que
-// solo se refresca a medianoche (job incrementarDias). Entre corridas el
-// valor puede estar hasta ~24h desactualizado. Si el frontend necesita
-// exactitud, usar diasTranscurridos(inversion.createdAt) en lugar de
-// inversion.dias.
+// NOTA: `dias`, `diasParaHabilitar`, `intereses` y `total` salen de
+// columnas persistidas que solo se refrescan a medianoche (job
+// incrementarDias). Entre corridas el valor puede estar hasta ~24h
+// desactualizado -- en particular, los intereses de una inversión
+// EN_PROGRESO no suben en tiempo real, solo cuando corre el job. Si el
+// frontend necesita exactitud, recalcular con
+// diasHabilesTranscurridos(inicioEnProgreso) * monto * porcentajeInteres
+// en vez de leer inversion.intereses directo.
 //
 // Compartido entre getInvestment (cliente, sobre las suyas) y
 // getInvestmentAdmin (administrador, sobre cualquiera): la única
@@ -343,7 +354,10 @@ const getInvestment = async (userId, inversionId) => {
 
 // Detalle de cualquier inversión para el panel de administración: a
 // diferencia de getInvestment, no exige ser el dueño (el acceso ya lo
-// resuelve la ruta con isAdmin).
+// resuelve la ruta con isAdmin) y además expone la wallet del cliente
+// dueño (el admin la necesita para verificar/enviar pagos) y su userId
+// (para el botón "Ver cliente", que enlaza a /admin/clientes/:id -- esa
+// ruta toma el id de User, no el de Client).
 const getInvestmentAdmin = async (inversionId) => {
   if (!Number.isInteger(inversionId) || inversionId <= 0) {
     throw fail(400, 'Inversión inválida');
@@ -354,7 +368,10 @@ const getInvestmentAdmin = async (inversionId) => {
     throw fail(404, 'La inversión no existe');
   }
 
-  return buildInvestmentDetail(inversion);
+  const detalle = buildInvestmentDetail(inversion);
+  detalle.inversion.walletCliente = inversion.client?.wallet ?? null;
+  detalle.inversion.clienteUserId = inversion.client?.userId ?? null;
+  return detalle;
 };
 
 const createApplication = async (userId, inversionId, montoRetiro) => {
@@ -392,14 +409,22 @@ const createApplication = async (userId, inversionId, montoRetiro) => {
   }
 
   // Regla del modelo: una sola solicitud sin resolver por inversión.
-  if (inversion.solicitudes.length > 0) {
+  if (inversion.solicitudes.some((s) => s.pendiente)) {
     throw fail(409, 'Ya existe una solicitud de retiro pendiente para esta inversión');
   }
 
   // Un retiro sale solo de los intereses generados: el capital invertido
-  // (monto) no se toca. Ver approve(), que resta montoRetiro de
-  // `intereses` al aprobar.
-  if (montoNum > Number(inversion.intereses)) {
+  // (monto) no se toca, y aprobar un retiro tampoco baja `intereses` (lo
+  // escribe únicamente incrementarDias, según los días hábiles
+  // transcurridos -- ver approve()). Lo disponible para pedir es, entonces,
+  // el total de intereses generados hasta ahora menos lo que ya se aceptó
+  // en solicitudes anteriores.
+  const yaRetirado = inversion.solicitudes
+    .filter((s) => s.estado === 'ACEPTADA')
+    .reduce((sum, s) => sum + Number(s.montoRetiro), 0);
+  const disponible = Number(inversion.intereses) - yaRetirado;
+
+  if (montoNum > disponible) {
     throw fail(422, 'El monto solicitado supera los intereses disponibles de la inversión');
   }
 
@@ -430,52 +455,123 @@ const diasTranscurridos = (createdAt) => {
   return Math.max(0, Math.floor(diff / MS_POR_DIA));
 };
 
+// Días hábiles (lunes a viernes) transcurridos estrictamente después de
+// `desde` y hasta `hasta` (hoy si no se pasa). Recorre día por día en vez
+// de una fórmula cerrada por semana completa: con MESES_VIDA_MAXIMA de
+// tope, una inversión vive como mucho unos pocos cientos de días, así que
+// no vale la pena la complejidad extra. Reutiliza esDiaHabil(), la misma
+// regla que ya usa createApplication() para bloquear retiros en fin de
+// semana.
+const diasHabilesTranscurridos = (desde, hasta = new Date()) => {
+  const cursor = new Date(desde);
+  cursor.setHours(0, 0, 0, 0);
+  cursor.setDate(cursor.getDate() + 1); // exclusivo del día de inicio
+
+  const fin = new Date(hasta);
+  fin.setHours(0, 0, 0, 0);
+
+  let dias = 0;
+  while (cursor <= fin) {
+    if (esDiaHabil(cursor)) dias += 1;
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return dias;
+};
+
+// Fecha límite de vida de una inversión: MESES_VIDA_MAXIMA meses después
+// de que entró a EN_PROGRESO (cuando empezó a generar intereses).
+// Cumplida, se marca RETIRADO aunque nadie haya pedido un retiro -- ver
+// incrementarDias.
+const fechaVencimiento = (inicioEnProgreso) => {
+  const vencimiento = new Date(inicioEnProgreso);
+  vencimiento.setMonth(vencimiento.getMonth() + MESES_VIDA_MAXIMA);
+  return vencimiento;
+};
+
 // Job idempotente: se puede correr N veces el mismo día sin efectos
-// secundarios (fija `dias` al valor calculado y solo agrega EN_PROGRESO
-// si aún no está).
+// secundarios -- recalcula `dias`/`intereses`/`total` a un valor absoluto
+// a partir de la fecha en la que arrancó la fase actual, no los va
+// incrementando a ciegas sobre lo que ya había.
 //
-// Solo envejecen las EN_ESPERA (ya aprobadas por un admin, esperando el
-// período de bloqueo): PENDIENTE todavía no tiene contador -- espera que
-// el admin la revise -- y RECHAZADO/RETIRADO son terminales. `dias` se
-// cuenta desde que entró a EN_ESPERA (la fecha de ese Estado, no
-// `inversion.createdAt`), porque el período de bloqueo arranca en la
-// aprobación, no en la creación del paquete.
+// Dos fases, cada una con su propio contador:
+//  - EN_ESPERA: cuenta días CORRIDOS desde que se aprobó el paquete
+//    (`dias`) y, al llegar a DIAS_PARA_HABILITAR, pasa a EN_PROGRESO.
+//  - EN_PROGRESO: recalcula los intereses generados según los días
+//    HÁBILES transcurridos desde que arrancó esta fase (`monto *
+//    porcentajeInteres * díasHábiles` -- el porcentaje que se congeló al
+//    crear el paquete, no el vigente ahora) y, si ya pasó
+//    MESES_VIDA_MAXIMA, la marca RETIRADO. El capital (`monto`) nunca se
+//    toca, y aprobar un retiro tampoco baja `intereses`/`total` (ver
+//    approve()) -- este es el único lugar que los escribe.
 //
-// Perf: recorre TODAS las inversiones y hace un $transaction por cada una
-// que cambia (N+1 escrituras secuenciales). Con pocos miles va bien; si
-// crece, conviene: (1) filtrar en SQL las que ya están EN_ESPERA,
-// (2) agrupar los UPDATE de `dias` por valor con updateMany, y
-// (3) createMany para los Estado nuevos. Como el estado transiciona solo
-// hacia adelante, el paso a EN_PROGRESO también se podría derivar en
-// lectura desde la fecha de EN_ESPERA y dejar el job solo para el panel
-// de admin.
+// PENDIENTE (esperando revisión del admin) y los estados terminales
+// (RECHAZADO, RETIRADO) no envejecen ni generan intereses.
+//
+// Perf: recorre TODAS las inversiones activas y hace un $transaction por
+// cada una que cambia (N+1 escrituras secuenciales). Con pocos miles va
+// bien; ver la nota de escala en getInversionesActivas.
 const incrementarDias = async () => {
   const inversiones = await investmentRepository.getInversionesActivas();
 
   let actualizadas = 0;
   let habilitadas = 0;
+  let retiradasPorVencimiento = 0;
 
   for (const inversion of inversiones) {
     const estadoActual = inversion.estados[0]?.estado ?? DEFAULT_ESTADO;
+    const inicioFase = inversion.estados[0]?.createdAt;
 
-    if (estadoActual !== 'EN_ESPERA') continue;
+    if (estadoActual === 'EN_ESPERA') {
+      const dias = diasTranscurridos(inicioFase);
+      const habilitar = dias >= DIAS_PARA_HABILITAR;
 
-    const dias = diasTranscurridos(inversion.estados[0].createdAt);
-    const habilitar = dias >= DIAS_PARA_HABILITAR;
+      // Nada que hacer: mismo contador y sin cambio de estado.
+      if (dias === inversion.dias && !habilitar) continue;
 
-    // Nada que hacer: mismo contador y sin cambio de estado.
-    if (dias === inversion.dias && !habilitar) continue;
+      await investmentRepository.actualizarInversion(
+        inversion.id,
+        { dias },
+        habilitar ? 'EN_PROGRESO' : undefined
+      );
 
-    await investmentRepository.avanzarInversion(inversion.id, { dias, habilitar });
+      actualizadas += 1;
+      if (habilitar) habilitadas += 1;
+      continue;
+    }
 
-    if (dias !== inversion.dias) actualizadas += 1;
-    if (habilitar) habilitadas += 1;
+    if (estadoActual === 'EN_PROGRESO') {
+      const diasHabiles = diasHabilesTranscurridos(inicioFase);
+      const montoNum = Number(inversion.monto);
+      const porcentaje = Number(inversion.porcentajeInteres);
+      const intereses = montoNum * porcentaje * diasHabiles;
+      const total = montoNum + intereses;
+      const vencida = Date.now() >= fechaVencimiento(inicioFase).getTime();
+
+      // Nada que hacer: mismos montos y sin cambio de estado.
+      if (
+        intereses === Number(inversion.intereses) &&
+        total === Number(inversion.total) &&
+        !vencida
+      ) {
+        continue;
+      }
+
+      await investmentRepository.actualizarInversion(
+        inversion.id,
+        { intereses, total },
+        vencida ? 'RETIRADO' : undefined
+      );
+
+      actualizadas += 1;
+      if (vencida) retiradasPorVencimiento += 1;
+    }
   }
 
   return {
     revisadas: inversiones.length,
     actualizadas,
-    habilitadas
+    habilitadas,
+    retiradasPorVencimiento
   };
 };
 
@@ -650,33 +746,19 @@ const buscarSolicitudOFallar = async (applicationId) => {
   return solicitud;
 };
 
-// Aprobar un retiro resta el monto pedido de los intereses de la
-// inversión (el capital invertido, `monto`, nunca se toca -- ya se
-// valida en createApplication que montoRetiro no supera los intereses
-// disponibles, y al haber una sola solicitud pendiente por inversión a
-// la vez, esos intereses no pudieron cambiar desde entonces). Si eso
-// agota los intereses, la inversión pasa a RETIRADO en la misma
-// transacción (ver investmentRepository.aprobarSolicitud); si no, sigue
-// EN_PROGRESO y se puede volver a pedir un retiro más adelante.
-const approve = async (applicationId, userId) => {
+// Aprobar/rechazar una solicitud de retiro no toca la inversión: el
+// capital (`monto`) nunca se mueve y los intereses/total los recalcula
+// únicamente incrementarDias, según los días hábiles transcurridos, no el
+// resolver una solicitud. "Cuánto queda disponible" ya se descontó en
+// createApplication (intereses generados menos lo ya aceptado), así que
+// acá solo queda marcar la solicitud resuelta. Comparten toda la lógica
+// -- solo cambia el estado de destino y qué acción queda en la auditoría
+// -- igual que resolverPendiente() para aprobar/rechazar un paquete.
+const resolverSolicitudPendiente = async (applicationId, userId, estado, auditAction) => {
   const solicitud = await buscarSolicitudOFallar(applicationId);
 
-  const montoRetiro = Number(solicitud.montoRetiro);
-  const montoInvertido = Number(solicitud.inversion.monto);
-  const interesesActuales = Number(solicitud.inversion.intereses);
-  const nuevosIntereses = Math.max(0, interesesActuales - montoRetiro);
-
   const admin = await investmentRepository.getAdminIdByUser(userId);
-  const resultado = await investmentRepository.aprobarSolicitud(
-    solicitud.id,
-    solicitud.inversionId,
-    {
-      intereses: nuevosIntereses,
-      total: montoInvertido + nuevosIntereses,
-      marcarRetirado: nuevosIntereses <= 0
-    },
-    admin?.id ?? null
-  );
+  const resultado = await investmentRepository.resolverSolicitud(solicitud.id, estado, admin?.id ?? null);
 
   // updateMany solo afecta filas todavía PENDIENTE: si otra request ya
   // la resolvió entre la lectura de arriba y este punto, count viene 0.
@@ -686,7 +768,7 @@ const approve = async (applicationId, userId) => {
 
   await registrarAuditoria({
     userId,
-    action: AUDIT_ACTIONS.APPROVE,
+    action: auditAction,
     tableName: AUDIT_TABLES.SOLICITUD,
     targetId: solicitud.id
   });
@@ -694,27 +776,11 @@ const approve = async (applicationId, userId) => {
   return resultado;
 };
 
-// Rechazar no toca la inversión: sigue EN_PROGRESO y el cliente puede
-// solicitar otro retiro.
-const reject = async (applicationId, userId) => {
-  const solicitud = await buscarSolicitudOFallar(applicationId);
+const approve = (applicationId, userId) =>
+  resolverSolicitudPendiente(applicationId, userId, 'ACEPTADA', AUDIT_ACTIONS.APPROVE);
 
-  const admin = await investmentRepository.getAdminIdByUser(userId);
-  const resultado = await investmentRepository.rechazarSolicitud(solicitud.id, admin?.id ?? null);
-
-  if (!resultado) {
-    throw fail(409, 'Esta solicitud ya fue resuelta');
-  }
-
-  await registrarAuditoria({
-    userId,
-    action: AUDIT_ACTIONS.REJECT,
-    tableName: AUDIT_TABLES.SOLICITUD,
-    targetId: solicitud.id
-  });
-
-  return resultado;
-};
+const reject = (applicationId, userId) =>
+  resolverSolicitudPendiente(applicationId, userId, 'RECHAZADA', AUDIT_ACTIONS.REJECT);
 
 // Valida el id y trae la inversión (o falla): comparte lectura entre
 // retire(), approveInvestment() y rejectInvestment(), las tres acciones
@@ -734,12 +800,14 @@ const buscarInversionOFallar = async (investmentId) => {
   return investment;
 };
 
-// Un admin puede terminar manualmente una inversión EN_PROGRESO (sin
-// esperar a que se agoten los intereses vía approve()). Al pasar a
-// RETIRADO dos cosas se dan solas con el resto del código, sin lógica
-// extra acá: el job incrementarDias ya solo envejece las EN_ESPERA, y
-// createApplication ya exige EN_PROGRESO para pedir un retiro -- sigue
-// viéndose en los listados y su detalle, pero no admite más acciones.
+// Un admin puede terminar manualmente una inversión EN_PROGRESO en
+// cualquier momento (sin esperar los MESES_VIDA_MAXIMA meses de
+// vencimiento automático que hace incrementarDias). Al pasar a RETIRADO
+// dos cosas se dan solas con el resto del código, sin lógica extra acá:
+// el job incrementarDias ya se salta las RETIRADO (no siguen generando
+// intereses), y createApplication ya exige EN_PROGRESO para pedir un
+// retiro -- sigue viéndose en los listados y su detalle, pero no admite
+// más acciones.
 const retire = async (investmentId, userId) => {
   const investment = await buscarInversionOFallar(investmentId);
 

@@ -26,9 +26,6 @@ const obtenerPersonas = async (req, res) => {
 const verCliente = async (req, res) => {
   try{
     const id = Number(req.params.id);
-    // Sin este guard, un :id no numérico llega como NaN a
-    // prisma.user.findUnique y Prisma lanza un PrismaClientValidationError
-    // que se traducía a un 500 en vez de a un 400.
     if (!Number.isInteger(id) || id <= 0) {
       return res.status(400).json({ message: 'Id inválido' });
     }
