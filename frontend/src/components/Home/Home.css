@@ -175,6 +175,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 30px;
 }
 .section-tag,
 .section-heading > span {
@@ -212,11 +213,13 @@
   color: #93a0b2;
   font-size: 15px;
   line-height: 1.75;
+  padding-top: 50px;
 }
 .hero-actions {
   display: flex;
   gap: 20px;
   margin-top: 30px;
+  padding-top: 30px;
 }
 .primary-button {
   min-height: 43px;

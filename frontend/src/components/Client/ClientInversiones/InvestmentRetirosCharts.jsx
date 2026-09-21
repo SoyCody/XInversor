@@ -42,6 +42,8 @@ const tooltipStyle = {
   fontSize: 12,
   borderRadius: 8,
   border: "1px solid var(--input-border)",
+  background: "var(--white)",
+  color: "var(--detail-value)",
 };
 
 // Un retiro sale siempre 100% de los intereses generados (el capital
@@ -107,7 +109,7 @@ const InvestmentRetirosCharts = ({
         ) : (
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={porRetiro} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--input-border)" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
               <XAxis dataKey="fecha" tick={{ fontSize: 12, fill: "var(--muted)" }} />
               <YAxis tick={{ fontSize: 12, fill: "var(--muted)" }} width={64} tickFormatter={formatEje} />
               <Tooltip
@@ -152,7 +154,7 @@ const InvestmentRetirosCharts = ({
               layout="vertical"
               margin={{ top: 4, right: 24, left: 8, bottom: 0 }}
             >
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--input-border)" />
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
               <XAxis type="number" tick={{ fontSize: 12, fill: "var(--muted)" }} tickFormatter={formatEje} />
               <YAxis
                 type="category"

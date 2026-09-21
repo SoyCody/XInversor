@@ -27,6 +27,8 @@ const tooltipStyle = {
   fontSize: 12,
   borderRadius: 8,
   border: "1px solid var(--input-border)",
+  background: "var(--white)",
+  color: "var(--detail-value)",
 };
 
 const formatFecha = (isoString) => {
@@ -91,7 +93,7 @@ const AdminDashboard = () => {
                   data={data?.clientesPorMes ?? []}
                   margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--input-border)" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                   <XAxis dataKey="mes" tick={{ fontSize: 12, fill: "var(--muted)" }} />
                   <YAxis tick={{ fontSize: 12, fill: "var(--muted)" }} width={32} allowDecimals={false} />
                   <Tooltip

@@ -1,7 +1,8 @@
 /* Ajustes del topbar. El layout base vive en App.css. */
 
-/* Icono (PNG) dentro del menú desplegable del perfil: fondo claro,
-   se deja en negro. */
+/* Icono (PNG) dentro del menú desplegable del perfil: en modo claro el
+   desplegable es blanco y se deja en negro; en modo oscuro se invierte
+   (ver el bloque de modo oscuro en App.css). */
 .menu-icon-img {
   width: 16px;
   height: 16px;
@@ -9,7 +10,8 @@
   flex: 0 0 auto;
 }
 
-/* Campana de notificaciones (PNG) en el topbar claro: gris apagado. */
+/* Campana de notificaciones (PNG, trazo oscuro) en el topbar azul:
+   se invierte a blanco para que resalte sobre el fondo. */
 .notification-button {
   display: grid;
   place-items: center;
@@ -19,5 +21,24 @@
   width: 20px;
   height: 20px;
   object-fit: contain;
-  opacity: 0.62;
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+}
+
+.topbar {
+  background-color: #153B63;
+  /* El borde inferior venía de cuando el topbar era claro (separarlo del
+     fondo blanco de .content); ahora que siempre es azul se ve como una
+     línea suelta contra el contenido, así que se quita acá. */
+  border-bottom: none;
+}
+
+/* Textos del perfil (nombre y rol) y flecha del desplegable: blancos
+   sobre el fondo azul del topbar. */
+.admin-profile-trigger {
+  color: #fff;
+}
+
+.admin-profile-trigger > div:nth-child(2) span {
+  color: rgba(255, 255, 255, 0.7);
 }

@@ -5,10 +5,12 @@ import { getCurrentUser, getAvatarUrl } from "../../services/authApi";
 import { getRecentClientNotifications, getRecentAdminNotifications } from "../../services/notificationApi.js";
 import { describirNotificacion, formatFechaNotificacion, colorNotificacion } from "../../utils/notificaciones.js";
 import { countUnseen, markAllSeen } from "../../utils/notificationsSeen.js";
+import { getTheme, setTheme } from "../../utils/theme.js";
 import "./Header.css";
 import "../Config/ConfigModal.css";
 import configuracionIcon from "../../assets/configuracion.png";
 import notificacionIcon from "../../assets/notificacion.png";
+import contrasteIcon from "../../assets/contraste.png";
 
 const ROLE_LABELS = {
   ADMIN: "Administrador",
@@ -32,8 +34,15 @@ const Header = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [theme, setThemeState] = useState(getTheme);
   const profileRef = useRef(null);
   const notifRef = useRef(null);
+
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    setThemeState(next);
+  };
 
   const roleLabel = user?.role
     ? ROLE_LABELS[user.role] ?? user.role
@@ -214,6 +223,15 @@ const Header = () => {
               >
                 <img className="menu-icon-img" src={configuracionIcon} alt="" aria-hidden="true" />
                 <span>Configuración</span>
+              </button>
+              <button
+                type="button"
+                className="admin-profile-menu-item"
+                role="menuitem"
+                onClick={toggleTheme}
+              >
+                <img className="menu-icon-img" src={contrasteIcon} alt="" aria-hidden="true" />
+                <span>{theme === "dark" ? "Modo claro" : "Modo oscuro"}</span>
               </button>
             </div>
           )}

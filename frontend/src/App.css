@@ -46,6 +46,7 @@
   --btn-muted-hover: #FDBC02;
   --input-border: #d9dfe8;
   --input-focus: #3b82f6;
+  --chart-grid: #d9dfe8;
   --detail-border: #c9d2df;
   --detail-label: #55657a;
   --detail-value: #1f2d3f;
@@ -678,6 +679,9 @@ h3 { font-size: var(--fs-h3); font-weight: 700; }
   justify-content: flex-end;
   gap: 23px;
   padding: 0 31px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .mobile-menu {
@@ -1644,8 +1648,9 @@ footer {
   gap: 23px;
   padding: 0 31px;
 
-  position: relative;
-  z-index: 5;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .content {
@@ -1702,4 +1707,171 @@ footer {
   .volume-summary div:nth-child(2) {
     border-right: 0;
   }
+}
+
+/* ===================================================================
+   MODO OSCURO
+   Se activa con body[data-theme="dark"] (ver src/utils/theme.js y el
+   botón del Header). Repinta solo `.main`: sidebar y topbar son
+   siempre oscuros y no cambian con el toggle. Reutiliza las variables
+   de diseño que ya usan la mayoría de los componentes (--text,
+   --muted, --detail-label/value/border, --input-border/focus) para que
+   el cambio se propague solo; el resto de reglas de acá son para los
+   colores que están escritos fijos en vez de con variable.
+   =================================================================== */
+
+body[data-theme="dark"] .main {
+  background: #000623;
+  color: #ffffff;
+
+  --text: #ffffff;
+  --muted: #a9b8cf;
+  --detail-label: #a9b8cf;
+  --detail-value: #ffffff;
+  --detail-border: rgba(255, 255, 255, 0.16);
+  --input-border: #3b82f6;
+  --input-focus: #5b9dff;
+  --chart-grid: rgba(255, 255, 255, 0.14);
+  --white: #0b1330;
+}
+
+body[data-theme="dark"] .main .page-heading p,
+body[data-theme="dark"] .main .cfg-subtitle,
+body[data-theme="dark"] .main .cfg-since,
+body[data-theme="dark"] .main .cfg {
+  color: #a9b8cf;
+}
+
+body[data-theme="dark"] .main .dashboard-error,
+body[data-theme="dark"] .main .page-alert {
+  background: rgba(223, 102, 102, 0.14);
+  color: #ff8f8f;
+  border-color: rgba(223, 102, 102, 0.35);
+}
+
+body[data-theme="dark"] .main .cfg-error,
+body[data-theme="dark"] .main .config-modal__error {
+  color: #ff8f8f;
+}
+
+body[data-theme="dark"] .main .config-modal__success {
+  color: #4ade80;
+}
+
+body[data-theme="dark"] .main .config-modal__warning {
+  color: #fbbf24;
+}
+
+/* Modal compartido (editar perfil, cambiar contraseña, eliminar
+   cuenta, gestionar solicitud...): la cabecera amarilla se deja igual
+   a propósito, solo cambia el cuerpo. */
+body[data-theme="dark"] .main .config-modal {
+  background: #0b1330;
+}
+
+/* Inputs cuyo borde ya viene de var(--input-border) (redefinida arriba
+   en azul): solo faltan el fondo -- igual al fondo general, no un
+   "panel" más claro -- y un borde un poco más grueso para que se note. */
+body[data-theme="dark"] .main .field input,
+body[data-theme="dark"] .main .field select,
+body[data-theme="dark"] .main .cfg-wallet-input input,
+body[data-theme="dark"] .main .config-modal__field input,
+body[data-theme="dark"] .main .data-filtro select,
+body[data-theme="dark"] .main .referral-card-link {
+  background: #000623;
+  border-width: 1.5px;
+}
+
+/* Igual que arriba, pero estos dos traen el color de borde fijo (no
+   por variable), así que hay que pisarlo también. */
+body[data-theme="dark"] .main .search,
+body[data-theme="dark"] .main .cfg-filepicker {
+  background: #000623;
+  border-width: 1.5px;
+  border-color: #3b82f6;
+}
+
+body[data-theme="dark"] .main .search input::placeholder {
+  color: #6f83a3;
+}
+
+body[data-theme="dark"] .main .search-icon,
+body[data-theme="dark"] .main .search-icon::after {
+  border-color: #a9b8cf;
+}
+
+body[data-theme="dark"] .main .cfg-filepicker__divider {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Ícono de "mostrar/ocultar billetera" (PNG de trazo oscuro): mismo
+   trato que la campana del Header, invertido a blanco. */
+body[data-theme="dark"] .main .cfg-eye img {
+  filter: brightness(0) invert(1);
+}
+
+/* Menús desplegables del Header (perfil / notificaciones): flotan
+   sobre el contenido y viven dentro de `.main`, así que siguen el
+   tema igual que el resto de la pantalla. */
+body[data-theme="dark"] .main .admin-profile-menu,
+body[data-theme="dark"] .main .notification-menu {
+  background: #0b1330;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.55);
+}
+
+body[data-theme="dark"] .main .admin-profile-menu-item,
+body[data-theme="dark"] .main .notification-menu-item-title {
+  color: #ffffff;
+}
+
+/* Íconos del menú de perfil (engranaje de Configuración, interruptor de
+   tema): de trazo oscuro, invertidos a blanco igual que el resto de
+   íconos del Header en modo oscuro. */
+body[data-theme="dark"] .main .menu-icon-img {
+  filter: brightness(0) invert(1);
+}
+
+body[data-theme="dark"] .main .admin-profile-menu-item:hover,
+body[data-theme="dark"] .main .notification-menu-item:hover,
+body[data-theme="dark"] .main .notification-menu-viewall:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Tabla compartida de listados (clientes, inversiones, auditorías...). */
+body[data-theme="dark"] .main .data-table-wrap {
+  background: #0b1330;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+body[data-theme="dark"] .main .data-table thead {
+  background: #141b3f;
+}
+
+body[data-theme="dark"] .main .data-table td {
+  color: #ffffff;
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="dark"] .main .data-table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.045);
+}
+
+/* Paginador. */
+body[data-theme="dark"] .main .pagination__box {
+  background: #0b1330;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+body[data-theme="dark"] .main .pagination__item {
+  color: #a9b8cf;
+  border-left-color: rgba(255, 255, 255, 0.14);
+}
+
+body[data-theme="dark"] .main .pagination__item:hover:not(:disabled):not(.pagination__item--active) {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+body[data-theme="dark"] .main .pagination__ellipsis {
+  color: #7c8ba3;
 }
