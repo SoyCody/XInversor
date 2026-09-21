@@ -17,7 +17,7 @@ import ConfirmActionModal from "../../Config/ConfirmActionModal.jsx";
 import GestionarSolicitudModal from "./GestionarSolicitudModal.jsx";
 import InvestmentStatusProgress from "../../Client/ClientInversiones/InvestmentStatusProgress.jsx";
 import InvestmentRetirosCharts from "../../Client/ClientInversiones/InvestmentRetirosCharts.jsx";
-import WalletDisplay from "../../Config/WalletDisplay.jsx";
+import CopyableField from "../../Config/CopyableField.jsx";
 import "../../../App.css";
 import "../../DataTable/DataTable.css";
 import "../../Client/ClientInversiones/VerInversion.css";
@@ -312,11 +312,19 @@ const VerInversionAdmin = () => {
                       <>
                         <div className="page-heading">
                           <div>
-                            <h1>Billetera del cliente</h1>
+                            <h1>Detalles del cliente</h1>
                             <p>Identificador de la billetera de bitcoins</p>
                           </div>
                         </div>
-                        <WalletDisplay wallet={inversion.walletCliente} />
+                        <CopyableField
+                          value={inversion.walletCliente}
+                          maskable
+                          placeholder="Sin billetera registrada"
+                        />
+                        <CopyableField
+                          value={inversion.emailCliente}
+                          placeholder="Sin correo registrado"
+                        />
                       </>
                     ) : null
                   }

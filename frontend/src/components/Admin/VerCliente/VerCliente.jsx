@@ -8,7 +8,7 @@ import AdminSideBar from "../../SideBar/AdminSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import Pagination from "../../Pagination/Pagination.jsx";
 import ConfirmActionModal from "../../Config/ConfirmActionModal.jsx";
-import WalletDisplay from "../../Config/WalletDisplay.jsx";
+import CopyableField from "../../Config/CopyableField.jsx";
 import "../../../App.css";
 import "../../DataTable/DataTable.css";
 import "../../Config/config.css";
@@ -172,7 +172,7 @@ const VerCliente = () => {
                       <p>Identificador de la billetera de bitcoins</p>
                     </div>
                   </div>
-                  <WalletDisplay wallet={cliente.wallet} />
+                  <CopyableField value={cliente.wallet} maskable placeholder="Sin billetera registrada" />
                 </div>
               )}
 

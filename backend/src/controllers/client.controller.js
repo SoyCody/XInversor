@@ -34,8 +34,19 @@ const updateWallet = async (req, res) => {
   }
 };
 
+const highestInvestment = async (req, res) => {
+  try {
+    const investment = await clientService.highestInvestment(req.user.id);
+    return res.status(200).json(investment);
+  } catch ( error ) {
+    console.error('Error al retornar inversion: ', error);
+    return res.status(500).json({ error: 'Error al obtener inversiones.'})
+  };
+};
+
 export default {
   dashboard,
   me,
-  updateWallet
+  updateWallet,
+  highestInvestment
 };

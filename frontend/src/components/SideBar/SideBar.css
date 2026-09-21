@@ -17,6 +17,27 @@
   text-overflow: ellipsis;
 }
 
+/* Acceso directo a la inversión con mayor monto: mismo ícono redondo que
+   la grilla de paquetes (NuevoPaqueteModal), en miniatura, justo debajo
+   de la marca. */
+.sidebar-highest-investment {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0 0;
+}
+
+.sidebar-highest-investment img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.15s ease;
+}
+
+.sidebar-highest-investment:hover img {
+  transform: scale(1.05);
+}
+
 /* Iconos de navegación: PNG de línea negra -> se invierten a blanco
    para que contrasten sobre el fondo oscuro del sidebar. */
 .nav-icon-img {

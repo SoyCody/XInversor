@@ -47,6 +47,15 @@
   text-align: right;
 }
 
+/* Cuando una fila tiene más de un botón de acción (p. ej. "Detalles" +
+   "Ver auditoría" en Notificaciones del admin): los agrupa en línea sin
+   que se pisen ni se vayan cada uno a un extremo de la celda. */
+.data-table-actions-group {
+  display: inline-flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 /* ===== Cabecera de listado: resumen + controles (filtro / búsqueda) =====
    Compartido por todos los listados; antes estaba duplicado en
    ObtenerClientes.css, Auditorias.css y MakeAdmin.css. */

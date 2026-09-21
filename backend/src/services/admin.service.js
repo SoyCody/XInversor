@@ -132,32 +132,6 @@ const verCliente = async (id) => {
   return { cliente: { ...rest, blocked: client?.blocked ?? false, wallet: client?.wallet ?? null } };
 };
 
-const promoteToAdmin = async (id, actingAdminUserId) => {
-  const user = await userRepository.findActiveById(id);
-  if (!user) {
-    throw new UserNotFoundError();
-  }
-
-  if (user.role === 'ADMIN') {
-    throw new AlreadyAdminError();
-  }
-
-  // TOCTOU menor: si el usuario se borra entre este check y el update,
-  // adminRepository.promoteToAdmin lanza P2025 y el controller responde
-  // 500. La verificación de existencia/rol podría moverse dentro de la
-  // transacción del repo.
-  const updatedUser = await adminRepository.promoteToAdmin(id);
-
-  await registrarAuditoria({
-    userId: actingAdminUserId,
-    action: AUDIT_ACTIONS.ROLE_CHANGE,
-    tableName: AUDIT_TABLES.USER,
-    targetId: id
-  });
-
-  const { passwordHash, ...userWithoutPassword } = updatedUser;
-  return userWithoutPassword;
-};
 
 const blockClient = async (id, actingAdminUserId) => {
   // 3 lecturas para un toggle: findActiveById aquí + findUnique(client) y
@@ -191,7 +165,6 @@ export {
   readDashboard,
   obtenerPersonas,
   verCliente,
-  promoteToAdmin,
   UserNotFoundError,
   AlreadyAdminError,
   blockClient

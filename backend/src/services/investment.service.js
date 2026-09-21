@@ -354,10 +354,10 @@ const getInvestment = async (userId, inversionId) => {
 
 // Detalle de cualquier inversión para el panel de administración: a
 // diferencia de getInvestment, no exige ser el dueño (el acceso ya lo
-// resuelve la ruta con isAdmin) y además expone la wallet del cliente
-// dueño (el admin la necesita para verificar/enviar pagos) y su userId
-// (para el botón "Ver cliente", que enlaza a /admin/clientes/:id -- esa
-// ruta toma el id de User, no el de Client).
+// resuelve la ruta con isAdmin) y además expone la wallet y el correo del
+// cliente dueño (el admin los necesita para verificar/contactar/enviar
+// pagos) y su userId (para el botón "Ver cliente", que enlaza a
+// /admin/clientes/:id -- esa ruta toma el id de User, no el de Client).
 const getInvestmentAdmin = async (inversionId) => {
   if (!Number.isInteger(inversionId) || inversionId <= 0) {
     throw fail(400, 'Inversión inválida');
@@ -370,6 +370,7 @@ const getInvestmentAdmin = async (inversionId) => {
 
   const detalle = buildInvestmentDetail(inversion);
   detalle.inversion.walletCliente = inversion.client?.wallet ?? null;
+  detalle.inversion.emailCliente = inversion.client?.user?.email ?? null;
   detalle.inversion.clienteUserId = inversion.client?.userId ?? null;
   return detalle;
 };

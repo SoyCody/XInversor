@@ -1,6 +1,16 @@
+import iconosCompleto from "../../assets/iconosCompleto.png";
+
 const PlatformSection = () => {
   return (
     <section className="platform-section" id="plataforma">
+      <div className="platform-icons">
+        <img
+          className="platform-icons-img"
+          src={iconosCompleto}
+          alt="Bitcoin, Ethereum, Tether, USD, Binance Coin"
+        />
+      </div>
+
       <div className="section-heading">
         <span>LA PLATAFORMA</span>
         <h2>Pensada para ser simple desde el primer día</h2>
@@ -9,22 +19,16 @@ const PlatformSection = () => {
 
       <div className="feature-grid">
         <article>
-          <div className="feature-icon">01</div>
-          <h3>Compra y venta</h3>
-          <p>
-            Gestiona tus operaciones de activos digitales desde una interfaz
-            clara.
-          </p>
+          <h3>Sistema de paquetes</h3>
+          <p>Cada paquete representa un monto inicial.</p>
         </article>
 
         <article>
-          <div className="feature-icon">02</div>
           <h3>Seguimiento</h3>
-          <p>Consulta el estado de tus operaciones en un solo lugar.</p>
+          <p>Consulta el estado de tus inversiones en un solo lugar.</p>
         </article>
 
         <article>
-          <div className="feature-icon">03</div>
           <h3>Cuenta verificada</h3>
           <p>
             Registro y verificación orientados a mantener cuentas confiables.

@@ -121,27 +121,6 @@ const verCliente = (id) => {
   });
 };
 
-const promoteToAdmin = (id) => {
-  return prisma.$transaction(async (tx) => {
-    const user = await tx.user.update({
-      where: { id },
-      data: { role: 'ADMIN' }
-    });
-
-    // El Client del usuario NO se toca aquí: así conserva su wallet
-    // e historial aunque ahora también sea admin.
-    // upsert por si el usuario ya tuvo un perfil Admin antes
-    // (por ejemplo, fue degradado y vuelve a ascender).
-    await tx.admin.upsert({
-      where: { userId: id },
-      update: {},
-      create: { userId: id }
-    });
-
-    return user;
-  });
-};
-
 const block = (id) => {
   return prisma.$transaction(async (tx) => {
     const client = await tx.client.findUnique({ where: { userId: id } });
@@ -166,6 +145,5 @@ export default {
   clientesBorradosDesde,
   obtenerPersona,
   verCliente,
-  promoteToAdmin,
   block
 };

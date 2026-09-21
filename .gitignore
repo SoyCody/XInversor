@@ -174,10 +174,27 @@ sketch
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/node,visualstudiocode,react
-/generated/prisma
+
+# Cliente de Prisma generado (backend/generated/prisma, ver
+# backend/prisma/schema.prisma#output): se regenera con `prisma generate`,
+# no hace falta versionarlo. Sin barra inicial a propósito, para que
+# matchee en cualquier subcarpeta (hoy solo backend/), no solo en la raíz.
+generated/
 
 .agents
 .claude
 .windsurf
 .vscode
 .continue
+
+# Basura de Windows (el equipo de desarrollo es Windows)
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Archivos temporales de swap de editores (vim, etc.) que no cubre ya
+# la sección de VisualStudioCode de arriba.
+*.swp
+*.swo
+*~

@@ -54,27 +54,6 @@ const verCliente = async (req, res) => {
   };
 };
 
-const promoteToAdmin = async (req, res) => {
-  try {
-    const id = Number(req.params.id);
-    if (!Number.isInteger(id) || id <= 0) {
-      return res.status(400).json({ message: 'Id inválido' });
-    }
-    const user = await adminService.promoteToAdmin(id, req.user.id);
-    return res.status(200).json(user);
-  } catch (error) {
-    if (error instanceof adminService.UserNotFoundError ||
-        error instanceof adminService.AlreadyAdminError) {
-      return res.status(error.statusCode).json({ message: error.message });
-    }
-
-    console.error(error);
-    return res.status(500).json({
-      message: "Error al ascender al usuario"
-    });
-  }
-};
-
 const blockClient = async (req, res) => {
   try{
     const id = Number(req.params.id);
@@ -99,6 +78,5 @@ export default {
   adminPanel,
   obtenerPersonas,
   verCliente,
-  promoteToAdmin,
   blockClient
 };

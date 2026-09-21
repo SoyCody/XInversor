@@ -76,10 +76,10 @@ const myList = async (clientId) => {
 };
 
 // Detalle completo de una inversión: montos, contador de días, historial
-// de estados (más reciente primero), datos del cliente dueño (wallet y
-// userId -- ambos solo los usa getInvestmentAdmin, para mostrar la wallet
-// y enlazar a "Ver cliente" desde el panel de administración) y todas sus
-// solicitudes de retiro.
+// de estados (más reciente primero), datos del cliente dueño (wallet,
+// email y userId -- los tres solo los usa getInvestmentAdmin, para
+// mostrar "Detalles del cliente" y enlazar a "Ver cliente" desde el panel
+// de administración) y todas sus solicitudes de retiro.
 const getInvestment = async (inversionId) => {
   return prisma.inversion.findUnique({
     where: { id: inversionId },
@@ -91,7 +91,13 @@ const getInvestment = async (inversionId) => {
       total: true,
       dias: true,
       createdAt: true,
-      client: { select: { wallet: true, userId: true } },
+      client: {
+        select: {
+          wallet: true,
+          userId: true,
+          user: { select: { email: true } }
+        }
+      },
       estados: {
         orderBy: { createdAt: 'desc' },
         select: { estado: true, createdAt: true }
@@ -148,7 +154,9 @@ const countSolicitudesPendientes = () => {
 
 // Detalle de cada solicitud sin resolver, para la sección "Retiros
 // pendientes" del listado de Inversiones del panel de administración
-// (misma forma que investmentRepository.list(), pero por solicitud).
+// (misma forma que investmentRepository.list(), pero por solicitud) y
+// para las notificaciones del admin ("retiros por revisar" -- de ahí
+// `createdAt`, que ese listado no necesitaba).
 const getSolicitudesPendientes = async () => {
   return prisma.solicitud.findMany({
     where: { estado: 'PENDIENTE' },
@@ -157,6 +165,7 @@ const getSolicitudesPendientes = async () => {
       id: true,
       montoRetiro: true,
       inversionId: true,
+      createdAt: true,
       inversion: {
         select: {
           intereses: true,
@@ -167,6 +176,49 @@ const getSolicitudesPendientes = async () => {
           }
         }
       }
+    }
+  });
+};
+
+// Historial de aprobaciones/rechazos de PAQUETES de un cliente (Estado,
+// no el estado actual de la inversión): un paquete aprobado sigue
+// "habiendo sido aprobado" aunque después pase a EN_PROGRESO o incluso
+// RETIRADO, así que no alcanza con mirar el estado actual -- hay que
+// recorrer el historial completo. Alimenta las notificaciones del cliente
+// (ver notification.service.js).
+const getPaquetesResueltos = (clientId) => {
+  return prisma.estado.findMany({
+    where: {
+      estado: { in: ['EN_ESPERA', 'RECHAZADO'] },
+      inversion: { clientId }
+    },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      estado: true,
+      createdAt: true,
+      inversion: { select: { id: true, monto: true } }
+    }
+  });
+};
+
+// Retiros ya resueltos (aceptados o rechazados) de un cliente: mismo
+// razonamiento que arriba, pero sobre Solicitud, que sí guarda el estado
+// final directo en la fila (no hace falta un historial aparte). Alimenta
+// las notificaciones del cliente.
+const getRetirosResueltos = (clientId) => {
+  return prisma.solicitud.findMany({
+    where: {
+      estado: { in: ['ACEPTADA', 'RECHAZADA'] },
+      inversion: { clientId }
+    },
+    orderBy: { resueltaEn: 'desc' },
+    select: {
+      id: true,
+      estado: true,
+      resueltaEn: true,
+      montoRetiro: true,
+      inversionId: true
     }
   });
 };
@@ -350,6 +402,8 @@ export default {
   crearSolicitud,
   countSolicitudesPendientes,
   getSolicitudesPendientes,
+  getPaquetesResueltos,
+  getRetirosResueltos,
   ultimosRetirosAprobados,
   getInversionesActivas,
   actualizarInversion,

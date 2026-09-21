@@ -44,4 +44,18 @@ const findById = (id) => {
   });
 };
 
-export default { createAudit, all, findById };
+// Busca en bloque las auditorías CREATE de un conjunto de paquetes o
+// solicitudes nuevas, para que las notificaciones del admin puedan
+// enlazar a "Ver auditoría" sin pedirla una por una (ver
+// notification.service.js). `tableName` + `action` + `targetId` ubica una
+// fila única porque cada paquete o solicitud solo se crea una vez.
+const findByTargets = (tableName, action, targetIds) => {
+  if (targetIds.length === 0) return Promise.resolve([]);
+
+  return prisma.audit.findMany({
+    where: { tableName, action, targetId: { in: targetIds } },
+    select: { id: true, targetId: true }
+  });
+};
+
+export default { createAudit, all, findById, findByTargets };

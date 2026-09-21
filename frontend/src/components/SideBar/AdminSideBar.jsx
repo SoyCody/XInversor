@@ -54,10 +54,10 @@ const AdminSideBar = () => {
           <span>Auditorías</span>
         </Link>
         
-        <a href="#" className="nav-link">
+        <Link to="/admin/notificaciones" className={`nav-link ${isActive("/admin/notificaciones") ? "active" : ""}`}>
           <img className="nav-icon-img" src={notificacionIcon} alt="" aria-hidden="true" />
           <span>Notificaciones</span>
-        </a>
+        </Link>
       </nav>
 
       <button

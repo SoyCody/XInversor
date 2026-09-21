@@ -41,10 +41,15 @@ const updateWallet = async (userId, wallet) => {
   return { wallet: updated.wallet };
 };
 
-
+const highestInvestment = async (userId) => {
+  const investment = await clientRepository.highest(userId);
+  if (!investment) return null;
+  return investment;
+};
 
 export {
   readDashboard,
   getMe,
-  updateWallet
+  updateWallet,
+  highestInvestment
 };

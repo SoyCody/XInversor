@@ -12,3 +12,10 @@ export function getMeClient() {
 export function updateWallet(wallet) {
   return apiFetch("/client/wallet", { method: "PUT", body: { wallet } });
 };
+
+// Inversión con el mayor monto del cliente autenticado (o null si todavía
+// no tiene ninguna): alimenta el acceso directo del sidebar a "Detalles
+// de la inversión".
+export function getHighestInvestment() {
+  return apiFetch("/client/highest/investment");
+};
