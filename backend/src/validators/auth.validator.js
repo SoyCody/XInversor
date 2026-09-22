@@ -62,6 +62,10 @@ const updateSchema= Joi.object({
 });
 
 const passwordSchema = Joi.object({
+  currentPassword: Joi.string().required().messages({
+    'string.empty': 'La contraseña actual es obligatoria',
+    'any.required': 'La contraseña actual es obligatoria'
+  }),
   password: Joi.string().required().min(8).messages({
     'string.min': 'La contraseña debe tener minimo 8 caracteres',
     'string.empty': 'La contraseña es obligatoria',

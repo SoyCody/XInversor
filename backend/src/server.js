@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import helmet from 'helmet';
 import cors from 'cors';
 import usersRoutes from './routes/auth.routes.js';
 import adminRoutes from './routes/admin.routes.js';
@@ -11,6 +12,21 @@ import { iniciarTareasProgramadas } from './jobs/scheduler.js';
 import prisma from './db.js';
 
 const app = express();
+// Cabeceras de seguridad estándar (X-Content-Type-Options, X-Frame-Options,
+// Strict-Transport-Security, Referrer-Policy...) y desactiva X-Powered-By,
+// que hasta ahora delataba el stack (Express) en cada respuesta. Va antes
+// de todo lo demás para que aplique a cualquier respuesta, incluidas las
+// de error.
+//
+// crossOriginResourcePolicy se afloja a "cross-origin": el default
+// "same-origin" de helmet bloqueaba que el frontend (otro puerto/origen,
+// ver CORS más abajo) cargara el avatar (<img src="http://.../avatar">) --
+// el navegador lo descartaba en silencio, sin llegar siquiera a disparar
+// onError. Esta API es cross-origin a propósito (SPA en un origen, API en
+// otro), así que las respuestas necesitan poder consumirse desde ahí.
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' }
+}));
 app.use(cookieParser());
 const PORT = process.env.PORT || 3001;
 

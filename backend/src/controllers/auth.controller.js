@@ -33,10 +33,7 @@ const login = async (req, res) => {
 
     res.status(200).json(user);
   } catch (error) {
-    if (error instanceof authService.EmailDoesntExistError) {
-      return res.status(error.statusCode).json({ error: error.message });
-    }
-    if (error instanceof authService.InvalidPasswordError) {
+    if (error instanceof authService.InvalidCredentialsError) {
       return res.status(error.statusCode).json({ error: error.message });
     }
 
@@ -86,11 +83,23 @@ const update = async (req, res) => {
 const changePassword = async (req, res) => {
   try{
     const id = req.user?.id;
-    await authService.changePassword(id, req.body);
+    const updatedUser = await authService.changePassword(id, req.body);
+
+    // Reemitir la cookie con la tokenVersion nueva: sin esto, el propio
+    // request que acaba de cambiar la contraseña quedaría deslogueado
+    // también (verifyToken rechazaría su token viejo en el próximo
+    // request, igual que el de cualquier otra sesión).
+    setAuthCookie(res, updatedUser);
+
     return res.status(200).json({
       message: "La contraseña se ha cambiado correctamente"
     });
   }catch(error){
+    if (error instanceof authService.InvalidPasswordError ||
+        error instanceof authService.UserNotFoundError) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+
     // No se devuelve error.message al cliente: puede traer detalle interno.
     console.error('Error al cambiar la contraseña:', error);
     return res.status(500).json({

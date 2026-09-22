@@ -492,9 +492,12 @@ footer strong {
   width: min(400px, 100%);
   position: relative;
   padding: 28px;
-  background: #0b0d10;
+  /* Mismo fondo oscuro que .config-modal en modo oscuro (el resto de
+     modales de la app): esta página no tiene el toggle claro/oscuro, así
+     que va fijo. */
+  background: #0B0D10;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
 }
 .close-auth {
@@ -520,6 +523,9 @@ footer strong {
   font-size: 10px;
   font-weight: 600;
 }
+/* Mismo tratamiento que los inputs oscuros del resto de la app (ver
+   App.css, bloque de modo oscuro): borde azul de --input-focus, un poco
+   más grueso para que se note, fondo igual al del panel. */
 .auth-panel input[type="text"],
 .auth-panel input[type="email"],
 .auth-panel input[type="password"] {
@@ -527,19 +533,22 @@ footer strong {
   height: 40px;
   margin-top: 6px;
   padding: 0 11px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1.5px solid var(--input-focus, #3b82f6);
   border-radius: 6px;
   outline: 0;
-  background: #0f1216;
+  background: #0B0D10;
   color: #e8ecf2;
   font-size: 11px;
+}
+/* Espacio para el botón de mostrar/ocultar (ver .auth-eye). */
+.auth-panel input[type="password"] {
+  padding-right: 38px;
 }
 .auth-panel input::placeholder {
   color: #4c5768;
 }
 .auth-panel input:focus {
-  border-color: #102e50;
-  box-shadow: 0 0 0 3px rgba(77, 127, 224, 0.15);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
 }
 .form-options {
   margin-top: 12px;
@@ -553,10 +562,13 @@ footer strong {
   color: #4a8bc2;
   text-decoration: none;
 }
+/* Ya no la usan los formularios de este modal (login/registro pasaron a
+   los botones compartidos .btn/.btn--primary de App.css), pero sigue en
+   pie porque AdminSideBar/ClientSideBar la combinan con .logout para el
+   botón "Cerrar sesión" -- borrarla rompería esa pantalla. */
 .auth-submit {
   width: 100%;
   height: 41px;
-  margin-top: 18px;
   border: 0;
   border-radius: 6px;
   background: linear-gradient(180deg, #153b63 0%, #102e50 100%);
@@ -565,7 +577,52 @@ footer strong {
   font-weight: 650;
   cursor: pointer;
 }
+.auth-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+/* Separa el CTA principal (.btn--block) del campo/mensaje de arriba --
+   .btn de App.css no trae margen propio. Dentro de .register-navigation
+   ya hay separación por el margin-top de ese contenedor, así que no
+   hace falta acá (ver la regla de más abajo). */
+.auth-panel form > .btn--block {
+  margin-top: 18px;
+}
+
+/* Campo de contraseña con el ícono de mostrar/ocultar (eye.png /
+   closedEye.png), mismo patrón que .cfg-wallet-input/.cfg-eye en
+   Configuración. */
+.auth-password-field {
+  position: relative;
+}
+.auth-eye {
+  position: absolute;
+  right: 4px;
+  top: calc(50% + 3px);
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.auth-eye img {
+  width: 16px;
+  height: 16px;
+  /* eye.png/closedEye.png son de trazo oscuro; este panel siempre es
+     oscuro (no tiene el toggle claro/oscuro del resto de la app), así
+     que se invierten a blanco fijo en vez de depender del tema. */
+  filter: brightness(0) invert(1);
+  opacity: 0.6;
+}
+.auth-eye:hover img {
+  opacity: 0.9;
+}
 .switch-auth {
+  margin-top: 16px;
   text-align: center;
   color: #6d7a8c;
   font-size: 10px;
@@ -641,33 +698,14 @@ footer strong {
   font-size: 9px;
   line-height: 1.6;
 }
+/* "Atrás" + "Continuar"/"Crear mi cuenta": mismas primitivas .btn de
+   App.css que el resto de la app (antes .auth-secondary/.auth-submit,
+   con su propio color y su propio :disabled duplicando lo que .btn ya
+   resuelve). */
 .register-navigation {
   display: flex;
   gap: 9px;
   margin-top: 18px;
-}
-.register-navigation .auth-submit {
-  margin-top: 0;
-}
-.auth-secondary {
-  flex: 0 0 auto;
-  height: 41px;
-  padding: 0 16px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 6px;
-  background: transparent;
-  color: #dbe1ea;
-  font-size: 10px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.auth-secondary:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-}
-.auth-secondary:disabled,
-.auth-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .confirm-summary {

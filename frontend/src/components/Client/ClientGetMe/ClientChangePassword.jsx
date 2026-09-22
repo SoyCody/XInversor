@@ -9,6 +9,7 @@ const ClientChangePassword = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
+    currentPassword: "",
     password: "",
     confirmPassword: "",
   });
@@ -23,6 +24,11 @@ const ClientChangePassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    if (!formData.currentPassword) {
+      setError("La contraseña actual es obligatoria");
+      return;
+    }
 
     if (!formData.password) {
       setError("La contraseña es obligatoria");
@@ -41,7 +47,10 @@ const ClientChangePassword = () => {
 
     setIsSubmitting(true);
     try {
-      await changePassword({ password: formData.password });
+      await changePassword({
+        currentPassword: formData.currentPassword,
+        password: formData.password,
+      });
       navigate("/client/me");
     } catch (err) {
       setError(err.message);
@@ -67,6 +76,19 @@ const ClientChangePassword = () => {
 
           <form className="section-form" onSubmit={handleSubmit}>
             {error && <p className="form-error">{error}</p>}
+
+            <div className="field">
+              <label htmlFor="client-pwd-current">Contraseña actual</label>
+              <input
+                id="client-pwd-current"
+                type="password"
+                name="currentPassword"
+                value={formData.currentPassword}
+                onChange={handleChange}
+                placeholder="Tu contraseña actual"
+                autoComplete="current-password"
+              />
+            </div>
 
             <div className="field">
               <label htmlFor="client-pwd-new">Nueva contraseña</label>

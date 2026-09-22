@@ -37,6 +37,7 @@ const findAuthContextById = (id, state = ACTIVE_STATE) => {
       email: true,
       role: true,
       state: true,
+      tokenVersion: true,
       client: { select: { blocked: true } }
     }
   });
@@ -67,11 +68,16 @@ const getAvatar = (id, state = ACTIVE_STATE) => {
   });
 };
 
-const changePassword = (userData, state = ACTIVE_STATE) => {
-  const { id, passwordHash } = userData;
-  return prisma.user.updateMany({
-    where: { id, state },
-    data: { passwordHash }
+// Incrementa tokenVersion en la misma escritura: es lo que hace que
+// cambiar la contraseña invalide cualquier otro token ya emitido (ver
+// verifyToken en auth.middleware.js). Se devuelven los campos que
+// generateToken necesita para reemitir la cookie de la sesión actual
+// (el controller la vuelve a setear con la versión nueva).
+const changePassword = ({ id, passwordHash }) => {
+  return prisma.user.update({
+    where: { id },
+    data: { passwordHash, tokenVersion: { increment: 1 } },
+    select: { id: true, email: true, role: true, state: true, tokenVersion: true }
   });
 };
 

@@ -21,10 +21,14 @@ export const COOKIE_OPTIONS = {
 
 const generateToken = (user) => {
   return jwt.sign(
-    { id: user.id, 
-      email: user.email, 
-      role: user.role, 
-      state: user.state 
+    { id: user.id,
+      email: user.email,
+      role: user.role,
+      state: user.state,
+      // Ver verifyToken: un cambio de contraseña incrementa esto en la
+      // BD, lo que invalida al instante cualquier token firmado con una
+      // versión anterior, sin esperar a que expire.
+      tokenVersion: user.tokenVersion ?? 0
     },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRES_IN }
@@ -69,6 +73,18 @@ const verifyToken = async (req, res, next) => {
       res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
       return res.status(401).json({
         error: 'La sesión ya no está activa'
+      });
+    }
+
+    // Un cambio de contraseña incrementa tokenVersion en la BD (ver
+    // auth.service.js#changePassword): cualquier token firmado con una
+    // versión anterior a la actual queda invalidado al instante, sin
+    // esperar a que expire. Así, cambiar la contraseña cierra todas las
+    // demás sesiones automáticamente.
+    if ((decoded.tokenVersion ?? 0) !== user.tokenVersion) {
+      res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
+      return res.status(401).json({
+        error: 'La sesión expiró, inicia sesión de nuevo'
       });
     }
 

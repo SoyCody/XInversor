@@ -12,14 +12,6 @@ class EmailAlreadyExistsError extends Error {
   }
 }
 
-class EmailDoesntExistError extends Error {
-  constructor() {
-    super('Credenciales inválidas');
-    this.name = 'EmailDoesntExistError';
-    this.statusCode = 404;
-  }
-}
-
 class UserNotFoundError extends Error {
   constructor() {
     super('Usuario no encontrado');
@@ -34,6 +26,20 @@ class InvalidPasswordError extends Error {
   constructor() {
     super('Contraseña incorrecta');
     this.name = 'InvalidPasswordError';
+    this.statusCode = 401;
+  }
+}
+
+// Login: mismo status/mensaje tanto si el correo no existe como si la
+// contraseña no coincide, para no filtrar cuál de las dos cosas pasó
+// (ver logClient). Antes esto se resolvía con dos errores separados
+// (EmailDoesntExistError 404 / InvalidPasswordError 401 -- reutilizada
+// arriba para el chequeo de "contraseña actual" al cambiar de
+// contraseña, un contexto donde sí importa distinguir).
+class InvalidCredentialsError extends Error {
+  constructor() {
+    super('Credenciales inválidas');
+    this.name = 'InvalidCredentialsError';
     this.statusCode = 401;
   }
 }
@@ -80,21 +86,25 @@ const registerClient = async ({ firstName, lastName, email, password }) => {
   return userWithoutPassword;
 };
 
+// Hash bcrypt de una contraseña que nadie tiene: se compara contra esto
+// cuando el correo no existe, para que ese camino tarde lo mismo que el
+// de "contraseña incorrecta" (que sí corre bcrypt.compare contra un hash
+// real) y un atacante no pueda distinguir "el correo existe" de "no
+// existe" por el tiempo de respuesta.
+const DUMMY_PASSWORD_HASH = bcrypt.hashSync('xinversor-dummy-hash-para-igualar-timing', 12);
+
 const logClient = async ({ email, password }) => {
   const existingUser = await userRepository.findByEmail(email);
-  if (!existingUser) {
-    // User enumeration: este camino lanza 404 y no ejecuta bcrypt.compare,
-    // mientras que "password incorrecta" lanza 401 y sí lo ejecuta. Un
-    // atacante distingue "email existe" de "no existe" por el status y por
-    // el tiempo de respuesta. Endurecimiento: mismo status (401) y mismo
-    // mensaje en ambos casos, y correr un bcrypt.compare contra un hash
-    // dummy cuando el email no existe para igualar la latencia.
-    throw new EmailDoesntExistError();
-  }
 
-  const isPasswordValid = await bcrypt.compare(password, existingUser.passwordHash);
-  if (!isPasswordValid) {
-    throw new InvalidPasswordError();
+  // Mismo status/mensaje (InvalidCredentialsError, 401) y mismo costo de
+  // bcrypt tanto si el correo no existe como si la contraseña no
+  // coincide: antes el correo inexistente cortaba en un 404 sin correr
+  // bcrypt.compare, lo que filtraba qué caso era por status Y por tiempo.
+  const hashToCompare = existingUser?.passwordHash ?? DUMMY_PASSWORD_HASH;
+  const isPasswordValid = await bcrypt.compare(password, hashToCompare);
+
+  if (!existingUser || !isPasswordValid) {
+    throw new InvalidCredentialsError();
   }
 
   const { passwordHash: _passwordHash, ...userWithoutPassword } = existingUser;
@@ -140,22 +150,38 @@ const updateClient = async (id, { firstName, lastName, email }) => {
   return userWithoutPassword;
 };
 
-const changePassword = async (id, { password }) => {
-  // SEGURIDAD: no se pide ni se verifica la contraseña actual. Con una
-  // sesión válida (cookie) cualquiera puede cambiarla. Sumado a que no hay
-  // protección CSRF explícita y sameSite es 'lax', el riesgo sube.
-  // Además no se invalidan las demás sesiones: los JWT ya emitidos siguen
-  // válidos hasta expirar (no hay tokenVersion ni lista de revocación).
-  // Recomendado: exigir `currentPassword`, compararla con bcrypt, y
-  // bumpear un `tokenVersion` en User que verifyToken chequee.
-  const passwordHash = await bcrypt.hash(password, 12);
-  const userData = { id, passwordHash };
+const changePassword = async (id, { currentPassword, password }) => {
+  const user = await userRepository.findById(id);
+  if (!user) {
+    throw new UserNotFoundError();
+  }
 
-  // changePassword usa updateMany -> devuelve { count }. Si count === 0
-  // (usuario inexistente/borrado) no se entera nadie; hoy isActive lo
-  // previene, pero conviene tratar count===0 como 404.
-  const updatePassword = await userRepository.changePassword(userData);
-  return updatePassword;
+  // Exige la contraseña actual antes de aceptar la nueva: una sesión
+  // robada (cookie filtrada, dispositivo desbloqueado) ya no alcanza por
+  // sí sola para tomar la cuenta.
+  const isCurrentValid = await bcrypt.compare(currentPassword, user.passwordHash);
+  if (!isCurrentValid) {
+    throw new InvalidPasswordError();
+  }
+
+  const passwordHash = await bcrypt.hash(password, 12);
+
+  // Incrementa tokenVersion en la misma escritura (ver
+  // user.repository.js#changePassword): cualquier JWT ya emitido con la
+  // versión anterior deja de ser válido al instante (verifyToken lo
+  // rechaza), aunque no haya expirado. El controller reemite la cookie
+  // de ESTA sesión con la versión nueva para no dejar deslogueado a quien
+  // acaba de cambiar su propia contraseña.
+  const updated = await userRepository.changePassword({ id, passwordHash });
+
+  await registrarAuditoria({
+    userId: id,
+    action: AUDIT_ACTIONS.UPDATE,
+    tableName: AUDIT_TABLES.USER,
+    targetId: id
+  });
+
+  return updated;
 };
 
 const updateAvatar = async (id, file) => {
@@ -206,7 +232,7 @@ export {
   updateAvatar,
   getAvatar,
   EmailAlreadyExistsError,
-  EmailDoesntExistError,
+  InvalidCredentialsError,
   InvalidPasswordError,
   UserNotFoundError
 };

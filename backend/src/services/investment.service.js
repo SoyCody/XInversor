@@ -69,31 +69,6 @@ const newInvestment = async (userId, { monto }) => {
     throw fail(400, 'El monto debe ser un número mayor a 0');
   }
 
-  // Un cliente no puede acumular más de MAX_INVERSIONES_ACTIVAS
-  // inversiones activas (PENDIENTE, EN_ESPERA o EN_PROGRESO) al mismo
-  // tiempo.
-  //
-  // Race condition conocida: dos POST /investment/new en paralelo pueden
-  // pasar los dos este chequeo y dejar al cliente con activas+1. Si el
-  // límite tiene que ser estricto, hay que contarlo y crear la inversión
-  // dentro de una misma transacción con SELECT ... FOR UPDATE sobre el
-  // Client, o un índice/constraint que lo garantice.
-  //
-  // Perf: myList trae TODAS las inversiones del cliente para contar. Con
-  // el denormalizado de estado (ver investment.repository.js) esto sería
-  // un simple prisma.inversion.count({ where: { clientId, estadoActual: { in: [...] } } }).
-  const inversiones = await investmentRepository.myList(client.id);
-  const activas = inversiones.filter((inv) =>
-    ESTADOS_ACTIVOS.includes(inv.estados[0]?.estado ?? DEFAULT_ESTADO)
-  ).length;
-
-  if (activas >= MAX_INVERSIONES_ACTIVAS) {
-    throw fail(
-      409,
-      `No puedes tener más de ${MAX_INVERSIONES_ACTIVAS} inversiones activas al mismo tiempo`
-    );
-  }
-
   // El monto es la base sobre la que se generan intereses A TRAVÉS DEL
   // TIEMPO (día hábil a día hábil, ver incrementarDias), no de una sola
   // vez acá: al crearse todavía no generó nada, así que arranca en 0 y
@@ -103,27 +78,47 @@ const newInvestment = async (userId, { monto }) => {
   // reescribe esta.
   const porcentajeInteres = await getPorcentajeInteres();
 
+  // Un cliente no puede acumular más de MAX_INVERSIONES_ACTIVAS
+  // inversiones activas (PENDIENTE, EN_ESPERA o EN_PROGRESO) al mismo
+  // tiempo. Contar y crear pasa dentro de una misma transacción con el
+  // Client bloqueado (ver investmentRepository.crearInversionSiHayCupo):
+  // dos POST /investment/new en paralelo del mismo cliente ya no pueden
+  // pasar los dos el chequeo, la segunda espera a la primera y cuenta de
+  // nuevo con la inversión que esa primera acaba de insertar.
+  //
   // dias arranca en 0: mientras esté PENDIENTE/EN_ESPERA cuenta el
   // período de bloqueo de 15 días; la inversión no tiene fecha de fin
   // fija más allá del vencimiento a los MESES_VIDA_MAXIMA meses (ver
   // incrementarDias).
-  const inversion = await investmentRepository.registerInvestment({
+  const resultado = await investmentRepository.crearInversionSiHayCupo({
     clientId: client.id,
-    monto: montoNum,
-    porcentajeInteres,
-    intereses: 0,
-    dias: 0,
-    total: montoNum
+    maxActivas: MAX_INVERSIONES_ACTIVAS,
+    estadosActivos: ESTADOS_ACTIVOS,
+    data: {
+      clientId: client.id,
+      monto: montoNum,
+      porcentajeInteres,
+      intereses: 0,
+      dias: 0,
+      total: montoNum
+    }
   });
+
+  if (resultado.limitReached) {
+    throw fail(
+      409,
+      `No puedes tener más de ${MAX_INVERSIONES_ACTIVAS} inversiones activas al mismo tiempo`
+    );
+  }
 
   await registrarAuditoria({
     userId,
     action: AUDIT_ACTIONS.CREATE,
     tableName: AUDIT_TABLES.INVERSION,
-    targetId: inversion.id
+    targetId: resultado.inversion.id
   });
 
-  return inversion;
+  return resultado.inversion;
 };
 
 // Tipos aceptados en ?tipo=...; cualquier otro valor cae en 'ALL'.
@@ -783,22 +778,14 @@ const approve = (applicationId, userId) =>
 const reject = (applicationId, userId) =>
   resolverSolicitudPendiente(applicationId, userId, 'RECHAZADA', AUDIT_ACTIONS.REJECT);
 
-// Valida el id y trae la inversión (o falla): comparte lectura entre
-// retire(), approveInvestment() y rejectInvestment(), las tres acciones
-// que dependen de leer el estado actual de una inversión antes de
-// decidir si se puede cambiar.
-const buscarInversionOFallar = async (investmentId) => {
+// Valida el id de una inversión antes de intentar cambiarle el estado;
+// comparte esto entre retire(), approveInvestment() y rejectInvestment().
+const validarIdInversion = (investmentId) => {
   const id = Number(investmentId);
   if (!Number.isInteger(id) || id <= 0) {
     throw fail(400, 'Inversión inválida');
   }
-
-  const investment = await investmentRepository.getInversionParaCambiarEstado(id);
-  if (!investment) {
-    throw fail(404, 'La inversión no existe');
-  }
-
-  return investment;
+  return id;
 };
 
 // Un admin puede terminar manualmente una inversión EN_PROGRESO en
@@ -809,30 +796,43 @@ const buscarInversionOFallar = async (investmentId) => {
 // intereses), y createApplication ya exige EN_PROGRESO para pedir un
 // retiro -- sigue viéndose en los listados y su detalle, pero no admite
 // más acciones.
+//
+// La validación corre DENTRO de investmentRepository.transicionAtomica,
+// sobre una lectura bloqueada (SELECT ... FOR UPDATE): si dos requests
+// llegan a la vez sobre la misma inversión, la segunda espera a que la
+// primera termine y ve ya el estado que dejó, en vez de decidir sobre uno
+// que está a punto de quedar obsoleto.
 const retire = async (investmentId, userId) => {
-  const investment = await buscarInversionOFallar(investmentId);
+  const id = validarIdInversion(investmentId);
 
-  const estadoActual = investment.estados[0]?.estado ?? DEFAULT_ESTADO;
-  if (estadoActual !== 'EN_PROGRESO') {
-    throw fail(409, mensajeNoEnProgreso(estadoActual));
+  const resultado = await investmentRepository.transicionAtomica(id, 'RETIRADO', (investment) => {
+    const estadoActual = investment.estados[0]?.estado ?? DEFAULT_ESTADO;
+    if (estadoActual !== 'EN_PROGRESO') {
+      return mensajeNoEnProgreso(estadoActual);
+    }
+    // No dejar una solicitud sin resolver colgando de una inversión que
+    // ya se cierra: el admin debe aprobarla/rechazarla primero.
+    if (investment.solicitudes.length > 0) {
+      return 'Esta inversión tiene una solicitud de retiro pendiente; resuélvela antes de retirarla';
+    }
+    return null;
+  });
+
+  if (resultado.notFound) {
+    throw fail(404, 'La inversión no existe');
   }
-
-  // No dejar una solicitud sin resolver colgando de una inversión que
-  // ya se cierra: el admin debe aprobarla/rechazarla primero.
-  if (investment.solicitudes.length > 0) {
-    throw fail(409, 'Esta inversión tiene una solicitud de retiro pendiente; resuélvela antes de retirarla');
+  if (resultado.conflict) {
+    throw fail(409, resultado.motivo);
   }
-
-  await investmentRepository.cambiarEstadoInversion(investment.id, 'RETIRADO');
 
   await registrarAuditoria({
     userId,
     action: AUDIT_ACTIONS.RETIRAR,
     tableName: AUDIT_TABLES.INVERSION,
-    targetId: investment.id
+    targetId: id
   });
 
-  return { id: investment.id, estado: 'RETIRADO' };
+  return { id, estado: 'RETIRADO' };
 };
 
 // Todo paquete nuevo nace PENDIENTE: la única decisión que le queda al
@@ -840,25 +840,34 @@ const retire = async (investmentId, userId) => {
 // bloqueo de 15 días, ver incrementarDias) o rechazarlo (RECHAZADO,
 // estado terminal donde ya no se puede hacer nada más que ver el
 // detalle). Comparten toda la lógica -- solo cambia a qué estado se
-// mueve y qué acción queda en la auditoría.
+// mueve y qué acción queda en la auditoría. Misma protección contra
+// carrera que retire() (ver transicionAtomica).
 const resolverPendiente = async (investmentId, userId, estadoSiguiente, auditAction) => {
-  const investment = await buscarInversionOFallar(investmentId);
+  const id = validarIdInversion(investmentId);
 
-  const estadoActual = investment.estados[0]?.estado ?? DEFAULT_ESTADO;
-  if (estadoActual !== 'PENDIENTE') {
-    throw fail(409, 'Esta inversión ya fue revisada por un administrador');
+  const resultado = await investmentRepository.transicionAtomica(id, estadoSiguiente, (investment) => {
+    const estadoActual = investment.estados[0]?.estado ?? DEFAULT_ESTADO;
+    if (estadoActual !== 'PENDIENTE') {
+      return 'Esta inversión ya fue revisada por un administrador';
+    }
+    return null;
+  });
+
+  if (resultado.notFound) {
+    throw fail(404, 'La inversión no existe');
   }
-
-  await investmentRepository.cambiarEstadoInversion(investment.id, estadoSiguiente);
+  if (resultado.conflict) {
+    throw fail(409, resultado.motivo);
+  }
 
   await registrarAuditoria({
     userId,
     action: auditAction,
     tableName: AUDIT_TABLES.INVERSION,
-    targetId: investment.id
+    targetId: id
   });
 
-  return { id: investment.id, estado: estadoSiguiente };
+  return { id, estado: estadoSiguiente };
 };
 
 const approveInvestment = (investmentId, userId) =>

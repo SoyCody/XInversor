@@ -1,3 +1,7 @@
+import { useState } from "react";
+import eyeIcon from "../../assets/eye.png";
+import closedEyeIcon from "../../assets/closedEye.png";
+
 const RegisterForm = ({
   step,
   data,
@@ -8,6 +12,9 @@ const RegisterForm = ({
   onPrevStep,
   onSubmit,
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   return (
     <form onSubmit={step === 3 ? onSubmit : (e) => e.preventDefault()}>
       <div className="register-steps">
@@ -62,7 +69,7 @@ const RegisterForm = ({
 
           {error && <p className="auth-error">{error}</p>}
 
-          <button className="auth-submit" type="button" onClick={onNextStep}>
+          <button className="btn btn--primary btn--block" type="button" onClick={onNextStep}>
             Continuar
           </button>
         </>
@@ -72,24 +79,44 @@ const RegisterForm = ({
         <>
           <label>
             Contraseña
-            <input
-              type="password"
-              name="password"
-              placeholder="Ingresa tu contraseña"
-              value={data.password}
-              onChange={onChange}
-            />
+            <div className="auth-password-field">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Ingresa tu contraseña"
+                value={data.password}
+                onChange={onChange}
+              />
+              <button
+                type="button"
+                className="auth-eye"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              >
+                <img src={showPassword ? eyeIcon : closedEyeIcon} alt="" />
+              </button>
+            </div>
           </label>
 
           <label>
             Confirmar contraseña
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Repite tu contraseña"
-              value={data.confirmPassword}
-              onChange={onChange}
-            />
+            <div className="auth-password-field">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="Repite tu contraseña"
+                value={data.confirmPassword}
+                onChange={onChange}
+              />
+              <button
+                type="button"
+                className="auth-eye"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+                aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              >
+                <img src={showConfirmPassword ? eyeIcon : closedEyeIcon} alt="" />
+              </button>
+            </div>
           </label>
 
           <p className="password-hint">
@@ -99,10 +126,10 @@ const RegisterForm = ({
           {error && <p className="auth-error">{error}</p>}
 
           <div className="register-navigation">
-            <button type="button" className="auth-secondary" onClick={onPrevStep}>
+            <button type="button" className="btn btn--muted" onClick={onPrevStep}>
               Atrás
             </button>
-            <button type="button" className="auth-submit" onClick={onNextStep}>
+            <button type="button" className="btn btn--primary btn--block" onClick={onNextStep}>
               Continuar
             </button>
           </div>
@@ -134,13 +161,13 @@ const RegisterForm = ({
           <div className="register-navigation">
             <button
               type="button"
-              className="auth-secondary"
+              className="btn btn--muted"
               onClick={onPrevStep}
               disabled={isSubmitting}
             >
               Atrás
             </button>
-            <button className="auth-submit" type="submit" disabled={isSubmitting}>
+            <button className="btn btn--primary btn--block" type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Creando cuenta..." : "Crear mi cuenta"}
             </button>
           </div>

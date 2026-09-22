@@ -1058,6 +1058,7 @@ export const UserScalarFieldEnum = {
   createdAt: 'createdAt',
   apdatedAt: 'apdatedAt',
   state: 'state',
+  tokenVersion: 'tokenVersion',
   avatar: 'avatar',
   avatarType: 'avatarType',
   avatarUpdatedAt: 'avatarUpdatedAt'

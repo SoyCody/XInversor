@@ -1,16 +1,44 @@
 import prisma from '../db.js';
 
-const registerInvestment = async (data) => {
-  return prisma.inversion.create({
+// Cuenta las inversiones activas del cliente y, si hay cupo, crea la
+// nueva -- las dos cosas dentro de la misma transacción, con el Client
+// bloqueado (SELECT ... FOR UPDATE). Antes el conteo (en el servicio) y
+// el create (acá) eran dos pasos sueltos: dos POST /investment/new en
+// paralelo del mismo cliente podían pasar los dos el chequeo de cupo y
+// dejarlo con una inversión activa de más. Con el lock, la segunda
+// transacción concurrente espera a que la primera termine y vuelve a
+// contar ya con la inversión que esa primera acaba de insertar.
+const crearInversionSiHayCupo = async ({ clientId, maxActivas, estadosActivos, data }) => {
+  return prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM "Client" WHERE id = ${clientId} FOR UPDATE`;
+
+    const inversiones = await tx.inversion.findMany({
+      where: { clientId },
+      select: {
+        estados: { orderBy: { createdAt: 'desc' }, take: 1, select: { estado: true } }
+      }
+    });
+    const activas = inversiones.filter((inv) =>
+      estadosActivos.includes(inv.estados[0]?.estado ?? 'PENDIENTE')
+    ).length;
+
+    if (activas >= maxActivas) {
+      return { limitReached: true };
+    }
+
     // Todo paquete nace PENDIENTE: es una solicitud a la espera de que
     // un admin la revise (ver approveInvestment/rejectInvestment en el
     // servicio). Si se aprueba pasa a EN_ESPERA y ahí arranca el período
     // de bloqueo de 15 días; recién entonces el job la pasa a
     // EN_PROGRESO, que es cuando se habilitan los retiros.
-    data: {
-      ...data,
-      estados: { create: { estado: 'PENDIENTE' } }
-    }
+    const inversion = await tx.inversion.create({
+      data: {
+        ...data,
+        estados: { create: { estado: 'PENDIENTE' } }
+      }
+    });
+
+    return { inversion };
   });
 };
 
@@ -356,45 +384,62 @@ const resolverSolicitud = async (applicationId, estado, adminId) => {
   return count > 0 ? { id: applicationId, estado } : null;
 };
 
-// Datos mínimos para decidir sobre el estado de una inversión: el estado
-// actual (para saber desde dónde se puede pasar -- EN_PROGRESO para
-// retirar, PENDIENTE para aprobar/rechazar el paquete) y si tiene una
-// solicitud sin resolver (solo aplica a retirar: no se puede cerrar una
-// inversión con un retiro pendiente colgando). Comparte lectura entre
-// retire(), approveInvestment() y rejectInvestment() en el servicio.
-const getInversionParaCambiarEstado = async (investmentId) => {
-  return prisma.inversion.findUnique({
-    where: { id: investmentId },
-    select: {
-      id: true,
-      estados: {
-        orderBy: { createdAt: 'desc' },
-        take: 1,
-        select: { estado: true }
-      },
-      solicitudes: {
-        where: { pendiente: true },
-        select: { id: true }
-      }
+// Aprobar/rechazar un paquete PENDIENTE y retirar una inversión EN_PROGRESO
+// (ver approveInvestment/rejectInvestment/retire en el servicio) leían el
+// estado actual y, en un paso aparte, agregaban la fila de Estado -- sin
+// nada que serialice a dos requests concurrentes sobre la MISMA inversión
+// (a diferencia de resolverSolicitud, que sí usa un updateMany con guarda).
+// Dos clicks casi simultáneos (p. ej. "Aprobar" y "Rechazar" desde dos
+// pestañas del panel) podían pasar los dos la validación y dejar dos filas
+// de Estado contradictorias.
+//
+// `SELECT ... FOR UPDATE` toma el lock de fila de la Inversion dentro de
+// la transacción: si dos requests llegan a la vez, la segunda queda
+// bloqueada hasta que la primera confirme (o revierta), y cuando por fin
+// lee ya ve el Estado que la primera acaba de insertar -- así `validar`
+// SIEMPRE decide sobre el estado más reciente, nunca sobre uno que otra
+// transacción está a punto de dejar obsoleto.
+//
+// `validar(inversion)` devuelve un mensaje si la transición no es válida
+// (p. ej. "ya fue revisada") o `null`/`undefined` si puede seguir. Se
+// reutiliza para las tres transiciones porque cada una valida algo
+// distinto (approve/reject exigen PENDIENTE; retire exige EN_PROGRESO y
+// sin solicitudes pendientes) sobre la misma lectura bloqueada.
+const transicionAtomica = async (investmentId, estadoSiguiente, validar) => {
+  return prisma.$transaction(async (tx) => {
+    const locked = await tx.$queryRaw`SELECT id FROM "Inversion" WHERE id = ${investmentId} FOR UPDATE`;
+    if (locked.length === 0) {
+      return { notFound: true };
     }
-  });
-};
 
-// Toda transición de estado de una inversión (aprobar/rechazar el
-// paquete, pasar a EN_PROGRESO o vencer a los 10 meses -- ver
-// actualizarInversion --, retirarla a mano) es, sin excepción, agregar
-// una fila nueva a Estado: no hay una columna mutable "estadoActual" que
-// bloquear. Dos requests simultáneas sobre la misma inversión podrían
-// agregar dos filas iguales seguidas; no rompe nada (el último estado
-// sigue siendo el mismo) pero ensucia el historial. Aceptable por ahora.
-const cambiarEstadoInversion = async (investmentId, estado) => {
-  return prisma.estado.create({
-    data: { inversionId: investmentId, estado }
+    const inversion = await tx.inversion.findUnique({
+      where: { id: investmentId },
+      select: {
+        id: true,
+        estados: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          select: { estado: true }
+        },
+        solicitudes: {
+          where: { pendiente: true },
+          select: { id: true }
+        }
+      }
+    });
+
+    const motivo = validar(inversion);
+    if (motivo) {
+      return { conflict: true, motivo };
+    }
+
+    await tx.estado.create({ data: { inversionId: investmentId, estado: estadoSiguiente } });
+    return { ok: true };
   });
 };
 
 export default {
-  registerInvestment,
+  crearInversionSiHayCupo,
   getIdByUser,
   list,
   myList,
@@ -414,6 +459,5 @@ export default {
   getSolicitudParaResolver,
   getAdminIdByUser,
   resolverSolicitud,
-  getInversionParaCambiarEstado,
-  cambiarEstadoInversion
+  transicionAtomica
 };

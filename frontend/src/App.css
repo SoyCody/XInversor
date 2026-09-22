@@ -138,6 +138,14 @@ h3 { font-size: var(--fs-h3); font-weight: 700; }
   margin-bottom: 16px;
 }
 
+/* Ocupa todo el ancho del contenedor (el CTA principal del modal de
+   autenticación, "Continuar"/"Crear mi cuenta"/"Ingresar a la
+   plataforma"), en vez del ancho automático por padding del resto de
+   usos de .btn. */
+.btn--block {
+  width: 100%;
+}
+
 /* ===== Primitiva de input: el de Configuración ===== */
 .field {
   display: flex;
@@ -1721,7 +1729,7 @@ footer {
    =================================================================== */
 
 body[data-theme="dark"] .main {
-  background: #000623;
+  background: #0B0D10;
   color: #ffffff;
 
   --text: #ffffff;
@@ -1732,7 +1740,7 @@ body[data-theme="dark"] .main {
   --input-border: #3b82f6;
   --input-focus: #5b9dff;
   --chart-grid: rgba(255, 255, 255, 0.14);
-  --white: #0b1330;
+  --white: #0B0D10;
 }
 
 body[data-theme="dark"] .main .page-heading p,
@@ -1766,19 +1774,20 @@ body[data-theme="dark"] .main .config-modal__warning {
    cuenta, gestionar solicitud...): la cabecera amarilla se deja igual
    a propósito, solo cambia el cuerpo. */
 body[data-theme="dark"] .main .config-modal {
-  background: #0b1330;
+  background: #0B0D10;
 }
 
 /* Inputs cuyo borde ya viene de var(--input-border) (redefinida arriba
-   en azul): solo faltan el fondo -- igual al fondo general, no un
-   "panel" más claro -- y un borde un poco más grueso para que se note. */
+   en azul): solo faltan el fondo -- igual al fondo general (#0B0D10, el
+   mismo que .main y .config-modal, ver arriba) -- y un borde un poco más
+   grueso para que se note. */
 body[data-theme="dark"] .main .field input,
 body[data-theme="dark"] .main .field select,
 body[data-theme="dark"] .main .cfg-wallet-input input,
 body[data-theme="dark"] .main .config-modal__field input,
 body[data-theme="dark"] .main .data-filtro select,
 body[data-theme="dark"] .main .referral-card-link {
-  background: #000623;
+  background: #0B0D10;
   border-width: 1.5px;
 }
 
@@ -1786,7 +1795,7 @@ body[data-theme="dark"] .main .referral-card-link {
    por variable), así que hay que pisarlo también. */
 body[data-theme="dark"] .main .search,
 body[data-theme="dark"] .main .cfg-filepicker {
-  background: #000623;
+  background: #0B0D10;
   border-width: 1.5px;
   border-color: #3b82f6;
 }
@@ -1815,7 +1824,7 @@ body[data-theme="dark"] .main .cfg-eye img {
    tema igual que el resto de la pantalla. */
 body[data-theme="dark"] .main .admin-profile-menu,
 body[data-theme="dark"] .main .notification-menu {
-  background: #0b1330;
+  background: #0B0D10;
   box-shadow: 0 20px 55px rgba(0, 0, 0, 0.55);
 }
 
@@ -1839,7 +1848,7 @@ body[data-theme="dark"] .main .notification-menu-viewall:hover {
 
 /* Tabla compartida de listados (clientes, inversiones, auditorías...). */
 body[data-theme="dark"] .main .data-table-wrap {
-  background: #0b1330;
+  background: #0B0D10;
   border-color: rgba(255, 255, 255, 0.14);
 }
 
@@ -1858,7 +1867,7 @@ body[data-theme="dark"] .main .data-table tbody tr:hover td {
 
 /* Paginador. */
 body[data-theme="dark"] .main .pagination__box {
-  background: #0b1330;
+  background: #0B0D10;
   border-color: rgba(255, 255, 255, 0.14);
 }
 

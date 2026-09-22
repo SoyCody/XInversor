@@ -5,6 +5,7 @@ import ConfigModal from "./ConfigModal.jsx";
 // Cambiar la contraseña de la cuenta autenticada (cliente o admin).
 const ChangePasswordModal = ({ onClose }) => {
   const [formData, setFormData] = useState({
+    currentPassword: "",
     password: "",
     confirmPassword: "",
   });
@@ -21,6 +22,10 @@ const ChangePasswordModal = ({ onClose }) => {
     e.preventDefault();
     setError(null);
 
+    if (!formData.currentPassword) {
+      setError("La contraseña actual es obligatoria");
+      return;
+    }
     if (!formData.password) {
       setError("La contraseña es obligatoria");
       return;
@@ -36,7 +41,10 @@ const ChangePasswordModal = ({ onClose }) => {
 
     setIsSubmitting(true);
     try {
-      await changePassword({ password: formData.password });
+      await changePassword({
+        currentPassword: formData.currentPassword,
+        password: formData.password,
+      });
       setDone(true);
     } catch (err) {
       setError(err.message);
@@ -76,6 +84,19 @@ const ChangePasswordModal = ({ onClose }) => {
     >
       <form className="config-modal__form" onSubmit={handleSubmit}>
         {error && <p className="config-modal__error">{error}</p>}
+
+        <div className="config-modal__field">
+          <label htmlFor="cfg-pwd-current">Contraseña actual</label>
+          <input
+            id="cfg-pwd-current"
+            type="password"
+            name="currentPassword"
+            value={formData.currentPassword}
+            onChange={handleChange}
+            placeholder="Tu contraseña actual"
+            autoComplete="current-password"
+          />
+        </div>
 
         <div className="config-modal__field">
           <label htmlFor="cfg-pwd-new">Nueva contraseña</label>

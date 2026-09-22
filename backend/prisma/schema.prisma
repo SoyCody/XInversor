@@ -52,6 +52,12 @@ model User {
   // romper una cosa ni la otra de golpe.
   apdatedAt       DateTime  @updatedAt
   state           State     @default(ACTIVO)
+  // Se incrementa en cada cambio de contraseña (ver
+  // auth.service.js#changePassword). verifyToken compara esto contra el
+  // claim del JWT: un token firmado con una versión vieja deja de ser
+  // válido al instante, sin esperar a que expire -- así un cambio de
+  // contraseña cierra todas las demás sesiones automáticamente.
+  tokenVersion    Int       @default(0)
   avatar          Bytes?
   avatarType      String?
   avatarUpdatedAt DateTime?
