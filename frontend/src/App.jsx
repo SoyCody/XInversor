@@ -21,6 +21,7 @@ import Auditorias from './components/Admin/Auditorias/Auditorias.jsx';
 import VerAuditoria from './components/Admin/Auditorias/VerAuditoria.jsx';
 import ClientNotificaciones from './components/Client/Notificaciones/Notificaciones.jsx';
 import AdminNotificaciones from './components/Admin/Notificaciones/Notificaciones.jsx';
+import NotFound from './components/NotFound/NotFound.jsx';
 
 // Transición de página (fade) al navegar entre rutas. React 19 quitó
 // findDOMNode, del que react-transition-group dependía por defecto para
@@ -67,6 +68,7 @@ const AnimatedRoutes = () => {
               <Route path="/admin/auditorias/:id" element={<VerAuditoria />} />
               <Route path="/client/notificaciones" element={<ClientNotificaciones />} />
               <Route path="/admin/notificaciones" element={<AdminNotificaciones />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
         </CSSTransition>

@@ -1,0 +1,57 @@
+/* Fondo404.jpg ya es casi negro (el gráfico de línea es lo único que
+   resalta); el overlay lo oscurece un poco más para que el 404 y el
+   mensaje queden legibles encima en cualquier punto de la imagen. */
+.notfound-page {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 10px;
+  background-image:
+    linear-gradient(rgba(2, 3, 8, 0.55), rgba(2, 3, 8, 0.55)),
+    url("../../assets/Fondo404.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.notfound-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Sube el bloque dentro del centrado vertical: el margen extra abajo
+     "empuja" el contenido hacia arriba, dejando menos aire suelto arriba. */
+  margin-bottom: 9vh;
+}
+
+.notfound-code {
+  /* Separación del lockup de marca (logo + FXINVERSORS), que antes
+     quedaba casi pegado por el margin negativo de .hero-brand-name. */
+  margin: 100px 0 0;
+  font-family: "Space Grotesk", Inter, sans-serif;
+  font-size: clamp(56px, 9vw, 96px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  color: #fff;
+}
+
+.notfound-code span {
+  color: var(--accent-amber, #f5a623);
+}
+
+/* Mismo estilo que los h2 de sección de Home (.section-heading h2,
+   "Una nueva forma de invertir en Bitcoin"): Space Grotesk, no Inter. */
+.notfound-message {
+  margin: 13px 0 0;
+  max-width: 600px;
+  font-family: "Space Grotesk", Inter, sans-serif;
+  font-size: 31px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: #eef1f6;
+}

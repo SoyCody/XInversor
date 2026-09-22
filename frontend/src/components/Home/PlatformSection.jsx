@@ -12,9 +12,10 @@ const PlatformSection = () => {
       </div>
 
       <div className="section-heading">
-        <span>LA PLATAFORMA</span>
-        <h2>Pensada para ser simple desde el primer día</h2>
-        <p>Estamos construyendo, paso a paso, las bases de la plataforma.</p>
+        <span>CRECIMIENTO</span>
+        <h2>Una nueva forma de invertir en Bitcoin</h2>
+        <p>Descubre oportunidades de inversión y participa de un modelo 
+          diseñado para conectar capital con proyectos.</p>
       </div>
 
       <div className="feature-grid">
