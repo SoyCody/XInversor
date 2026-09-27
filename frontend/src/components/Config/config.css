@@ -246,6 +246,19 @@
   margin-top: 8px;
 }
 
+/* Enlaces legales al final de Configuración: misma banda que el resto,
+   pero discretos a propósito (ver LegalLinks.css) y separados del resto
+   del contenido para no competir visualmente con "Eliminar cuenta". */
+.cfg-footer {
+  width: 100%;
+  max-width: var(--band-w);
+  margin: 4px auto 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+}
+
 /* ----- Mensajes -----
    Los botones ahora son las primitivas .btn / .btn--primary / .btn--muted
    de App.css (el JSX de esta sección ya las usa). */

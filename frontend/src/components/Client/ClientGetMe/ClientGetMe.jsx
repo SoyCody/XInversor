@@ -15,6 +15,7 @@ import ChangePasswordModal from "../../Config/ChangePasswordModal.jsx";
 import DeleteAccountModal from "../../Config/DeleteAccountModal.jsx";
 import BlockedActionModal from "../../Config/BlockedActionModal.jsx";
 import SuccessBanner from "../../SuccessBanner/SuccessBanner.jsx";
+import LegalLinks from "../../Legal/LegalLinks.jsx";
 
 const formatDate = (isoString) => {
   if (!isoString) return "—";
@@ -145,6 +146,10 @@ const ClientGetMe = () => {
                 >
                   Eliminar Cuenta
                 </button>
+              </div>
+
+              <div className="cfg-footer">
+                <LegalLinks />
               </div>
             </div>
           )}

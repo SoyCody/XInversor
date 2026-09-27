@@ -1,0 +1,53 @@
+1. Aceptación
+Al dar el primer paso que es el crear una cuenta, declaras que leíste, entendiste y aceptas estos Términos y Condiciones y nuestra Política de Privacidad. Si no estás de acuerdo, no podrás acceder a las diferentes pantallas del sitio. Asimismo, debes ser mayor de 18 años y tener capacidad legal para invertir. Si la usas en nombre de una empresa, declaras que tienes facultades para obligarla. Por lo tanto, eres el responsable sobre tus paquetes y sus retiros, en caso de haber mal entendidos o dudas podrás comunicarte mediante el canal oficial para soporte técnico y ayuda.
+2. Qué hace la plataforma
+La plataforma es una herramienta de registro y seguimiento: te permite anotar, organizar y consultar la información de tus paquetes y de sus etapas. No es una entidad financiera, casa de valores, asesor de inversiones ni intermediario.
+La Plataforma sí	La Plataforma no
+Registra los datos de paquetes que tú ingresas como el monto invertido, fecha, plazo y rendimiento.	Recibe, custodia ni transfiere dinero o valores directamente, eso lo hace Binance.
+Muestra el estado y las etapas de cada inversión.	Ejecuta compras, ventas ni órdenes de inversión
+Genera reportes y resúmenes.	Recomienda en qué y cuándo invertir ni evalúa la conveniencia de una inversión
+Permite adjuntar comprobantes y documentos.	Garantiza rentabilidad ni la solvencia de ninguna entidad financiera.
+Verifica que la información que registras sea verdadera.	
+Toda inversión que registres la realizas directamente con la entidad correspondiente bajo tu responsabilidad y según los contratos que firmes con ella. FXInversors no forma parte de esa relación oficialmente.
+3. Definiciones clave
+Usuario: persona natural o jurídica que crea una cuenta y hace uso de la web.
+Paquete: monto pre definido y configurado para realizar inversiones.
+Cuenta: el acceso personal del usuario, protegido con credenciales.
+Registro de inversión: la información que el usuario ingresa sobre una inversión y sus etapas solicitud, aprobación, cancelación, crecimiento, vencimiento y liquidación.
+Contenido del Usuario: datos y acciones que el usuario sube a la plataforma.
+Entidad: banco, cooperativa, casa de valores, emisor u otra institución con la que el Usuario invierte, ajena a FXInversors.
+Software: Programas informáticos que surge a partir de una necesidad.
+4. Registro y seguridad de la cuenta
+Para navegar debes crear una cuenta con datos verdaderos, completos y actualizados. Cada cuenta es personal e intransferible.
+Eres responsable de mantener en secreto tu contraseña y sobre todo tu identificativo de billetera de bitcoins la cual solo la podrán ver el administrador y tú y de toda actividad realizada desde tu cuenta.
+Te recomendamos activar la verificación en dos pasos.
+Si sospechas un acceso no autorizado, avísanos de inmediato al contacto de soporte para bloquear la cuenta.
+Tenemos la libertad total para rechazar un registro en el caso que el equipo de administración identifique datos falsos o riesgo de fraude.
+5. Obligaciones del usuario 
+Te comprometes a usar la plataforma de forma lícita y solo para registrar y dar seguimiento a tus propias inversiones. Dentro de esta misma no se permitirá las siguientes características:
+Registrar información falsa con el fin de engañar a terceros o presentar reportes de la plataforma como documentos oficiales de una entidad.
+Usar la plataforma para ofrecer, promocionar o captar inversiones de terceros.
+Usarla para actividades de lavado de activos, financiamiento de delitos o cualquier fin ilícito.
+Subir archivos con virus o código malicioso, o intentar acceder a cuentas o sistemas ajenos.
+Copiar, extraer datos de forma automatizada, revender o hacer ingeniería inversa de la plataforma con el fin de explotar vulnerabilidades.
+Los reportes que genera la plataforma reflejan lo que tú ingresaste. No constituyen certificados, estados de cuenta ni comprobantes emitidos por ninguna entidad, esto solo se hace para el manejo interno de cada paquete y externamente puede representar una justificación legal totalmente válida.
+6. Sin asesoría financiera y exactitud de la información
+Nada de lo que muestra la plataforma (cálculos, gráficos, proyecciones de rendimiento o alertas) es una recomendación de inversión ni asesoría financiera, tributaria o legal. Las decisiones de invertir o retirar son exclusivamente tuyas; consulta con un asesor autorizado si lo necesitas.
+Los cálculos de rendimiento son estimaciones basadas en los datos que ingresaste y pueden diferir de lo que liquide la Entidad por impuestos, retenciones, comisiones o cambios de tasa.
+La información de referencia que mostremos de fuentes externas [tasas, cotizaciones] puede tener retrasos o errores; confírmala siempre con la entidad.
+Eres responsable de la exactitud de lo que registras. Ante cualquier diferencia, prevalecen los documentos emitidos por la Entidad.
+7. Tarifas y pagos
+El uso de la plataforma es gratuito. Si en el futuro introducimos planes de pago, te avisaremos con al menos 30 días de anticipación.
+Los pagos que cobramos corresponden solo al uso de la herramienta. Nunca te pediremos que transfieras dinero para invertir a través de nosotros.
+8. Propiedad intelectual y datos del Usuario
+El software, diseño, marca, logotipos y textos de la plataforma pertenecen a FXInversors y a sus miembros. Te otorgamos una licencia personal, limitada, no exclusiva e intransferible para usarla según estos términos; no adquieres ningún otro derecho sobre ella.
+Tu contenido del usuario sigue siendo tuyo. Nos autorizas a almacenarlo y procesarlo solo para prestarte el servicio. El tratamiento de tus datos personales se rige por nuestra Política de Privacidad, que forma parte de estos términos. No usaremos la información de tus inversiones para ofrecerte productos de terceros sin tu consentimiento expreso.
+9. Disponibilidad y limitación de responsabilidad
+Procuramos que la plataforma esté disponible de forma continua, pero puede interrumpirse por mantenimiento, fallas técnicas o causas fuera de nuestro control. Avisaremos con anticipación los mantenimientos programados cuando sea posible.
+En la medida que permite la ley ecuatoriana, no respondemos por:
+Pérdidas o ganancias no obtenidas derivadas de tus decisiones de inversión.
+Errores en la información que tú registraste o en datos de fuentes externas.
+Daños causados por el uso indebido de tu cuenta por no proteger tus credenciales.
+Esta limitación no excluye nuestra responsabilidad por dolo, culpa grave ni los derechos irrenunciables que te reconoce la Ley Orgánica de Defensa del Consumidor.
+10. Suspensión, terminación y modificaciones
+Puedes eliminar tu cuenta en cualquier momento desde Configuración > Eliminar cuenta. Podemos bloquear cuenta si incumples estos términos, si lo exige una autoridad o si detectamos uso fraudulento. 

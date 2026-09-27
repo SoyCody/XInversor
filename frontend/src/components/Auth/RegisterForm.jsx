@@ -1,6 +1,7 @@
 import { useState } from "react";
 import eyeIcon from "../../assets/eye.png";
 import closedEyeIcon from "../../assets/closedEye.png";
+import LegalLinks from "../Legal/LegalLinks.jsx";
 
 const RegisterForm = ({
   step,
@@ -155,6 +156,8 @@ const RegisterForm = ({
             Al crear tu cuenta aceptas seguir el desarrollo de la plataforma
             como usuario cliente.
           </p>
+
+          <LegalLinks className="register-legal-links" />
 
           {error && <p className="auth-error">{error}</p>}
 

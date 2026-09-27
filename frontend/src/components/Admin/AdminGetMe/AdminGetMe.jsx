@@ -14,6 +14,7 @@ import EditProfileModal from "../../Config/EditProfileModal.jsx";
 import ChangePasswordModal from "../../Config/ChangePasswordModal.jsx";
 import DeleteAccountModal from "../../Config/DeleteAccountModal.jsx";
 import SuccessBanner from "../../SuccessBanner/SuccessBanner.jsx";
+import LegalLinks from "../../Legal/LegalLinks.jsx";
 
 const formatDate = (isoString) => {
   if (!isoString) return "—";
@@ -127,6 +128,10 @@ const AdminGetMe = () => {
                 >
                   Eliminar Cuenta
                 </button>
+              </div>
+
+              <div className="cfg-footer">
+                <LegalLinks />
               </div>
             </div>
           )}

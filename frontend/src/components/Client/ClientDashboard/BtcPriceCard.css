@@ -1,0 +1,148 @@
+.btc-card {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--white);
+}
+
+.btc-card-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.btc-card-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btc-card-title {
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--text);
+}
+
+.btc-card-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+.btc-card-status i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.btc-card-status.is-live i {
+  background: var(--green);
+  animation: btc-pulse 1.6s ease-in-out infinite;
+}
+
+.btc-card-status.is-offline i {
+  background: var(--red);
+}
+
+.btc-card-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btc-card-price {
+  font-size: 28px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.btc-card-price.flash-up {
+  animation: btc-flash-up 0.7s ease-out;
+}
+
+.btc-card-price.flash-down {
+  animation: btc-flash-down 0.7s ease-out;
+}
+
+.btc-card-change {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.btc-card-change small {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.btc-card-change.is-up {
+  color: var(--green);
+}
+
+.btc-card-change.is-down {
+  color: var(--red);
+}
+
+.btc-card-source {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+.btc-card-chart {
+  flex: 1;
+  max-width: 320px;
+  height: 64px;
+}
+
+@keyframes btc-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes btc-flash-up {
+  from {
+    color: var(--green);
+  }
+}
+
+@keyframes btc-flash-down {
+  from {
+    color: var(--red);
+  }
+}
+
+@media (max-width: 640px) {
+  .btc-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btc-card-chart {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btc-card-price.flash-up,
+  .btc-card-price.flash-down,
+  .btc-card-status.is-live i {
+    animation: none;
+  }
+}
+
+body[data-theme="dark"] .main .btc-card {
+  border-color: rgba(255, 255, 255, 0.16);
+}

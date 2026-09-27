@@ -1,0 +1,70 @@
+1. Responsable del tratamiento
+Edgar Patricio Cabrera Zúñiga, domicilio en el cantón Yantzaza de la provincia Zamora, Ecuador, como responsable del tratamiento de los datos personales recogidos a través de www.FXInversors-com.
+2. Marco legal y definiciones
+Esta política se rige por el artículo 66 numeral 19 y el artículo 92 de la Constitución de la República del Ecuador, la Ley Orgánica de Protección de Datos Personales y su Reglamento. Para efectos de este documento:
+Dato personal: información que identifica o hace identificable a una persona natural, directa o indirectamente.
+Titular: la persona a quien pertenecen los datos (tú, como usuario).
+Tratamiento: cualquier operación sobre datos personales, como recogerlos, guardarlos, usarlos, transferirlos o eliminarlos.
+Responsable del tratamiento: quien decide para qué y cómo se tratan los datos; en este caso, [Nombre comercial].
+Encargado del tratamiento: un tercero que trata datos por cuenta del responsable (por ejemplo, un proveedor de hosting).
+Consentimiento: manifestación de voluntad libre, específica, informada e inequívoca con la que el titular autoriza el tratamiento.
+Datos sensibles: datos sobre etnia, identidad de género, identidad cultural, religión, ideología, afiliación política, pasado judicial, condición migratoria, orientación sexual, salud, datos biométricos y genéticos, y otros cuyo uso indebido pueda causar discriminación.
+3. Datos que recopilamos
+Recopilamos solo los datos necesarios para las finalidades descritas en la sección 4. Los obtenemos de tres maneras:
+Origen	Datos	Ejemplo de cuándo
+Los que tú nos das	Nombres, apellidos, correo electrónico e identificativo de billetera de bitcoins	Al registrarte y realizar inversiones.
+Los que se generan al usar el servicio	Dirección IP, tipo de dispositivo, navegador.	Al navegar por el sitio.
+Los que recibimos de terceros	Manejo de infromación con Google.	Al registrarse o iniciar sesión con tu cuenta
+No solicitamos datos sensibles salvo tu billetera. Si decides no entregar los datos marcados como obligatorios en un formulario, no podremos prestarte ese servicio concreto.
+4. Para qué usamos tus datos y con qué base legal
+Cada uso de tus datos tiene una base legal reconocida en la LOPDP. No usamos tus datos para fines distintos a los indicados sin informarte y, cuando corresponda, pedir tu consentimiento.
+Finalidad	Base legal
+Crear y administrar tu cuenta	Ejecución de la relación contractual contigo
+Responder consultas y dar soporte	Ejecución del contrato o medidas precontractuales que tú solicitas
+Prevenir fraudes y proteger la seguridad del servicio	Interés legítimo
+5. Con quién compartimos tus datos
+No vendemos tus datos personales. Solo los compartimos con estos destinatarios y únicamente en la medida necesaria:
+Destinatario	Para qué	País
+Proveedor de hosting / nube: ePanel	Alojar el sitio y las bases de datos.	Brazil
+Herramienta de correo: Resend	Enviar confirmación de registro en la plataforma.	Estados Unidos
+Herramienta de mensajería: WhatsApp	Soporte técnico y dudas.	Ecuador
+Los proveedores que tratan datos por nuestra cuenta actúan como encargados del tratamiento. Firmamos con ellos contratos que los obligan a proteger tus datos y a usarlos solo según nuestras instrucciones.
+6. Cuánto tiempo guardamos tus datos
+Guardamos tus datos solo mientras sean necesarios para la finalidad que motivó su recogida, y luego los anonimizamos.
+Tipo de dato	Plazo
+Datos de cuenta	Mientras la cuenta esté activa y 3 meses después de cerrarla
+Mensajes de soporte	Una vez que elimines tu cuenta
+7. Cómo protegemos tus datos
+Aplicamos medidas técnicas y organizativas para proteger tus datos contra pérdida, acceso no autorizado, alteración o divulgación. Entre ellas:
+Cifrado de las comunicaciones mediante HTTPS.
+Contraseñas almacenadas con cifrado irreversible.
+Acceso a los datos limitado al personal que lo necesita, con credenciales individuales.
+Copias de seguridad periódicas.
+Acuerdos de confidencialidad con administradores de la plataforma.
+Si ocurre una vulneración de seguridad que afecte tus datos, la notificaremos a la Superintendencia de Protección de Datos Personales y, cuando la ley lo exija, a ti, dentro de los plazos que establece la LOPDP.
+8. Tus derechos y cómo ejercerlos
+Como titular de tus datos, la LOPDP te reconoce estos derechos, que puedes ejercer de forma gratuita:
+Derecho	En qué consiste
+Información	Saber quién trata tus datos, para qué y con quién los comparte
+Acceso	Obtener una copia de los datos que tenemos sobre ti
+Rectificación y actualización	Corregir datos inexactos o incompletos
+Eliminación	Pedir que borremos tus datos cuando ya no sean necesarios o el tratamiento sea ilícito
+Oposición	Negarte a ciertos tratamientos.
+Portabilidad	Recibir tus datos en un formato estructurado y de uso común, o que los enviemos a otro responsable
+Suspensión del tratamiento	Pedir que dejemos de usar tus datos temporalmente en los casos que prevé la ley
+No ser objeto de decisiones automatizadas	No quedar sujeto a decisiones basadas solo en tratamientos automatizados que te afecten de forma significativa
+Revocar el consentimiento	Retirarlo en cualquier momento, sin afectar lo tratado antes
+Cómo ejercerlos: escribe al medio oficial para ayudas indicando tu nombre, el derecho que quieres ejercer y un medio para responderte. Responderemos en un plazo de 15 días.
+Si consideras que no atendimos bien tu solicitud, puedes presentar un reclamo ante la Superintendencia de Protección de Datos Personales.
+9. Público objetivo
+Nuestro servicio está dirigido solamente a personas mayores de 18 años los cuales tengan una billetera de bitcoins. No nos responsabilizamos por cuentas creadas por menores de edad y sin supervisión de un adulto. Si detectamos que recibimos datos de un menor sin esa autorización, los eliminaremos.
+10. Cookies y tecnologías similares
+Usamos cookies y tecnologías similares en FXInversors. Las cookies técnicas, necesarias para que el servicio funcione, se instalan sin consentimiento. Las cookies de analítica solo se activan si las aceptas en el banner de cookies.
+Tipo	Para qué	¿Requiere tu consentimiento?
+Técnicas o necesarias	Mantener la sesión y la seguridad	No
+De preferencias	Recordar idioma y configuración	No
+Puedes cambiar tu elección en cualquier momento desde la configuración de tu navegador. 
+11. Cambios, vigencia y contacto
+Esta política entra en vigencia el 25 de sept. de 2026 (versión 1.0). Podemos actualizarla cuando cambien nuestros servicios o la normativa. Si el cambio es importante, te avisaremos por aviso en el sitio o la app antes de que aplique y, cuando corresponda, volveremos a pedir tu consentimiento.
+Para cualquier duda sobre esta política o sobre tus datos, escríbenos al canal de soporte técnico y ayuda. 
+Última actualización: 25 de sept. de 2026

@@ -2,6 +2,7 @@ import { useState } from "react";
 import ClientSideBar from "../../SideBar/ClientSideBar.jsx";
 import Header from "../../Header/Header.jsx";
 import ReferralLinkCard from "./ReferralLinkCard.jsx";
+import BtcPriceCard from "./BtcPriceCard.jsx";
 import InvestmentOverview from "./InvestmentOverview.jsx";
 import WelcomeWalletModal from "./WelcomeWalletModal.jsx";
 import BlockedAccountModal from "./BlockedAccountModal.jsx";
@@ -41,6 +42,8 @@ const ClientDashboard = () => {
           {error && <p className="dashboard-error">{error}</p>}
 
           <ReferralLinkCard link={data?.link} isLoading={isLoading} />
+
+          <BtcPriceCard />
 
           <InvestmentOverview
             totalInvertido={data?.totalInvertido ?? 0}

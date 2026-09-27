@@ -698,6 +698,11 @@ footer strong {
   font-size: 9px;
   line-height: 1.6;
 }
+
+.legal-links.register-legal-links {
+  margin: 10px 0 0;
+  font-size: 11px;
+}
 /* "Atrás" + "Continuar"/"Crear mi cuenta": mismas primitivas .btn de
    App.css que el resto de la app (antes .auth-secondary/.auth-submit,
    con su propio color y su propio :disabled duplicando lo que .btn ya
