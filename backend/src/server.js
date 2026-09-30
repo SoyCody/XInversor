@@ -30,6 +30,23 @@ app.use(helmet({
 app.use(cookieParser());
 const PORT = process.env.PORT || 3001;
 
+// En producción casi siempre hay un proxy/balanceador delante (el de la
+// plataforma de hosting, nginx, Cloudflare...) que termina el TLS y
+// reenvía por HTTP interno. Sin "trust proxy", req.ip resuelve a la IP
+// del proxy para TODAS las conexiones, no a la del cliente real -- los
+// límites de intentos por IP (ver rateLimit.middleware.js) dejan de
+// distinguir usuarios y terminan compartiendo un único cupo entre todos
+// (un usuario agota el límite y bloquea a los demás). express-rate-limit
+// además marca esto por consola (ValidationError
+// ERR_ERL_UNEXPECTED_X_FORWARDED_FOR) al detectar X-Forwarded-For sin
+// "trust proxy" configurado -- no rechaza la petición, pero es la pista
+// de que falta este ajuste. TRUST_PROXY permite subir cuántos saltos de
+// proxy confiar si hay más de uno encadenado (por defecto, 1); en
+// desarrollo no hay proxy, así que esto no aplica.
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', Number(process.env.TRUST_PROXY) || 1);
+}
+
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true,

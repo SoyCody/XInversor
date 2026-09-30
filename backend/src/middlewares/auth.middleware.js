@@ -8,14 +8,24 @@ const JWT_MAX_AGE_MS = JWT_EXPIRES_IN_DAYS * 24 * 60 * 60 * 1000;
 
 export const COOKIE_NAME = 'access_token';
 
+// "lax" alcanza mientras frontend y backend compartan sitio (mismo
+// dominio registrable, aunque estén en subdominios distintos, p. ej.
+// app.xinversor.com + api.xinversor.com): el navegador la sigue
+// considerando same-site. Si en el despliegue terminan en dominios
+// TOTALMENTE distintos (p. ej. frontend en Vercel, backend en Railway),
+// hace falta "none" -- y el navegador exige Secure (HTTPS) para
+// aceptar una cookie SameSite=None, por eso se fuerza acá en vez de
+// dejarlo solo a NODE_ENV.
+const COOKIE_SAME_SITE = process.env.COOKIE_SAME_SITE || 'lax';
+
 // Estas mismas opciones se deben usar tanto al SETEAR la cookie
 // (login/register) como al LIMPIARLA (logout). Si no coinciden
 // exactamente (sobre todo "path"), el navegador no la reconoce
 // como la misma cookie y clearCookie no borra nada.
 export const COOKIE_OPTIONS = {
   httpOnly: true, // JS del navegador no puede leer ni tocar esta cookie
-  secure: process.env.NODE_ENV === 'production', // solo por HTTPS en prod
-  sameSite: 'lax', // permite cookies en la app local frontend/backend sin bloquear la sesión
+  secure: process.env.NODE_ENV === 'production' || COOKIE_SAME_SITE === 'none',
+  sameSite: COOKIE_SAME_SITE,
   path: '/',
 };
 

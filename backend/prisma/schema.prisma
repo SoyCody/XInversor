@@ -37,6 +37,11 @@ enum EstadoSolicitud {
   RECHAZADA
 }
 
+enum VerificationPurpose {
+  REGISTER
+  CHANGE_PASSWORD
+}
+
 model User {
   id              Int       @id @default(autoincrement())
   firstName       String
@@ -164,4 +169,30 @@ model Estado {
   // Se lee siempre como "último estado por inversión":
   // WHERE inversionId = ? ORDER BY createdAt DESC LIMIT 1.
   @@index([inversionId, createdAt])
+}
+
+// Código de un solo uso enviado por correo (Resend) para confirmar una
+// acción sensible antes de aplicarla: crear la cuenta (REGISTER) o
+// cambiar la contraseña (CHANGE_PASSWORD). `payload` guarda lo que hay
+// que aplicar cuando el código se confirme -- ya con la contraseña
+// hasheada, nunca en texto plano -- para no tener que volver a pedir esos
+// datos ni reabrir una sesión a medio hacer:
+//   REGISTER         -> { firstName, lastName, email, passwordHash }
+//   CHANGE_PASSWORD  -> { userId, passwordHash }
+// `code` nunca se guarda en texto plano, solo su hash (mismo esquema que
+// User.passwordHash). `attempts` + `expiresAt` limitan la ventana de
+// fuerza bruta del código de 6 dígitos junto con `codeLimiter` (ver
+// rateLimit.middleware.js).
+model VerificationCode {
+  id        String              @id @default(cuid())
+  purpose   VerificationPurpose
+  email     String
+  codeHash  String
+  payload   Json
+  attempts  Int                 @default(0)
+  expiresAt DateTime
+  createdAt DateTime            @default(now())
+
+  // Buscar el código pendiente de un correo para un propósito dado.
+  @@index([email, purpose])
 }

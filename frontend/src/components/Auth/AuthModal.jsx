@@ -39,6 +39,12 @@ const AuthModal = ({ mode, onClose, onSwitchMode, onAuthSuccess }) => {
             onNextStep={register.step === 1 ? register.goToStepTwo : register.goToStepThree}
             onPrevStep={register.goBack}
             onSubmit={register.submit}
+            verification={register.verification}
+            code={register.code}
+            onCodeChange={register.handleCodeChange}
+            onConfirmCode={register.confirmCode}
+            onResendCode={register.resendCode}
+            resendMessage={register.resendMessage}
           />
         )}
 

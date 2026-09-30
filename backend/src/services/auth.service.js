@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import userRepository from '../repositories/user.repository.js';
 import { registrarAuditoria, AUDIT_ACTIONS, AUDIT_TABLES } from './auditorias.service.js';
 import { getDefaultAvatar } from '../utils/defaultAvatar.js';
+import * as verificationService from './verification.service.js';
 
 // Error de dominio: se traduce a un 409 en el controller.
 class EmailAlreadyExistsError extends Error {
@@ -44,7 +45,12 @@ class InvalidCredentialsError extends Error {
   }
 }
 
-const registerClient = async ({ firstName, lastName, email, password }) => {
+// Paso 1 de 2 del registro: valida los datos, pero todavía NO crea la
+// cuenta. Guarda una verificación pendiente (con la contraseña ya
+// hasheada, nunca en texto plano -- ver verification.service.js) y manda
+// el código al correo. La cuenta solo nace cuando ese código se confirma
+// en confirmRegister.
+const requestRegister = async ({ firstName, lastName, email, password }) => {
 
   // findByEmail filtra state=ACTIVO, pero User.email es @unique global (sin
   // filtro de state). Si el email pertenece a una cuenta BORRADA, este
@@ -58,12 +64,38 @@ const registerClient = async ({ firstName, lastName, email, password }) => {
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
+
+  const { verificationId, expiresAt } = await verificationService.createVerification({
+    purpose: 'REGISTER',
+    email,
+    payload: { firstName, lastName, email, passwordHash },
+  });
+
+  return { verificationId, email, expiresAt };
+};
+
+// Paso 2 de 2: confirma el código y recién ahí crea la cuenta con los
+// datos guardados en el paso 1.
+const confirmRegister = async ({ verificationId, code }) => {
+  const payload = await verificationService.confirmAndConsume({
+    verificationId,
+    code,
+    purpose: 'REGISTER',
+  });
+
+  // Repetir el check: pudo registrarse otra cuenta con el mismo correo
+  // entre el paso 1 y este (otra pestaña, otra verificación en curso).
+  const existingUser = await userRepository.findByEmail(payload.email);
+  if (existingUser) {
+    throw new EmailAlreadyExistsError();
+  }
+
   const { buffer: defaultAvatar, mimeType: defaultAvatarType } = getDefaultAvatar();
   const userData = {
-    firstName,
-    lastName,
-    email,
-    passwordHash,
+    firstName: payload.firstName,
+    lastName: payload.lastName,
+    email: payload.email,
+    passwordHash: payload.passwordHash,
     role: 'CLIENT',
     avatar: defaultAvatar,
     avatarType: defaultAvatarType,
@@ -150,13 +182,18 @@ const updateClient = async (id, { firstName, lastName, email }) => {
   return userWithoutPassword;
 };
 
-const changePassword = async (id, { currentPassword, password }) => {
+// Paso 1 de 2: valida la contraseña actual y la nueva, pero todavía NO
+// las aplica. Guarda una verificación pendiente y manda el código al
+// correo YA registrado del usuario (no a uno que el cliente mande en el
+// body -- así no sirve para husmear si un correo cualquiera existe, ni
+// para reencaminar el código a otra bandeja).
+const requestPasswordChange = async (id, { currentPassword, password }) => {
   const user = await userRepository.findById(id);
   if (!user) {
     throw new UserNotFoundError();
   }
 
-  // Exige la contraseña actual antes de aceptar la nueva: una sesión
+  // Exige la contraseña actual antes de mandar el código: una sesión
   // robada (cookie filtrada, dispositivo desbloqueado) ya no alcanza por
   // sí sola para tomar la cuenta.
   const isCurrentValid = await bcrypt.compare(currentPassword, user.passwordHash);
@@ -166,13 +203,44 @@ const changePassword = async (id, { currentPassword, password }) => {
 
   const passwordHash = await bcrypt.hash(password, 12);
 
+  const { verificationId, expiresAt } = await verificationService.createVerification({
+    purpose: 'CHANGE_PASSWORD',
+    email: user.email,
+    payload: { userId: id, passwordHash },
+  });
+
+  return { verificationId, expiresAt };
+};
+
+// Paso 2 de 2: confirma el código y recién ahí aplica la contraseña
+// guardada en el paso 1.
+const confirmPasswordChange = async ({ id, verificationId, code }) => {
+  const user = await userRepository.findById(id);
+  if (!user) {
+    throw new UserNotFoundError();
+  }
+
+  const payload = await verificationService.confirmAndConsume({
+    verificationId,
+    code,
+    purpose: 'CHANGE_PASSWORD',
+    email: user.email,
+  });
+
+  // El código es de un solo uso y va atado a un correo, no directamente a
+  // un userId -- este chequeo es la defensa real contra confirmar un
+  // verificationId ajeno con la sesión de otro usuario.
+  if (payload.userId !== id) {
+    throw new verificationService.VerificationNotFoundError();
+  }
+
   // Incrementa tokenVersion en la misma escritura (ver
   // user.repository.js#changePassword): cualquier JWT ya emitido con la
   // versión anterior deja de ser válido al instante (verifyToken lo
   // rechaza), aunque no haya expirado. El controller reemite la cookie
   // de ESTA sesión con la versión nueva para no dejar deslogueado a quien
   // acaba de cambiar su propia contraseña.
-  const updated = await userRepository.changePassword({ id, passwordHash });
+  const updated = await userRepository.changePassword({ id, passwordHash: payload.passwordHash });
 
   await registrarAuditoria({
     userId: id,
@@ -224,10 +292,12 @@ const deleteUser =  async (id) =>{
 }
 
 export {
-  registerClient,
+  requestRegister,
+  confirmRegister,
   logClient,
   updateClient,
-  changePassword,
+  requestPasswordChange,
+  confirmPasswordChange,
   deleteUser,
   updateAvatar,
   getAvatar,

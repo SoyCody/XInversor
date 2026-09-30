@@ -5,10 +5,22 @@ export const MAX_AVATAR_SIZE_BYTES = 2 * 1024 * 1024; // 2MB, igual que el backe
 
 // Ya no hay nada que guardar en localStorage: el backend setea
 // la cookie httpOnly directamente en la respuesta de fetch.
+//
+// El registro quedó en dos pasos: este solo valida los datos y dispara
+// el código de verificación al correo (responde { verificationId, email
+// }, todavía sin crear la cuenta ni cookie de sesión). confirmRegister
+// es el que efectivamente crea la cuenta.
 export function registerUser({ firstName, lastName, email, password }) {
   return apiFetch("/users/register", {
     method: "POST",
     body: { firstName, lastName, email, password },
+  });
+}
+
+export function confirmRegister({ verificationId, code }) {
+  return apiFetch("/users/register/confirm", {
+    method: "POST",
+    body: { verificationId, code },
   });
 }
 
@@ -36,11 +48,23 @@ export function updateMe(payload) {
   });
 };
 
+// Igual que el registro: este paso solo valida la contraseña actual y
+// dispara el código al correo ya registrado (responde { verificationId
+// }), todavía no cambia nada. confirmPasswordChange es el que aplica el
+// cambio de verdad.
 export function changePassword(data) {
-  // "data" será el objeto { password: "..." } que mandamos desde el componente
+  // "data" será el objeto { currentPassword, password } que mandamos
+  // desde el componente
   return apiFetch("/users/change/password", {
     method: "PUT",
-    body: data 
+    body: data
+  });
+};
+
+export function confirmPasswordChange({ verificationId, code }) {
+  return apiFetch("/users/change/password/confirm", {
+    method: "PUT",
+    body: { verificationId, code },
   });
 };
 
