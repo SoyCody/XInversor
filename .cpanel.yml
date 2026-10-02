@@ -1,0 +1,7 @@
+---
+deployment:
+  tasks:
+    # Toda la lógica está en deploy/cpanel-deploy.sh (y deja su registro en
+    # /home/fxinvers45/deploy-fxinversor.log). Se llama con /bin/bash para
+    # no depender del permiso de ejecución del archivo.
+    - /bin/bash deploy/cpanel-deploy.sh

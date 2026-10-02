@@ -1,0 +1,4 @@
+# Estos archivos se ejecutan en Linux (cPanel): con finales de línea CRLF de
+# Windows, bash falla con errores tipo "$'\r': command not found".
+*.sh text eol=lf
+.cpanel.yml text eol=lf

@@ -8,7 +8,7 @@
 // La app además lo corre sola cada medianoche (ver src/jobs/scheduler.js),
 // así que este script es sobre todo para entornos donde el proceso no
 // queda vivo o para forzar una corrida manual.
-import 'dotenv/config';
+import '../loadEnv.js';
 import prisma from '../db.js';
 import investmentService from '../services/investment.service.js';
 

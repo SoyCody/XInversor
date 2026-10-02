@@ -6,6 +6,10 @@
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
+  // Sin motor nativo (binario Rust): las consultas las ejecuta el driver
+  // de Node (@prisma/adapter-pg, ver src/db.js). Más portable en hosting
+  // compartido.
+  engineType = "client"
 }
 
 datasource db {
