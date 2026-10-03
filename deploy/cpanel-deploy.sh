@@ -104,9 +104,17 @@ if [ -n "$NATIVOS" ]; then
   echo "$NATIVOS"
 fi
 
-# Comprobación: ¿se pueden cargar de verdad el cliente y el adaptador de
-# Postgres en este servidor? (Esto aún no ejecuta WebAssembly.)
-node --import tsx -e "Promise.all([import('./generated/prisma/client.ts'), import('@prisma/adapter-pg')]).then(() => console.log('Cliente de Prisma + adaptador pg: carga OK'))"
+# Envoltorio de Node para Passenger (plan B, ver bin/node-wasm.sh): necesita
+# permiso de ejecución, que git en Windows no conserva.
+chmod +x "$APP_DIR/bin/node-wasm.sh" 2>/dev/null || true
+
+# Comprobación informativa: ¿cargan el cliente y el adaptador de Postgres?
+# tsx usa WebAssembly, y en esta cuenta (límite de memoria virtual de 4 GB)
+# falla sin --disable-wasm-trap-handler; por eso se usa aquí. Si falla NO
+# se aborta: solo se avisa (la prueba detallada está al final).
+if ! NODE_OPTIONS="--disable-wasm-trap-handler" node --import tsx -e "Promise.all([import('./generated/prisma/client.ts'), import('@prisma/adapter-pg')]).then(() => console.log('Cliente de Prisma + adaptador pg: carga OK'))"; then
+  echo "AVISO: no se pudo cargar el cliente de Prisma con el flag (ver prueba al final)."
+fi
 
 # --- 4. Reiniciar Passenger ----------------------------------------------------
 # Passenger reinicia la app cuando cambia la fecha de este archivo.
@@ -115,25 +123,37 @@ touch "$APP_DIR/tmp/restart.txt"
 
 echo "===== Despliegue terminado OK ====="
 
-# --- 5. ¿Funciona el WebAssembly del cliente de Prisma en este servidor? -------
-# engineType = "client" ejecuta WebAssembly al arrancar la app. Si el límite de
-# memoria de la cuenta lo impide, la app no arrancará bajo Passenger: esto lo
-# comprueba ahora y lo deja claro en el log. Un fallo aquí NO marca el
-# despliegue como fallido (va después del mensaje de OK y no usa `set -e`).
+# --- 5. ¿Funciona el WebAssembly en este servidor? --------------------------------
+# Esta cuenta limita la memoria virtual (ulimit -v, ver arriba): sin
+# --disable-wasm-trap-handler cualquier WebAssembly falla (tsx, Prisma). Aquí se
+# prueba con el flag (B) y sin él (A) y se deja claro en el log.
+#
+# Cada prueba va aislada: un fallo (incluso un crash) solo queda registrado y el
+# script sigue. Como el reinicio de Passenger ya se hizo arriba y no se usa
+# `set -e` aquí, nada de esto puede tumbar el despliegue.
+set +e
+trap - ERR
 echo
 echo "===== Prueba de WebAssembly / Prisma ====="
-echo "--- Prueba A: opciones normales de Node"
-RES_A=0
-node --import tsx scripts/check-runtime.js || RES_A=$?
-RES_B="no probada"
-if node --disable-wasm-trap-handler -e 0 2>/dev/null; then
-  echo "--- Prueba B: con --disable-wasm-trap-handler (necesita menos memoria virtual)"
-  RES_B=0
-  NODE_OPTIONS=--disable-wasm-trap-handler node --import tsx scripts/check-runtime.js || RES_B=$?
-fi
-echo "--- RESULTADO: A=$RES_A B=$RES_B (0 = OK, 2 = falla el WebAssembly, 3 = WebAssembly OK pero la BD no responde, 4 = DATABASE_URL mal)"
-if [ "$RES_A" = "2" ] && { [ "$RES_B" = "0" ] || [ "$RES_B" = "3" ]; }; then
-  echo ">>> Solo funciona con --disable-wasm-trap-handler: en cPanel > Application Manager añade la variable de entorno NODE_OPTIONS=--disable-wasm-trap-handler y reinicia la app."
-elif [ "$RES_A" = "2" ]; then
-  echo ">>> El WebAssembly no carga en este servidor ni con la opción B: hay que usar el plan B (motor nativo con binaryTargets)."
+echo "--- Prueba B: con NODE_OPTIONS=--disable-wasm-trap-handler"
+NODE_OPTIONS="--disable-wasm-trap-handler" node scripts/check-runtime.js
+RES_B=$?
+echo "--- Prueba A: sin el flag (como arrancaría la app si Passenger no lo aplica)"
+env -u NODE_OPTIONS node scripts/check-runtime.js
+RES_A=$?
+echo
+echo "RESULTADO: A=$RES_A B=$RES_B"
+echo "  (0 = OK, 2 = falla WebAssembly básico, 5 = falla tsx, 4 = DATABASE_URL mal, 6 = falla WebAssembly de Prisma, 3 = WebAssembly OK pero la BD no responde)"
+if [ "$RES_B" = "0" ] || [ "$RES_B" = "3" ]; then
+  if [ "$RES_A" = "0" ] || [ "$RES_A" = "3" ]; then
+    echo ">>> WebAssembly funciona incluso sin el flag: no hace falta configurar nada especial."
+  else
+    echo ">>> HACE FALTA el flag: en cPanel > Application Manager añade la variable NODE_OPTIONS=--disable-wasm-trap-handler y reinicia la app."
+    echo ">>> Si tras eso /health indica wasmTrapHandlerDisabled:false, usa el plan B: PassengerNodejs apuntando a $APP_DIR/bin/node-wasm.sh"
+  fi
+  if [ "$RES_B" = "3" ]; then
+    echo ">>> Ojo: la base de datos no respondió en la prueba (revisa DATABASE_URL, Neon y el puerto 5432)."
+  fi
+else
+  echo ">>> Ni siquiera con el flag funciona (B=$RES_B). Hay que pasar al motor nativo (plan B de Prisma) o revisar los límites de arriba."
 fi

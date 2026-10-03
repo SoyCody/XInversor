@@ -25,6 +25,13 @@ process.on('unhandledRejection', (reason) => {
 
 const isProd = process.env.NODE_ENV === 'production';
 
+// ¿Node se inició con --disable-wasm-trap-handler? En el hosting (límite de
+// memoria virtual de 4 GB) hace falta para que cualquier WebAssembly (tsx,
+// el cliente de Prisma) pueda cargarse. Solo se puede dar al INICIAR el
+// proceso (NODE_OPTIONS o argumento de node), por eso aquí solo se informa.
+const wasmFlagActivo = `${process.env.NODE_OPTIONS ?? ''} ${process.execArgv.join(' ')}`
+  .includes('--disable-wasm-trap-handler');
+
 // Sin estas variables la app arrancaría "bien" y fallaría recién en la
 // primera petición, con un error poco claro. Mejor avisar y parar acá.
 const faltantes = ['DATABASE_URL', 'JWT_SECRET'].filter((k) => !process.env[k]);
@@ -116,10 +123,12 @@ app.get('/health', async (req, res) => {
         setTimeout(() => reject(Object.assign(new Error('timeout'), { code: 'TIMEOUT' })), 10_000).unref();
       }),
     ]);
-    res.json({ status: 'ok', db: 'ok' });
+    res.json({ status: 'ok', db: 'ok', wasmTrapHandlerDisabled: wasmFlagActivo });
   } catch (err) {
     console.error('[health] falló la consulta a la BD:', err?.code ?? err?.name, err?.message);
-    res.status(503).json({ status: 'error', db: 'error', code: err?.code ?? 'UNKNOWN' });
+    res.status(503).json({
+      status: 'error', db: 'error', code: err?.code ?? 'UNKNOWN', wasmTrapHandlerDisabled: wasmFlagActivo,
+    });
   }
 });
 
@@ -156,6 +165,7 @@ app.use((err, req, res, next) => {
 // PORT solo importa en local.
 const server = app.listen(PORT, () => {
   console.log(`Servidor backend escuchando (puerto ${PORT}, NODE_ENV=${process.env.NODE_ENV || 'sin definir'})`);
+  console.log(`Node ${process.version} | --disable-wasm-trap-handler: ${wasmFlagActivo ? 'ACTIVO' : 'NO activo'}`);
   iniciarTareasProgramadas();
 });
 

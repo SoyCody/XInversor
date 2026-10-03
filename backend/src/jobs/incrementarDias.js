@@ -3,7 +3,10 @@
 //
 // Uso puntual / cron del sistema (Task Scheduler de Windows, crontab, etc.):
 //   npm run job:dias
-//   node --import tsx src/jobs/incrementarDias.js
+//   node --disable-wasm-trap-handler --import tsx src/jobs/incrementarDias.js
+//
+// En cPanel (Cron Jobs), con rutas absolutas y el flag de WebAssembly:
+//   cd /home/fxinvers45/fxinversor-api && NODE_OPTIONS=--disable-wasm-trap-handler /opt/cpanel/ea-nodejs20/bin/node --import tsx src/jobs/incrementarDias.js >> /home/fxinvers45/cron-dias.log 2>&1
 //
 // La app además lo corre sola cada medianoche (ver src/jobs/scheduler.js),
 // así que este script es sobre todo para entornos donde el proceso no

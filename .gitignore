@@ -190,3 +190,6 @@ $RECYCLE.BIN/
 *.swp
 *.swo
 *~
+
+# Error de arranque que app.js escribe en el servidor
+startup-error.log

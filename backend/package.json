@@ -19,9 +19,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --import tsx src/server.js",
+    "start": "node --disable-wasm-trap-handler --import tsx src/server.js",
     "dev": "node --watch --import tsx src/server.js",
-    "job:dias": "node --import tsx src/jobs/incrementarDias.js",
+    "job:dias": "node --disable-wasm-trap-handler --import tsx src/jobs/incrementarDias.js",
     "migrate:deploy": "node scripts/migrate-deploy.js",
     "prisma:generate": "prisma generate"
   },
