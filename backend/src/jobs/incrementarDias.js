@@ -3,7 +3,7 @@
 //
 // Uso puntual / cron del sistema (Task Scheduler de Windows, crontab, etc.):
 //   npm run job:dias
-//   node --experimental-strip-types src/jobs/incrementarDias.js
+//   node --import tsx src/jobs/incrementarDias.js
 //
 // La app además lo corre sola cada medianoche (ver src/jobs/scheduler.js),
 // así que este script es sobre todo para entornos donde el proceso no

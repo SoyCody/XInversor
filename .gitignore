@@ -173,14 +173,6 @@ sketch
 .history
 .ionide
 
-# End of https://www.toptal.com/developers/gitignore/api/node,visualstudiocode,react
-
-# Cliente de Prisma generado (backend/generated/prisma, ver
-# backend/prisma/schema.prisma#output): se regenera con `prisma generate`,
-# no hace falta versionarlo. Sin barra inicial a propósito, para que
-# matchee en cualquier subcarpeta (hoy solo backend/), no solo en la raíz.
-generated/
-
 .agents
 .claude
 .windsurf

@@ -2,3 +2,6 @@
 # Windows, bash falla con errores tipo "$'\r': command not found".
 *.sh text eol=lf
 .cpanel.yml text eol=lf
+
+# Código generado por Prisma: mismo fin de línea en cualquier PC y fuera de los diffs.
+backend/generated/** text eol=lf linguist-generated -diff
