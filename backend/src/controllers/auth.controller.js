@@ -1,32 +1,16 @@
 import * as authService from '../services/auth.service.js';
-import * as verificationService from '../services/verification.service.js';
-import { EmailDeliveryError } from '../utils/mailer.js';
 import { setAuthCookie, COOKIE_NAME, COOKIE_OPTIONS } from '../middlewares/auth.middleware.js';
 
-// Errores de dominio comunes a cualquier paso "confirmar código"
-// (register/confirm y change/password/confirm): centralizado acá para no
-// repetir el mismo if/else en los cuatro controllers.
-const isVerificationError = (error) =>
-  error instanceof verificationService.VerificationNotFoundError ||
-  error instanceof verificationService.InvalidCodeError ||
-  error instanceof verificationService.TooManyAttemptsError;
-
-// Paso 1 de 2: valida los datos y manda el código de verificación al
-// correo. Todavía no crea la cuenta ni setea cookie de sesión -- eso pasa
-// en confirmRegister, cuando el código se confirma.
 const register = async (req, res) => {
   try {
-    const result = await authService.requestRegister(req.body);
-    res.status(200).json({
-      message: 'Te enviamos un código de verificación a tu correo',
-      ...result
-    });
+    const user = await authService.registerClient(req.body);
+
+    // El token ya no va en el body: viaja como cookie httpOnly.
+    setAuthCookie(res, user);
+
+    res.status(201).json(user);
   } catch (error) {
     if (error instanceof authService.EmailAlreadyExistsError) {
-      return res.status(error.statusCode).json({ error: error.message });
-    }
-
-    if (error instanceof EmailDeliveryError) {
       return res.status(error.statusCode).json({ error: error.message });
     }
 
@@ -38,31 +22,6 @@ const register = async (req, res) => {
 
     console.error('Error al registrar usuario:', error);
     res.status(500).json({ error: 'Error al registrar usuario' });
-  }
-};
-
-// Paso 2 de 2: confirma el código y recién ahí crea la cuenta.
-const confirmRegister = async (req, res) => {
-  try {
-    const user = await authService.confirmRegister(req.body);
-
-    // El token ya no va en el body: viaja como cookie httpOnly.
-    setAuthCookie(res, user);
-
-    res.status(201).json(user);
-  } catch (error) {
-    if (error instanceof authService.EmailAlreadyExistsError || isVerificationError(error)) {
-      return res.status(error.statusCode).json({ error: error.message });
-    }
-
-    if (error.code === 'P2002') {
-      return res.status(409).json({
-        error: 'Ya existe una cuenta con este correo electrónico'
-      });
-    }
-
-    console.error('Error al confirmar el registro:', error);
-    res.status(500).json({ error: 'Error al confirmar el registro' });
   }
 };
 
@@ -121,40 +80,10 @@ const update = async (req, res) => {
   }
 };
 
-// Paso 1 de 2: valida la contraseña actual y manda el código al correo
-// YA registrado del usuario. Todavía no cambia nada.
 const changePassword = async (req, res) => {
-  try {
+  try{
     const id = req.user?.id;
-    const result = await authService.requestPasswordChange(id, req.body);
-
-    return res.status(200).json({
-      message: 'Te enviamos un código de verificación a tu correo',
-      ...result
-    });
-  } catch (error) {
-    if (error instanceof authService.InvalidPasswordError ||
-        error instanceof authService.UserNotFoundError) {
-      return res.status(error.statusCode).json({ error: error.message });
-    }
-
-    if (error instanceof EmailDeliveryError) {
-      return res.status(error.statusCode).json({ error: error.message });
-    }
-
-    // No se devuelve error.message al cliente: puede traer detalle interno.
-    console.error('Error al solicitar el cambio de contraseña:', error);
-    return res.status(500).json({
-      message: 'Error al cambiar la contraseña'
-    })
-  }
-};
-
-// Paso 2 de 2: confirma el código y recién ahí aplica la contraseña.
-const confirmChangePassword = async (req, res) => {
-  try {
-    const id = req.user?.id;
-    const updatedUser = await authService.confirmPasswordChange({ id, ...req.body });
+    const updatedUser = await authService.changePassword(id, req.body);
 
     // Reemitir la cookie con la tokenVersion nueva: sin esto, el propio
     // request que acaba de cambiar la contraseña quedaría deslogueado
@@ -165,12 +94,14 @@ const confirmChangePassword = async (req, res) => {
     return res.status(200).json({
       message: "La contraseña se ha cambiado correctamente"
     });
-  } catch (error) {
-    if (error instanceof authService.UserNotFoundError || isVerificationError(error)) {
+  }catch(error){
+    if (error instanceof authService.InvalidPasswordError ||
+        error instanceof authService.UserNotFoundError) {
       return res.status(error.statusCode).json({ error: error.message });
     }
 
-    console.error('Error al confirmar el cambio de contraseña:', error);
+    // No se devuelve error.message al cliente: puede traer detalle interno.
+    console.error('Error al cambiar la contraseña:', error);
     return res.status(500).json({
       message: 'Error al cambiar la contraseña'
     })
@@ -233,12 +164,10 @@ const deleteUser = async (req, res)=> {
  };
 export default {
   register,
-  confirmRegister,
   login,
   logout,
   update,
   changePassword,
-  confirmChangePassword,
   deleteUser,
   updateAvatar,
   getAvatar

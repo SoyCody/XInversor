@@ -691,30 +691,6 @@ footer strong {
   font-size: 10px;
   line-height: 1.5;
 }
-
-/* Confirmación de "te reenviamos el código" (paso 4 del registro): mismo
-   tratamiento que .auth-error pero en verde. */
-.auth-success {
-  margin: 10px 0 0;
-  padding: 9px 11px;
-  border-radius: 6px;
-  background: rgba(43, 155, 120, 0.14);
-  border: 1px solid rgba(43, 155, 120, 0.35);
-  color: #5fd6ab;
-  font-size: 10px;
-  line-height: 1.5;
-}
-
-/* Código de verificación (paso 4 del registro): mismo input que el resto
-   del panel (.auth-panel input[type="text"]), pero grande y espaciado
-   para que se lea de un vistazo. El selector repite [type="text"] nada
-   más para pesar más que esa regla y no competir por orden en la hoja. */
-.auth-panel input[type="text"].auth-code-input {
-  text-align: center;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 10px;
-}
 .password-hint,
 .role-description {
   margin: 8px 0 0;

@@ -95,37 +95,6 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
-/* Código de verificación (cambio de contraseña): mismo input de arriba,
-   pero grande y espaciado para que se lea de un vistazo. */
-.config-modal__field input.config-modal__code-input {
-  text-align: center;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 10px;
-}
-
-/* "¿No te llegó el código? Reenviar": link de texto suelto, sin las
-   primitivas .btn (no es una acción primaria/secundaria del modal). */
-.config-modal__link-btn {
-  align-self: flex-start;
-  margin: -6px 0 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--btn-primary);
-  font-size: var(--fs-meta);
-  cursor: pointer;
-}
-
-.config-modal__link-btn:hover:not(:disabled) {
-  text-decoration: underline;
-}
-
-.config-modal__link-btn:disabled {
-  color: var(--btn-muted);
-  cursor: not-allowed;
-}
-
 .config-modal__text {
   margin: 0;
   font-size: var(--fs-body);

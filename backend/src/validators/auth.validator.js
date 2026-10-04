@@ -1,5 +1,4 @@
 import Joi from 'joi';
-import { CODE_LENGTH } from '../services/verification.service.js';
 
 // ==============================
 // VALIDACIONES - Registro de usuario
@@ -74,23 +73,4 @@ const passwordSchema = Joi.object({
   })
 });
 
-// ==============================
-// VALIDACIONES - Confirmar código de verificación
-// ==============================
-// Comparte forma entre /register/confirm y /change/password/confirm: un
-// id de la verificación pendiente (ver verification.service.js) + el
-// código de CODE_LENGTH dígitos que llegó al correo.
-const confirmCodeSchema = Joi.object({
-  verificationId: Joi.string().trim().required().messages({
-    'string.empty': 'Falta el identificador de la verificación',
-    'any.required': 'Falta el identificador de la verificación'
-  }),
-  code: Joi.string().trim().length(CODE_LENGTH).pattern(/^\d+$/).required().messages({
-    'string.empty': 'El código es obligatorio',
-    'string.length': `El código debe tener ${CODE_LENGTH} dígitos`,
-    'string.pattern.base': `El código debe tener ${CODE_LENGTH} dígitos`,
-    'any.required': 'El código es obligatorio'
-  })
-});
-
-export { registerSchema, loginSchema, updateSchema, passwordSchema, confirmCodeSchema };
+export { registerSchema, loginSchema, updateSchema, passwordSchema };

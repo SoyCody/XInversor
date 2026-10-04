@@ -211,12 +211,10 @@ servidor o en plataformas distintas.
      `rateLimit.middleware.js`) terminan compartiendo un único cupo
      entre todos los usuarios (ver `server.js`). 1 alcanza para un solo
      proxy delante.
-   - `RESEND_API_KEY` / `RESEND_FROM_EMAIL`: con una cuenta de Resend
-     sin dominio propio verificado, los correos de verificación **solo**
-     llegan a la dirección con la que se creó esa cuenta de Resend. Para
-     que le lleguen a clientes reales hay que verificar un dominio en
-     resend.com/domains y usar una dirección de ese dominio como
-     `RESEND_FROM_EMAIL`.
+   - `RESEND_API_KEY` / `RESEND_FROM_EMAIL`: reservadas. Hoy no se envía
+     ningún correo (el registro y el cambio de contraseña se aplican
+     directamente); se usarán cuando se habilite la verificación por
+     correo.
 2. Instalar dependencias (corre `prisma generate` solo, vía
    `postinstall`) y aplicar las migraciones pendientes:
    ```bash

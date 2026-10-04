@@ -12,24 +12,12 @@ const RegisterForm = ({
   onNextStep,
   onPrevStep,
   onSubmit,
-  verification,
-  code,
-  onCodeChange,
-  onConfirmCode,
-  onResendCode,
-  resendMessage,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleSubmit = (e) => {
-    if (step === 3) return onSubmit(e);
-    if (step === 4) return onConfirmCode(e);
-    return e.preventDefault();
-  };
-
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={step === 3 ? onSubmit : (e) => e.preventDefault()}>
       <div className="register-steps">
         <div className={step >= 1 ? "step active" : "step"}>
           <span>1</span>
@@ -39,8 +27,6 @@ const RegisterForm = ({
           <span>2</span>
           <small>Seguridad</small>
         </div>
-        {/* El paso 4 (código) es una continuación del 3: sigue mostrando
-            "Confirmar" como activo, no agrega una cuarta bolita. */}
         <div className={step >= 3 ? "step active" : "step"}>
           <span>3</span>
           <small>Confirmar</small>
@@ -185,57 +171,7 @@ const RegisterForm = ({
               Atrás
             </button>
             <button className="btn btn--primary btn--block" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Enviando código..." : "Enviar código de verificación"}
-            </button>
-          </div>
-        </>
-      )}
-
-      {step === 4 && (
-        <>
-          <p className="role-description">
-            Te enviamos un código de 4 dígitos a <strong>{verification?.email}</strong>.
-            Ingrésalo para crear tu cuenta.
-          </p>
-
-          <label>
-            Código de verificación
-            <input
-              className="auth-code-input"
-              type="text"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={4}
-              placeholder="0000"
-              value={code}
-              onChange={onCodeChange}
-            />
-          </label>
-
-          {resendMessage && !error && (
-            <p className="auth-success">{resendMessage}</p>
-          )}
-
-          {error && <p className="auth-error">{error}</p>}
-
-          <p className="switch-auth">
-            ¿No te llegó el código?
-            <button type="button" onClick={onResendCode} disabled={isSubmitting}>
-              Reenviar
-            </button>
-          </p>
-
-          <div className="register-navigation">
-            <button
-              type="button"
-              className="btn btn--muted"
-              onClick={onPrevStep}
-              disabled={isSubmitting}
-            >
-              Editar datos
-            </button>
-            <button className="btn btn--primary btn--block" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Verificando..." : "Verificar y crear cuenta"}
+              {isSubmitting ? "Creando cuenta..." : "Crear mi cuenta"}
             </button>
           </div>
         </>
