@@ -13,29 +13,22 @@ import fx500 from "../../assets/packages/fx-500.png";
 import fx1000 from "../../assets/packages/fx-1000.png";
 import fx2000 from "../../assets/packages/fx-2000.png";
 import fx3000 from "../../assets/packages/fx-3000.png";
-import fx4000 from "../../assets/packages/fx-4000.png";
 import fx5000 from "../../assets/packages/fx-5000.png";
-import fx6000 from "../../assets/packages/fx-6000.png";
 import fx7000 from "../../assets/packages/fx-7000.png";
-import fx8000 from "../../assets/packages/fx-8000.png";
-import fx9000 from "../../assets/packages/fx-9000.png";
+import fx10000 from "../../assets/packages/fx-10000.png";
+import fx15000 from "../../assets/packages/fx-15000.png";
+import fx20000 from "../../assets/packages/fx-20000.png";
 
-// Mismos íconos que NuevoPaqueteModal (assets/packages/fx-*.png): cada
-// paquete tiene un monto fijo, así que el ícono alcanza para identificarlo.
-// Si el monto no calza exacto con ninguno (inversiones de antes del
-// selector de paquetes, con montos libres), se usa el más cercano en vez
-// de no mostrar nada.
 const ICONOS_PAQUETE = [
   { monto: 500, icon: fx500 },
   { monto: 1000, icon: fx1000 },
   { monto: 2000, icon: fx2000 },
   { monto: 3000, icon: fx3000 },
-  { monto: 4000, icon: fx4000 },
   { monto: 5000, icon: fx5000 },
-  { monto: 6000, icon: fx6000 },
   { monto: 7000, icon: fx7000 },
-  { monto: 8000, icon: fx8000 },
-  { monto: 9000, icon: fx9000 },
+  { monto: 10000, icon: fx10000 },
+  { monto: 15000, icon: fx15000 },
+  { monto: 20000, icon: fx20000 }
 ];
 
 const iconoParaMonto = (monto) => {
